@@ -1,0 +1,10 @@
+{
+  "name": "StaffPath — Staff Engineer Preparation",
+  "short_name": "StaffPath",
+  "description": "A local-first Staff Software Engineer preparation, practice, and evidence workspace.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f5f0",
+  "theme_color": "#173b2b",
+  "icons": [{ "src": "/staffpath-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

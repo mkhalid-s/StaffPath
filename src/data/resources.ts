@@ -1,0 +1,19 @@
+export interface LearningResource { title: string; provider: string; type: 'Guide' | 'Book' | 'Reference' | 'Paper'; domain: string; url: string; purpose: string }
+export const learningResources: LearningResource[] = [
+  { title:'Staff engineering guides', provider:'StaffEng', type:'Guide', domain:'Leadership', url:'https://staffeng.com/guides/', purpose:'Archetypes, scope, strategy, influence, technical quality, and career evidence.' },
+  { title:'Site Reliability Engineering books', provider:'Google', type:'Book', domain:'Reliability', url:'https://sre.google/books/', purpose:'SLOs, overload, capacity, incidents, and reliable operations.' },
+  { title:'Engineering practices', provider:'Google', type:'Guide', domain:'Engineering', url:'https://google.github.io/eng-practices/', purpose:'Code review, change quality, and maintainable team practices.' },
+  { title:'DORA capabilities', provider:'DORA', type:'Reference', domain:'Delivery', url:'https://dora.dev/capabilities/', purpose:'Evidence-informed delivery, culture, platform, and feedback capabilities.' },
+  { title:'Architecture Center', provider:'Microsoft Azure', type:'Reference', domain:'Architecture', url:'https://learn.microsoft.com/en-us/azure/architecture/', purpose:'Architecture styles, cloud patterns, workload guides, and technology choices.' },
+  { title:'Well-Architected Framework', provider:'AWS', type:'Reference', domain:'Architecture', url:'https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html', purpose:'Operational, security, reliability, performance, cost, and sustainability reviews.' },
+  { title:'Threat Modeling', provider:'OWASP', type:'Guide', domain:'Security', url:'https://owasp.org/www-project-threat-modeling/', purpose:'Structured threat discovery, mitigation, communication, and maintenance.' },
+  { title:'Developer Guide', provider:'OWASP', type:'Guide', domain:'Security', url:'https://owasp.org/www-project-developer-guide/', purpose:'Security throughout requirements, design, implementation, verification, and operation.' },
+  { title:'HTTP reference', provider:'MDN', type:'Reference', domain:'Networking', url:'https://developer.mozilla.org/en-US/docs/Web/HTTP', purpose:'HTTP semantics, methods, headers, caching, security, and version concepts.' },
+  { title:'Transaction isolation', provider:'PostgreSQL', type:'Reference', domain:'Data', url:'https://www.postgresql.org/docs/current/transaction-iso.html', purpose:'Concrete isolation behavior and concurrency anomalies.' },
+  { title:'Kafka design documentation', provider:'Apache Kafka', type:'Reference', domain:'Messaging', url:'https://kafka.apache.org/documentation/#design', purpose:'Log, replication, delivery, consumer, and operational design.' },
+  { title:'In Search of an Understandable Consensus Algorithm', provider:'Raft authors', type:'Paper', domain:'Distributed systems', url:'https://raft.github.io/raft.pdf', purpose:'Consensus, terms, elections, replicated logs, and safety.' },
+  { title:'Kubernetes concepts', provider:'Kubernetes', type:'Reference', domain:'Cloud', url:'https://kubernetes.io/docs/concepts/', purpose:'Workloads, services, configuration, storage, security, and cluster architecture.' },
+  { title:'OpenTelemetry documentation', provider:'OpenTelemetry', type:'Reference', domain:'Observability', url:'https://opentelemetry.io/docs/', purpose:'Vendor-neutral signals, instrumentation, context, and collectors.' },
+  { title:'AI Risk Management Framework', provider:'NIST', type:'Reference', domain:'AI', url:'https://www.nist.gov/itl/ai-risk-management-framework', purpose:'Govern, map, measure, and manage production AI risks.' },
+  { title:'Leadership Principles', provider:'Amazon Jobs', type:'Reference', domain:'Company pack', url:'https://www.amazon.jobs/content/en/our-workplace/leadership-principles', purpose:'Authoritative source for the optional Amazon behavioral overlay.' },
+];

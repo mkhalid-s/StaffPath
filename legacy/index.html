@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f5f0" />
+    <title>StaffPath — 90 Day Staff Engineer Practice</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#today" aria-label="StaffPath home">
+          <span class="brand-mark">S</span>
+          <span>StaffPath</span>
+        </a>
+
+        <nav class="nav" aria-label="Main navigation">
+          <button class="nav-item active" data-view="today"><span>⌁</span> Today</button>
+          <button class="nav-item" data-view="roadmap"><span>□</span> Roadmap</button>
+          <button class="nav-item" data-view="practice"><span>△</span> Practice Lab</button>
+          <button class="nav-item" data-view="skills"><span>◇</span> Skills</button>
+          <button class="nav-item" data-view="handbook"><span>▤</span> Handbook</button>
+          <button class="nav-item" data-view="encyclopedia"><span>⌕</span> Encyclopedia</button>
+          <button class="nav-item" data-view="journal"><span>≡</span> Journal</button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="mini-progress">
+            <div class="mini-progress-head"><span>90-day journey</span><strong id="sidePercent">0%</strong></div>
+            <div class="progress-track"><span id="sideProgress"></span></div>
+            <small id="sideDays">0 of 90 sessions complete</small>
+          </div>
+          <button class="profile" id="settingsButton">
+            <span class="avatar" id="avatar">Y</span>
+            <span><strong id="profileName">Your journey</strong><small>Staff Engineer track</small></span>
+            <span>•••</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="mobile-header">
+          <a class="brand" href="#today"><span class="brand-mark">S</span><span>StaffPath</span></a>
+          <button class="icon-button" id="mobileMenu" aria-label="Open menu">☰</button>
+        </header>
+
+        <section class="view active" id="todayView">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow" id="todayDate">TODAY</p>
+              <h1 id="greeting">Build your Staff-level impact.</h1>
+              <p id="daySubtitle">One focused hour. One concrete artifact.</p>
+            </div>
+            <div class="streak-pill"><span>↗</span><strong id="streakCount">0</strong> day streak</div>
+          </div>
+
+          <div class="today-grid">
+            <article class="focus-card">
+              <div class="card-topline">
+                <span class="week-chip" id="weekChip">WEEK 1</span>
+                <span class="duration">◷ 60 min</span>
+              </div>
+              <p class="focus-label">TODAY'S FOCUS</p>
+              <h2 id="taskTitle">Loading today’s session…</h2>
+              <p class="task-description" id="taskDescription"></p>
+              <div class="skill-tags" id="skillTags"></div>
+
+              <div class="resource-row">
+                <div>
+                  <span class="resource-kicker">SESSION MATERIAL</span>
+                  <a id="resourceLink" href="#" target="_blank" rel="noreferrer">Open today’s supporting resource ↗</a>
+                </div>
+                <span id="resourceType">GUIDE</span>
+              </div>
+
+              <div class="session-plan">
+                <div><span class="step-number">1</span><p><strong>Recall</strong><small>Review yesterday without notes</small></p><em>10m</em></div>
+                <div><span class="step-number">2</span><p><strong>Learn</strong><small id="learnPrompt">Study today's topic</small></p><em>25m</em></div>
+                <div><span class="step-number">3</span><p><strong>Apply</strong><small id="applyPrompt">Create a useful artifact</small></p><em>20m</em></div>
+                <div><span class="step-number">4</span><p><strong>Reflect</strong><small>Capture insight and next action</small></p><em>5m</em></div>
+              </div>
+
+              <button class="primary-button" id="startSession">Start focused session <span>→</span></button>
+            </article>
+
+            <div class="right-column">
+              <article class="timer-card" id="timerCard">
+                <div class="timer-heading"><span>SESSION TIMER</span><button class="text-button" id="resetTimer">Reset</button></div>
+                <div class="timer-ring" id="timerRing">
+                  <div><strong id="timerDisplay">60:00</strong><small id="timerPhase">Ready to begin</small></div>
+                </div>
+                <div class="timer-controls">
+                  <button class="timer-button" id="timerToggle">▶</button>
+                  <button class="complete-button" id="completeSession">Mark complete</button>
+                </div>
+              </article>
+
+              <article class="practice-card">
+                <div class="practice-icon">◉</div>
+                <div>
+                  <p class="focus-label">COMMUNICATION REP</p>
+                  <h3 id="communicationTitle">Explain it simply</h3>
+                  <p id="communicationPrompt">Record a two-minute explanation of today's idea without jargon.</p>
+                </div>
+                <label class="check-label"><input type="checkbox" id="communicationCheck" /><span></span></label>
+              </article>
+            </div>
+          </div>
+
+          <section class="weekly-section">
+            <div class="section-heading"><div><p class="eyebrow">THIS WEEK</p><h2 id="weekTitle">Your weekly plan</h2></div><button class="text-button" data-go="roadmap">View roadmap →</button></div>
+            <div class="week-strip" id="weekStrip"></div>
+          </section>
+        </section>
+
+        <section class="view" id="roadmapView">
+          <div class="page-heading compact"><div><p class="eyebrow">THE JOURNEY</p><h1>90-day roadmap</h1><p>Technical depth, organizational influence, and communication—practiced together.</p></div></div>
+          <div class="roadmap-toolbar">
+            <div class="filter-pills" id="roadmapFilters">
+              <button class="active" data-filter="all">All</button><button data-filter="technical">Technical</button><button data-filter="leadership">Leadership</button><button data-filter="communication">Communication</button>
+            </div>
+            <button class="secondary-button" id="jumpToday">Jump to current day</button>
+          </div>
+          <div class="roadmap" id="roadmap"></div>
+        </section>
+
+        <section class="view" id="skillsView">
+          <div class="page-heading compact"><div><p class="eyebrow">YOUR GROWTH</p><h1>Staff skill portfolio</h1><p>Track demonstrated practice, not passive reading.</p></div></div>
+          <div class="skills-summary">
+            <article><span>SESSIONS</span><strong id="sessionsStat">0</strong><small>of 90 completed</small></article>
+            <article><span>FOCUS TIME</span><strong id="timeStat">0h</strong><small>deliberate practice</small></article>
+            <article><span>COMMS REPS</span><strong id="commsStat">0</strong><small>speaking exercises</small></article>
+            <article><span>ARTIFACTS</span><strong id="artifactStat">0</strong><small>evidence created</small></article>
+          </div>
+          <div class="skills-layout">
+            <article class="panel"><div class="section-heading"><div><p class="eyebrow">SKILL COVERAGE</p><h2>Practice balance</h2></div></div><div id="skillBars" class="skill-bars"></div></article>
+            <article class="panel"><div class="section-heading"><div><p class="eyebrow">SELF-ASSESSMENT</p><h2>Confidence check</h2></div></div><p class="muted">Review monthly. Evidence matters more than the number.</p><div id="confidenceSliders" class="confidence-list"></div></article>
+          </div>
+        </section>
+
+        <section class="view" id="practiceView">
+          <div class="page-heading compact">
+            <div><p class="eyebrow">DELIBERATE PRACTICE</p><h1>Staff Practice Lab</h1><p>Design, diagnose, influence, and deliver—not just read.</p></div>
+            <div class="lab-count"><strong id="labAttemptCount">0</strong><span>attempts saved</span></div>
+          </div>
+          <div class="lab-tabs" id="labTabs">
+            <button class="active" data-lab="design"><span>⌘</span><strong>System design</strong><small>Architecture variations</small></button>
+            <button data-lab="problem"><span>?</span><strong>Problem solving</strong><small>Ambiguous scenarios</small></button>
+            <button data-lab="people"><span>◎</span><strong>People skills</strong><small>Influence role-play</small></button>
+            <button data-lab="sdlc"><span>↻</span><strong>SDLC</strong><small>Lifecycle decisions</small></button>
+          </div>
+
+          <div class="lab-layout">
+            <article class="lab-challenge panel">
+              <div class="challenge-meta"><span id="labType">SYSTEM DESIGN</span><span>45–60 MIN</span></div>
+              <h2 id="labTitle">Design a URL shortener</h2>
+              <p id="labPrompt" class="challenge-prompt"></p>
+              <div class="variation-box" id="variationBox"><span>DESIGN VARIATION</span><strong id="labVariation"></strong></div>
+              <div class="coach-prompts" id="coachPrompts"></div>
+              <button class="secondary-button reveal-button" id="revealCoach">Reveal coaching prompts</button>
+              <div class="lab-actions"><button class="secondary-button" id="previousChallenge">← Previous</button><button class="secondary-button" id="nextChallenge">Next challenge →</button></div>
+            </article>
+
+            <form class="lab-workspace panel" id="labForm">
+              <div><p class="eyebrow">YOUR RESPONSE</p><h2>Work the problem</h2></div>
+              <label id="labResponseLabel">Architecture and trade-offs<textarea id="labResponse" rows="9" placeholder="Clarify requirements, state assumptions, explore options, and make a recommendation…"></textarea></label>
+              <label>Reflection and next improvement<textarea id="labReflection" rows="3" placeholder="What did you miss? What would you do differently next time?"></textarea></label>
+              <div class="rubric"><div class="rubric-heading"><strong>Self-review rubric</strong><small>Check only what your response demonstrates</small></div><div id="labRubric"></div></div>
+              <button class="primary-button" type="submit">Save attempt to handbook</button>
+            </form>
+          </div>
+        </section>
+
+        <section class="view" id="handbookView">
+          <div class="page-heading compact">
+            <div><p class="eyebrow">LIVING REFERENCE</p><h1>Your Staff handbook</h1><p>Curriculum, reusable templates, and evidence from your practice.</p></div>
+            <button class="secondary-button" id="exportHandbook">Export as Markdown</button>
+          </div>
+          <div class="handbook-stats">
+            <article><strong id="handbookAttempts">0</strong><span>practice attempts</span></article>
+            <article><strong id="handbookArtifacts">0</strong><span>artifacts recorded</span></article>
+            <article><strong id="handbookCoverage">0%</strong><span>curriculum coverage</span></article>
+          </div>
+          <div class="handbook-tabs" id="handbookTabs"><button class="active" data-handbook="evidence">My evidence</button><button data-handbook="curriculum">12-week technical library</button><button data-handbook="templates">Staff templates</button></div>
+          <div id="handbookContent"></div>
+        </section>
+
+        <section class="view" id="encyclopediaView">
+          <div class="page-heading compact">
+            <div><p class="eyebrow">ENGINEERING REFERENCE</p><h1>Engineering encyclopedia</h1><p>Search problems, patterns, failure modes, and Staff-level discussion points.</p></div>
+            <div class="encyclopedia-count"><strong id="chapterCount">0</strong><span>chapters</span></div>
+          </div>
+          <div class="encyclopedia-toolbar">
+            <label class="search-box"><span>⌕</span><input id="encyclopediaSearch" type="search" placeholder="Search idempotency, caching, RAG, failure scenarios…" /></label>
+            <div class="filter-pills" id="encyclopediaFilters">
+              <button class="active" data-topic="all">All</button>
+              <button data-topic="systems">Systems</button>
+              <button data-topic="patterns">Patterns</button>
+              <button data-topic="reliability">Reliability</button>
+              <button data-topic="ai">AI</button>
+              <button data-topic="leadership">Leadership</button>
+            </div>
+          </div>
+          <div class="chapter-grid" id="chapterGrid"></div>
+        </section>
+
+        <section class="view" id="journalView">
+          <div class="page-heading compact"><div><p class="eyebrow">REFLECTION</p><h1>Learning journal</h1><p>Turn activity into insight, evidence, and better judgment.</p></div><button class="primary-button small" id="newEntry">+ New entry</button></div>
+          <div class="journal-layout">
+            <form class="journal-form panel" id="journalForm">
+              <label>What did you learn?<textarea id="journalLearning" rows="4" placeholder="The most important insight was…"></textarea></label>
+              <label>How will you apply it?<textarea id="journalApplication" rows="3" placeholder="In my current system or team, I can…"></textarea></label>
+              <label>Evidence or artifact<input id="journalArtifact" placeholder="ADR, diagram, presentation, feedback…" /></label>
+              <div class="mood-row"><span>Session quality</span><div id="qualityPicker"><button type="button" data-quality="1">1</button><button type="button" data-quality="2">2</button><button type="button" data-quality="3" class="active">3</button><button type="button" data-quality="4">4</button><button type="button" data-quality="5">5</button></div></div>
+              <button class="primary-button" type="submit">Save reflection</button>
+            </form>
+            <div class="entries" id="journalEntries"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="setupDialog">
+      <form method="dialog" id="setupForm">
+        <button class="dialog-close" value="cancel" aria-label="Close">×</button>
+        <p class="eyebrow">PERSONALIZE YOUR PLAN</p>
+        <h2>Set up your journey</h2>
+        <label>Your name<input id="nameInput" placeholder="Alex" /></label>
+        <label>Journey start date<input type="date" id="startDateInput" /></label>
+        <p class="dialog-note">Your progress stays in this browser. The plan advances when you complete a session, so missed days never put you behind.</p>
+        <button class="primary-button" value="default">Save settings</button>
+        <div class="data-actions">
+          <button class="secondary-button" type="button" id="exportData">Export progress</button>
+          <label class="secondary-button import-button">Import backup<input type="file" id="importData" accept="application/json" /></label>
+        </div>
+        <button class="danger-link" type="button" id="clearData">Reset all local data</button>
+      </form>
+    </dialog>
+
+    <dialog id="chapterDialog" class="chapter-dialog">
+      <article>
+        <button class="dialog-close" id="closeChapter" aria-label="Close chapter">×</button>
+        <div id="chapterContent"></div>
+      </article>
+    </dialog>
+
+    <div class="toast" id="toast" role="status"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
