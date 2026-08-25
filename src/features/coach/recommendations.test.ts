@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { StaffPathState } from '../../domain/appState';
 import { buildCoachActions, retrieveCoachMatches } from './recommendations';
 
-const blank: StaffPathState = { version: 2, assessments: {}, completedChapters: [], mistakes: [], mockInterviews: [], roadmap: {}, practiceAttempts: [], practiceCursor: { design: 0, problem: 0, people: 0, sdlc: 0 }, communicationLessons: {}, journal: [], behavioralStories: [], diagrams: [] };
+const blank: StaffPathState = { version: 2, profile: { name: 'Test', startDate: '2026-01-01', onboardingComplete: true, preparationMode: 'moderate', skillAssessmentComplete: true }, assessments: {}, completedChapters: [], mistakes: [], mockInterviews: [], roadmap: {}, practiceAttempts: [], practiceCursor: { design: 0, problem: 0, people: 0, sdlc: 0 }, communicationLessons: {}, journal: [], behavioralStories: [], diagrams: [] };
 
 describe('preparation coach', () => {
   it('prioritizes due mistake retrieval above new work', () => {

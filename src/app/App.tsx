@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { AppShell } from './AppShell';
 import { RouteErrorBoundary } from './RouteErrorBoundary';
 import { DashboardPage } from '../features/dashboard/DashboardPage';
+import { OnboardingGuide } from '../features/onboarding/OnboardingGuide';
 import { usePathname } from '../lib/router';
 
 const EncyclopediaPage = lazy(() => import('../features/encyclopedia/EncyclopediaPage').then((module) => ({ default: module.EncyclopediaPage })));
@@ -34,5 +35,5 @@ export function App() {
     '/coach': <CoachPage />,
     '/resources': <ResourcesPage />,
   };
-  return <AppShell><RouteErrorBoundary><Suspense fallback={<div className="page route-loading">Loading workspace…</div>}>{pages[path] || <DashboardPage />}</Suspense></RouteErrorBoundary></AppShell>;
+  return <AppShell><OnboardingGuide /><RouteErrorBoundary><Suspense fallback={<div className="page route-loading">Loading workspace…</div>}>{pages[path] || <DashboardPage />}</Suspense></RouteErrorBoundary></AppShell>;
 }

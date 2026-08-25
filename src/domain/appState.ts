@@ -1,3 +1,14 @@
+import type { CustomModeConfig, PreparationMode } from './preparationModes';
+
+export interface UserProfile {
+  name: string;
+  startDate: string;
+  onboardingComplete: boolean;
+  preparationMode: PreparationMode;
+  customMode?: CustomModeConfig;
+  skillAssessmentComplete: boolean;
+}
+
 export interface CompetencyAssessment { score: number; evidence: string; updatedAt: string }
 export interface MistakeRecord { id: string; prompt: string; missed: string; correction: string; nextReview: string; reviewCount: number; resolved: boolean }
 export interface MockInterviewRecord { id: string; type: 'system-design' | 'behavioral' | 'coding' | 'ai-design'; score: number; date: string; feedback: string; prompt?: string; durationMinutes?: number; criteria?: Record<string, number> }
@@ -27,6 +38,7 @@ export interface BehavioralStoryRecord { id: string; title: string; situation: s
 export interface DiagramArtifactRecord { id: string; title: string; source: string; version: number; updatedAt: string }
 export interface StaffPathState {
   version: 2;
+  profile: UserProfile;
   assessments: Record<string, CompetencyAssessment>;
   completedChapters: string[];
   mistakes: MistakeRecord[];

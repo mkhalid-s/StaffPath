@@ -160,3 +160,15 @@ export const roadmapWeeks: RoadmapWeek[] = rawPlan.map((entry, weekIndex) => ({
 }));
 
 export const roadmapSessions = roadmapWeeks.flatMap((week) => week.sessions);
+
+export const ROADMAP_SESSION_COUNT = roadmapSessions.length;
+
+/** Sessions per week at the chosen pace (90 sessions spread across totalDays). */
+export function sessionsPerWeek(totalDays: number): number {
+  return Math.round((ROADMAP_SESSION_COUNT / totalDays) * 7 * 10) / 10;
+}
+
+/** Expected calendar day when a session should be completed at this pace. */
+export function expectedDayForSession(sessionId: number, totalDays: number): number {
+  return Math.ceil((sessionId / ROADMAP_SESSION_COUNT) * totalDays);
+}
