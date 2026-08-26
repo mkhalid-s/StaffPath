@@ -3,6 +3,7 @@ import { roadmapSessions, roadmapWeeks, ROADMAP_SESSION_COUNT, sessionsPerWeek, 
 import type { RoadmapSessionRecord } from '../../domain/appState';
 import { resolveModeConfig } from '../../domain/preparationModes';
 import { appStore, useStaffPathState } from '../../lib/appStore';
+import { enqueueAction, isOnline } from '../../lib/offlineQueue';
 import { buildSessionPlan } from './sessionPlan';
 
 const emptyRecord = (): RoadmapSessionRecord => ({ focusedSeconds: 0, communicationComplete: false, reflection: '', artifact: '' });
@@ -43,6 +44,7 @@ export function RoadmapPage() {
 
   function completeSession() {
     updateRecord({ completedAt: record.completedAt || new Date().toISOString() });
+    if (!isOnline()) enqueueAction('roadmap', `Session ${selectedId}: ${selected.title}`);
     setRunning(false);
   }
 

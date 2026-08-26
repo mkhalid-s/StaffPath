@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { practiceCatalog, practiceRubrics, practiceTracks, type PracticeTrack } from '../../data/practiceCatalog';
 import { appStore, useStaffPathState } from '../../lib/appStore';
+import { enqueueAction, isOnline } from '../../lib/offlineQueue';
 
 const labels: Record<PracticeTrack, [string, string]> = {
   design: ['System design', 'Architecture, scale, and trade-offs'],
@@ -35,6 +36,7 @@ export function PracticePage() {
       practiceAttempts: [...current.practiceAttempts, { id: crypto.randomUUID(), challengeId: challenge.id, track, title: challenge.title, variation, response: response.trim(), reflection: reflection.trim(), score: checked.length, maxScore: rubric.length, date: new Date().toISOString() }],
       practiceCursor: { ...current.practiceCursor, [track]: current.practiceCursor[track] + 1 },
     }));
+    if (!isOnline()) enqueueAction('practice', `Practice: ${challenge.title}`);
     setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false);
   }
 

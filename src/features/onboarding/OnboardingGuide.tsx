@@ -54,7 +54,7 @@ export function OnboardingGuide() {
           <div className="onboarding-step">
             <p className="eyebrow">WELCOME TO STAFFPATH</p>
             <h2 id="onboarding-title">Build judgment. Create leverage.</h2>
-            <p>StaffPath is your local-first preparation workspace for Staff-level engineering interviews and growth. Let&apos;s personalize your plan in under two minutes.</p>
+            <p>StaffPath is your local-first preparation workspace for Staff-level engineering interviews and growth. Use <kbd>⌘ ?</kbd> anytime to see keyboard shortcuts. Let&apos;s personalize your plan in under two minutes.</p>
             <label>What should we call you?<input aria-label="Your name" value={name} onChange={(event) => setName(event.target.value)} placeholder="Your name" /></label>
             <div className="button-row">
               <button className="button primary" onClick={() => { appStore.update((c) => ({ ...c, profile: { ...c.profile, name: name.trim() } })); setStep('mode'); }}>Choose your pace →</button>

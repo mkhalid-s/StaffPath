@@ -232,3 +232,25 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 @media (max-width: 680px) {
   .intelligence-grid, .analytics-grid, .analytics-stats, .weakness-cards { grid-template-columns: 1fr; }
 }
+
+.connection-status { display: flex; align-items: center; gap: 8px; padding: 8px 20px; font-size: 10px; font-weight: 650; }
+.connection-status.offline { background: #f5e8e8; color: #5a3d2d; }
+.connection-status.syncing { background: #e8f5e9; color: #2d5a3d; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+.shortcut-overlay { position: fixed; z-index: 80; inset: 0; display: grid; place-items: center; padding: 24px; }
+.shortcut-backdrop { position: absolute; inset: 0; border: 0; background: rgba(24,29,25,.63); backdrop-filter: blur(3px); cursor: pointer; }
+.shortcut-panel { position: relative; width: min(480px, 100%); padding: 28px 32px; border-radius: 14px; background: var(--paper); box-shadow: 0 30px 100px rgba(0,0,0,.28); }
+.shortcut-panel header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.shortcut-panel header button { border: 0; background: none; font-size: 24px; cursor: pointer; color: var(--muted); }
+.shortcut-list { display: grid; gap: 12px; }
+.shortcut-row { display: grid; grid-template-columns: 72px 1fr; gap: 14px; align-items: start; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.shortcut-row:last-child { border-bottom: 0; }
+.shortcut-row kbd { display: inline-block; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--cream); font-size: 10px; font-weight: 700; font-family: inherit; }
+.shortcut-row strong { display: block; font-size: 12px; margin-bottom: 2px; }
+.shortcut-row p { margin: 0; font-size: 10px; color: var(--muted); }
+.shortcut-hint { margin: 16px 0 0; font-size: 9px; color: var(--muted); text-align: center; }
+
+.shortcut-toast { position: fixed; z-index: 75; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 8px 16px; border-radius: 8px; background: var(--green); color: white; font-size: 11px; font-weight: 700; animation: unlock-slide-in .3s ease-out; }
+.shortcut-hint-link { display: block; margin-top: 10px; padding: 0; border: 0; background: none; color: var(--muted); font-size: 9px; cursor: pointer; text-decoration: underline; }
+.shortcut-hint-link:hover { color: var(--green); }

@@ -3,6 +3,7 @@ import type { ChapterCategory, EncyclopediaChapter } from '../../domain/encyclop
 import { encyclopediaChapters } from '../../data/encyclopediaChapters';
 import { ChapterDetail } from './ChapterDetail';
 import { searchChapters } from './search';
+import { FOCUS_SEARCH_EVENT } from '../../lib/keyboardShortcuts';
 import { appStore, useStaffPathState } from '../../lib/appStore';
 
 const categories: Array<'All' | ChapterCategory> = ['All', 'Systems', 'Data', 'Reliability', 'AI', 'Architecture', 'Leadership'];
@@ -15,7 +16,11 @@ export function EncyclopediaPage() {
   const deferredQuery = useDeferredValue(query);
   const searchInput = useRef<HTMLInputElement>(null);
   const results = useMemo(() => searchChapters(encyclopediaChapters, deferredQuery, category), [deferredQuery, category]);
-  useEffect(() => { const focusSearch = (event: KeyboardEvent) => { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); searchInput.current?.focus(); } }; window.addEventListener('keydown', focusSearch); return () => window.removeEventListener('keydown', focusSearch); }, []);
+  useEffect(() => {
+    const focusSearch = () => searchInput.current?.focus();
+    window.addEventListener(FOCUS_SEARCH_EVENT, focusSearch);
+    return () => window.removeEventListener(FOCUS_SEARCH_EVENT, focusSearch);
+  }, []);
 
   return <div className="page encyclopedia-page">
     <div className="page-heading"><div><p className="eyebrow">ENGINEERING ENCYCLOPEDIA</p><h1>Search concepts. Connect judgment.</h1><p>Every chapter follows one interview-to-production structure.</p></div><div className="chapter-count"><strong>{encyclopediaChapters.length}</strong><span>curated chapters</span></div></div>

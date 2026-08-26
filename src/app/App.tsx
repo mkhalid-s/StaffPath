@@ -1,13 +1,17 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { AppShell } from './AppShell';
 import { RouteErrorBoundary } from './RouteErrorBoundary';
 import { DashboardPage } from '../features/dashboard/DashboardPage';
 import { OnboardingGuide } from '../features/onboarding/OnboardingGuide';
 import { UnlockCelebration } from '../components/UnlockCelebration';
 import { LockedFeaturePage } from '../components/LockedFeaturePage';
+import { ShortcutHelp } from '../components/ShortcutHelp';
+import { ShortcutToast } from '../components/ShortcutToast';
 import { usePathname } from '../lib/router';
 import { useStaffPathState } from '../lib/appStore';
 import { FEATURE_BY_PATH, isPathUnlocked } from '../lib/featureUnlocks';
+import { initKeyboardShortcuts, SHOW_SHORTCUTS_EVENT } from '../lib/keyboardShortcuts';
+import { initOfflineSync } from '../lib/offlineQueue';
 
 const EncyclopediaPage = lazy(() => import('../features/encyclopedia/EncyclopediaPage').then((module) => ({ default: module.EncyclopediaPage })));
 const LifecyclePage = lazy(() => import('../features/lifecycle/LifecyclePage').then((module) => ({ default: module.LifecyclePage })));
@@ -54,10 +58,33 @@ function AppContent() {
 }
 
 export function App() {
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    const cleanupShortcuts = initKeyboardShortcuts({
+      onShowHelp: () => setHelpOpen(true),
+      onToast: (message) => {
+        setToast(message);
+        window.setTimeout(() => setToast(null), 1500);
+      },
+    });
+    const showHelp = () => setHelpOpen(true);
+    window.addEventListener(SHOW_SHORTCUTS_EVENT, showHelp);
+    const cleanupSync = initOfflineSync();
+    return () => {
+      cleanupShortcuts();
+      cleanupSync();
+      window.removeEventListener(SHOW_SHORTCUTS_EVENT, showHelp);
+    };
+  }, []);
+
   return (
     <AppShell>
       <OnboardingGuide />
       <UnlockCelebration />
+      <ShortcutHelp open={helpOpen} onClose={() => setHelpOpen(false)} />
+      <ShortcutToast message={toast} />
       <RouteErrorBoundary>
         <Suspense fallback={<div className="page route-loading">Loading workspace…</div>}>
           <AppContent />

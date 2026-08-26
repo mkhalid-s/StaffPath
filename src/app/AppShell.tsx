@@ -1,4 +1,6 @@
 import { type ReactNode, useState } from 'react';
+import { ConnectionStatus } from '../components/ConnectionStatus';
+import { SHOW_SHORTCUTS_EVENT } from '../lib/keyboardShortcuts';
 import { FEATURE_BY_PATH, isPathUnlocked, NAVIGATION, getUnlockProgress } from '../lib/featureUnlocks';
 import { useStaffPathState } from '../lib/appStore';
 import { Link, usePathname } from '../lib/router';
@@ -45,9 +47,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           <small>PREPARATION SYSTEM</small>
           <strong>Local-first workspace</strong>
           <span>Your learning data stays in this browser.</span>
+          <button type="button" className="shortcut-hint-link" onClick={() => window.dispatchEvent(new Event(SHOW_SHORTCUTS_EVENT))}>⌘ ? Shortcuts</button>
         </div>
       </aside>
       <main>
+        <ConnectionStatus />
         <header className="mobile-header">
           <Link className="brand" to="/"><span>S</span>StaffPath</Link>
           <button onClick={() => setMenuOpen((value) => !value)} aria-label="Toggle navigation">☰</button>
