@@ -3,6 +3,7 @@ import type { PreparationMode } from '../../domain/preparationModes';
 import { PREPARATION_MODES, resolveModeConfig } from '../../domain/preparationModes';
 import type { StaffPathState } from '../../domain/appState';
 import { appStore, useStaffPathState } from '../../lib/appStore';
+import { CompanyPackSelection } from './CompanyPackSelection';
 
 export function isStaffPathBackup(value: unknown): value is StaffPathState {
   if (!value || typeof value !== 'object') return false;
@@ -47,6 +48,8 @@ export function SettingsPage() {
       <div className="page-heading">
         <div><p className="eyebrow">LOCAL-FIRST DATA</p><h1>Settings</h1><p>Manage your preparation pace, profile, and data backup.</p></div>
       </div>
+
+      <CompanyPackSelection />
 
       <section className="settings-section">
         <div className="section-heading"><div><p className="eyebrow">FEATURE ACCESS</p><h2>Progressive disclosure</h2></div></div>

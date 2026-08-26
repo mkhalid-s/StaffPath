@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { practiceCatalog, practiceRubrics, practiceTracks, type PracticeTrack } from '../../data/practiceCatalog';
+import { getActivePack } from '../../data/companyPacks';
 import { appStore, useStaffPathState } from '../../lib/appStore';
 import { enqueueAction, isOnline } from '../../lib/offlineQueue';
 
@@ -22,6 +23,7 @@ export function PracticePage() {
   const challenge = challenges[cursor % challenges.length];
   const variation = challenge.variations[Math.floor(cursor / challenges.length) % challenge.variations.length];
   const rubric = practiceRubrics[track];
+  const pack = getActivePack(state.profile.selectedCompanyPack);
 
   function switchTrack(next: PracticeTrack) { setTrack(next); setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false); }
   function move(delta: number) {
@@ -47,6 +49,7 @@ export function PracticePage() {
       <section className="challenge-panel">
         <div className="session-meta"><span>{labels[track][0].toUpperCase()}</span><span>CHALLENGE {cursor % challenges.length + 1} / {challenges.length}</span></div>
         <h2>{challenge.title}</h2><p>{challenge.prompt}</p>
+        {pack && <div className="pack-context-card"><span>{pack.label.toUpperCase()}</span><p>{pack.practiceContext}</p></div>}
         <div className="variation-card"><span>CONSTRAINT VARIATION</span><strong>{variation}</strong></div>
         <label>{labels[track][1]}<textarea aria-label="Practice response" required value={response} onChange={(event) => setResponse(event.target.value)} placeholder="Clarify the problem, state assumptions, reason through options, make a recommendation…" /></label>
         <label>Post-attempt reflection<textarea aria-label="Practice reflection" value={reflection} onChange={(event) => setReflection(event.target.value)} placeholder="What was weak? What will you do differently next time?" /></label>

@@ -20,6 +20,7 @@ const defaultProfile = (): UserProfile => ({
   skillAssessmentComplete: false,
   unlockAll: false,
   celebratedUnlocks: [],
+  selectedCompanyPack: 'none',
 });
 
 const blankState = (): StaffPathState => ({

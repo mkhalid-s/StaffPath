@@ -1,4 +1,5 @@
 import type { CustomModeConfig, PreparationMode } from './preparationModes';
+import type { CompanyPackId } from '../data/companyPacks';
 
 export interface UserProfile {
   name: string;
@@ -9,6 +10,7 @@ export interface UserProfile {
   skillAssessmentComplete: boolean;
   unlockAll: boolean;
   celebratedUnlocks: string[];
+  selectedCompanyPack: CompanyPackId;
 }
 
 export interface CompetencyAssessment { score: number; evidence: string; updatedAt: string }
