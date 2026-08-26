@@ -1,5 +1,6 @@
 import { type ReactNode, useState } from 'react';
 import { ConnectionStatus } from '../components/ConnectionStatus';
+import { QuickActionsFab } from '../components/QuickActionsFab';
 import { SHOW_SHORTCUTS_EVENT } from '../lib/keyboardShortcuts';
 import { FEATURE_BY_PATH, isPathUnlocked, NAVIGATION, getUnlockProgress } from '../lib/featureUnlocks';
 import { useStaffPathState } from '../lib/appStore';
@@ -57,6 +58,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button onClick={() => setMenuOpen((value) => !value)} aria-label="Toggle navigation">☰</button>
         </header>
         {children}
+        <QuickActionsFab />
       </main>
       {menuOpen && <button className="menu-backdrop" onClick={() => setMenuOpen(false)} aria-label="Close navigation" />}
     </div>

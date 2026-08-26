@@ -254,3 +254,25 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .shortcut-toast { position: fixed; z-index: 75; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 8px 16px; border-radius: 8px; background: var(--green); color: white; font-size: 11px; font-weight: 700; animation: unlock-slide-in .3s ease-out; }
 .shortcut-hint-link { display: block; margin-top: 10px; padding: 0; border: 0; background: none; color: var(--muted); font-size: 9px; cursor: pointer; text-decoration: underline; }
 .shortcut-hint-link:hover { color: var(--green); }
+
+.quick-actions-fab { position: fixed; z-index: 55; right: 28px; bottom: 28px; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+.quick-actions-menu { width: min(320px, calc(100vw - 56px)); padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: white; box-shadow: 0 16px 48px rgba(0,0,0,.15); animation: fab-menu-in .2s ease-out; }
+.quick-actions-menu .eyebrow { margin-bottom: 10px; }
+.quick-action-item { display: grid; grid-template-columns: 32px 1fr auto; gap: 12px; align-items: center; width: 100%; padding: 12px; border: 0; border-radius: 10px; background: none; text-align: left; cursor: pointer; transition: background .15s; }
+.quick-action-item:hover { background: var(--cream); }
+.quick-action-icon { font-size: 16px; text-align: center; }
+.quick-action-item strong { display: block; font-size: 12px; }
+.quick-action-item p { margin: 2px 0 0; font-size: 9px; color: var(--muted); line-height: 1.4; }
+.quick-action-badge { padding: 2px 7px; border-radius: 10px; background: var(--green); color: white; font-size: 9px; font-weight: 800; }
+
+.fab-button { position: relative; width: 52px; height: 52px; border: 0; border-radius: 50%; background: var(--green); color: white; font-size: 24px; cursor: pointer; box-shadow: 0 8px 24px rgba(23,59,43,.35); transition: transform .2s, box-shadow .2s; }
+.fab-button:hover { transform: scale(1.05); box-shadow: 0 12px 32px rgba(23,59,43,.4); }
+.fab-button.open { transform: rotate(0deg); }
+.fab-icon { display: grid; place-items: center; line-height: 1; }
+.fab-badge { position: absolute; top: -2px; right: -2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #c44; color: white; font-size: 9px; font-weight: 800; display: grid; place-items: center; }
+
+@keyframes fab-menu-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 680px) {
+  .quick-actions-fab { right: 16px; bottom: 16px; }
+}
