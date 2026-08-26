@@ -1,4 +1,5 @@
 import type { EncyclopediaChapter } from '../domain/encyclopedia';
+import { detailedFoundationChapters } from './encyclopediaDetailedFoundations';
 import { foundationChapters } from './encyclopediaFoundations';
 
 export const encyclopediaChapters: EncyclopediaChapter[] = [
@@ -23,24 +24,94 @@ export const encyclopediaChapters: EncyclopediaChapter[] = [
     oneMinuteAnswer: 'I begin with users and workload: daily and peak requests, read/write ratio, payloads, retention, and growth. I calculate rough QPS, bandwidth, and storage, state uncertainty, and identify the first likely bottleneck. I then choose an architecture that meets the envelope with explicit headroom and define load tests, production thresholds, degradation behavior, and a date for revisiting the assumptions.'
   },
   {
-    id: 'cache-stampede', title: 'Cache stampede', category: 'Reliability',
-    summary: 'Prevent many clients from recomputing the same missing or expired value simultaneously.',
-    problemStatement: 'A popular key expires and concurrent misses overwhelm the database or origin service.',
-    interviewQuestion: 'How would you prevent a cache outage from taking down the underlying database?',
-    coreConcepts: ['TTL', 'Hot keys', 'Dogpile effect', 'Request coalescing', 'Stale data', 'Jitter'],
-    architectureDiagram: 'flowchart LR\n  C[Clients] --> K{Cache}\n  K -->|hit| V[Value]\n  K -->|miss| S[Single-flight lock]\n  S --> O[Origin]\n  O --> R[Refresh cache]\n  R --> V',
-    solutionApproach: ['Classify which values may be stale', 'Randomize expiration times', 'Coalesce concurrent refreshes by key', 'Serve stale values during bounded refresh where safe', 'Protect the origin with admission control', 'Measure miss amplification and hot-key concentration'],
-    designPatterns: ['Single flight', 'Probabilistic early refresh', 'Stale-while-revalidate', 'TTL jitter', 'Rate limiting'],
-    tradeoffs: ['Freshness versus availability', 'Lock coordination versus duplicate work', 'Memory versus origin load'],
-    failureScenarios: ['Many keys expire together', 'Refresh owner crashes', 'Cache cluster unavailable', 'One key receives extreme traffic'],
-    productionConsiderations: ['Randomize expirations', 'Bound lock duration', 'Monitor miss and origin amplification', 'Define behavior when cache is unavailable'],
-    staffDiscussion: ['Treat cache failure as a normal operating mode', 'Choose freshness from product requirements', 'Reduce blast radius with tenant and key isolation'],
-    relatedTopics: ['Caching', 'Redis', 'Thundering herd', 'Backpressure', 'Graceful degradation'],
-    realWorldSystems: ['Product catalogs', 'Social feeds', 'Configuration services'],
-    followUpQuestions: ['What if stale data is unsafe?', 'How do you handle a crashed refresh worker?', 'How would you protect a single celebrity key?'],
-    cheatSheet: ['Jitter avoids synchronized expiry', 'Single flight allows one recomputation per key', 'Stale-while-revalidate preserves availability'],
-    flashcards: [{ question: 'What causes a cache stampede?', answer: 'Many concurrent requests observe the same miss or expiry and independently call the origin.' }, { question: 'Why add TTL jitter?', answer: 'To prevent many keys created together from expiring at the same instant.' }],
-    oneMinuteAnswer: 'I would first identify whether stale data is acceptable. For most read paths, I combine jittered TTLs with stale-while-revalidate and single-flight request coalescing so one caller refreshes a key while others receive a stale value. Locks must be bounded because the owner can fail. I also rate-limit origin traffic, isolate hot keys, and monitor miss amplification. If stale values are unsafe, I favor controlled failure or admission control over overwhelming the source of truth.'
+    id: 'cache-stampede', title: 'Advanced caching patterns', category: 'Reliability',
+    summary: 'Design multi-tier caches with correct invalidation, stampede protection, and hot-key isolation without overwhelming the origin.',
+    problemStatement: 'A popular key expires or a cache tier fails, and concurrent misses—or a single celebrity key—overwhelm the database while stale or inconsistent values confuse users.',
+    interviewQuestion: 'How would you design caching for a high-traffic product catalog that must stay fast during flash sales?',
+    coreConcepts: [
+      'Cache-aside',
+      'Read-through and write-through',
+      'Write-behind',
+      'TTL and negative caching',
+      'Cache stampede',
+      'Single-flight coalescing',
+      'Stale-while-revalidate',
+      'Hot-key isolation',
+      'Multi-tier cache',
+      'Invalidation strategy',
+    ],
+    architectureDiagram:
+      'flowchart LR\n  C[Clients] --> E[Edge cache]\n  E --> A[App cache]\n  A --> K{Redis}\n  K -->|hit| V[Value]\n  K -->|miss| S[Single-flight]\n  S --> O[(Origin DB)]\n  O --> R[Refresh tiers]\n  R --> V\n  H[Hot-key router] --> K',
+    solutionApproach: [
+      'Classify data by freshness requirements and read/write ratio',
+      'Choose cache-aside for most paths; write-through only when strong freshness is required',
+      'Add TTL jitter and probabilistic early refresh to prevent synchronized expiry',
+      'Coalesce concurrent misses per key with single-flight or lease-based refresh',
+      'Serve stale-while-revalidate when business rules allow bounded staleness',
+      'Isolate celebrity keys with local in-process caches, sharding, or pre-warming',
+      'Invalidate with versioned keys or event-driven purge instead of wild-card deletes',
+      'Measure hit ratio, miss amplification, origin QPS, and hot-key concentration',
+    ],
+    designPatterns: [
+      'Cache-aside',
+      'Single flight',
+      'Stale-while-revalidate',
+      'TTL jitter',
+      'Probabilistic early expiration',
+      'Two-tier local + distributed cache',
+      'Consistent hashing for hot-key fan-out',
+    ],
+    tradeoffs: [
+      'Freshness versus availability and origin protection',
+      'Memory cost versus database load',
+      'Write-through consistency versus write latency',
+      'Lock coordination overhead versus duplicate origin work',
+    ],
+    failureScenarios: [
+      'Thundering herd after mass key expiry',
+      'Refresh owner crashes while holding the lock',
+      'Cache cluster partition serves stale authorization',
+      'Invalidation storm after bulk catalog update',
+      'Single hot key exceeds single-node memory or bandwidth',
+    ],
+    productionConsiderations: [
+      'Randomize TTLs and bound lock lease duration',
+      'Define behavior when cache is unavailable—fail closed or degrade gracefully',
+      'Monitor miss amplification, origin latency, and eviction rate',
+      'Pre-warm known hot keys before major events',
+      'Use negative caching with short TTL for absent keys',
+    ],
+    staffDiscussion: [
+      'Treat cache failure as a normal operating mode with explicit fallback',
+      'Choose freshness per entity—catalog metadata tolerates staleness; inventory may not',
+      'Reduce blast radius with tenant isolation and separate pools for hot tenants',
+      'Prefer versioned keys over flush-all invalidation in large namespaces',
+    ],
+    relatedTopics: ['Capacity estimation', 'Load balancing', 'Thundering herd', 'Backpressure', 'CDN'],
+    realWorldSystems: ['Product catalogs', 'Social feeds', 'Configuration services', 'Rate-limit counters'],
+    followUpQuestions: [
+      'When would you choose write-through over cache-aside?',
+      'How do you invalidate a catalog with millions of SKUs?',
+      'What if stale inventory counts are unacceptable?',
+    ],
+    cheatSheet: [
+      'Cache-aside: app loads on miss, app writes invalidate or update',
+      'Jitter + single-flight stops stampedes',
+      'Stale-while-revalidate trades freshness for availability',
+      'Version keys: product:123:v47 avoids broad invalidation',
+    ],
+    flashcards: [
+      {
+        question: 'What causes a cache stampede?',
+        answer: 'Many concurrent requests observe the same miss or expiry and independently call the origin.',
+      },
+      {
+        question: 'When is write-through appropriate?',
+        answer: 'When reads must never observe stale values after a write and you can accept higher write latency.',
+      },
+    ],
+    oneMinuteAnswer:
+      'I classify data by freshness needs and traffic shape. For catalog reads I use cache-aside with a local plus Redis tier, jittered TTLs, and single-flight coalescing so one request refreshes a key while others get a stale value or wait briefly. I version cache keys so bulk updates do not require flush-all invalidation, and I isolate celebrity keys with pre-warming or sharded hot-key routing. I monitor miss amplification and origin QPS, bound lock duration, and define explicit behavior when cache is down. If an entity cannot tolerate staleness—like inventory—I keep stronger invalidation or shorter TTL on that path only.',
   },
   {
     id: 'idempotent-webhooks', title: 'Idempotent payment webhooks', category: 'Data',
@@ -122,5 +193,6 @@ export const encyclopediaChapters: EncyclopediaChapter[] = [
     flashcards: [{ question: 'Why use a model router?', answer: 'To match each request to an appropriate quality, latency, risk, and cost envelope.' }, { question: 'What is shadow routing?', answer: 'Sending production-like requests to a candidate route without using its answer, so quality and cost can be evaluated safely.' }],
     oneMinuteAnswer: 'I classify requests by intent, complexity, context size, user tier, domain, and risk, then apply versioned policy to select a model or workflow. High-risk or low-confidence responses pass a verification gate and may fall back to a stronger model or human. Provider health, latency, budget, and data policy constrain the options. Routing changes are shadow-tested against task-specific evaluations, and I monitor quality, escalation, latency, cost, and misrouting—not just model accuracy.'
   },
+  ...detailedFoundationChapters,
   ...foundationChapters,
 ];

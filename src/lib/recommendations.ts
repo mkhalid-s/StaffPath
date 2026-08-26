@@ -21,11 +21,11 @@ export const COMPETENCIES: CompetencyDefinition[] = [
 ];
 
 const competencyToChapters: Record<string, string[]> = {
-  'technical-foundations': ['cap-pacelc-consistency', 'consensus-coordination', 'messaging-delivery-semantics'],
+  'technical-foundations': ['cap-pacelc-consistency', 'consensus-coordination', 'distributed-transactions'],
   'system-design': ['requirements-quality-attributes', 'load-balancing-rate-limits', 'capacity-estimation'],
   'production': ['slo-observability-incidents', 'resilience-patterns', 'cache-stampede'],
   'business': ['capacity-estimation', 'technical-strategy-decisions'],
-  'execution': ['safe-delivery-migrations', 'messaging-delivery-semantics'],
+  'execution': ['safe-delivery-migrations', 'distributed-transactions'],
   'influence': ['technical-strategy-decisions', 'influence-conflict-feedback'],
   'communication': ['influence-conflict-feedback', 'api-protocol-selection'],
   'mentoring': ['influence-conflict-feedback', 'technical-strategy-decisions'],
