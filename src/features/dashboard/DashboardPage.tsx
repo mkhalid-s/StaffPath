@@ -1,8 +1,10 @@
 import { Link } from '../../lib/router';
 import { roadmapSessions, ROADMAP_SESSION_COUNT } from '../../data/roadmap';
 import { resolveModeConfig } from '../../domain/preparationModes';
+import { buildWhatsNextActions } from '../../lib/intelligence';
 import { FEATURES, getNextUnlock, getUnlockProgress, isFeatureUnlocked } from '../../lib/featureUnlocks';
 import { useStaffPathState } from '../../lib/appStore';
+import { IntelligentRecommendations } from './IntelligentRecommendations';
 
 const lifecycle = [
   ['Learn', 'Build accurate mental models', '/encyclopedia', 'encyclopedia'],
@@ -24,6 +26,7 @@ export function DashboardPage() {
   const nextUnlock = getNextUnlock(state);
   const lockedFeatures = FEATURES.filter((feature) => !isFeatureUnlocked(state, feature.id) && feature.id !== 'settings');
   const unlockedCount = FEATURES.filter((feature) => isFeatureUnlocked(state, feature.id)).length;
+  const topAction = buildWhatsNextActions(state)[0];
 
   return (
     <div className="page dashboard-page">
@@ -31,10 +34,28 @@ export function DashboardPage() {
         <div><p className="eyebrow">STAFF ENGINEER WORKSPACE</p><h1>{greeting}</h1><p>Your complete preparation lifecycle in one focused system.</p></div>
         <div className="progress-orb"><strong>{progress}%</strong><span>{modeConfig.totalDays}-day {modeConfig.label.toLowerCase()} plan</span></div>
       </div>
+
       <section className="hero-panel">
-        <div><span className="status-chip">DAY {next.id} · WEEK {next.week}</span><h2>{next.title}</h2><p>{next.description} Today’s hour ends with a communication rep and evidence for your handbook.</p><div className="button-row"><Link className="button primary" to="/roadmap">Start today’s session →</Link>{dueMistakes > 0 && <Link className="button" to="/interviews">Review {dueMistakes} due mistake{dueMistakes === 1 ? '' : 's'}</Link>}</div></div>
-        <div className="hero-stats"><div><strong>{sessions}</strong><span>sessions</span></div><div><strong>{state.practiceAttempts.length}</strong><span>practice attempts</span></div><div><strong>{focusHours}h</strong><span>focus time</span></div><div><strong>{communication}</strong><span>communication reps</span></div></div>
+        <div>
+          <span className="status-chip">DAY {next.id} · WEEK {next.week}</span>
+          <h2>{topAction ? topAction.title : next.title}</h2>
+          <p>{topAction ? `${topAction.reason} ${topAction.insight}` : `${next.description} Today's hour ends with a communication rep and evidence for your handbook.`}</p>
+          <div className="button-row">
+            <Link className="button primary" to={topAction?.to ?? '/roadmap'}>
+              {topAction ? 'Do this next →' : "Start today's session →"}
+            </Link>
+            {dueMistakes > 0 && <Link className="button" to="/interviews">Review {dueMistakes} due mistake{dueMistakes === 1 ? '' : 's'}</Link>}
+          </div>
+        </div>
+        <div className="hero-stats">
+          <div><strong>{sessions}</strong><span>sessions</span></div>
+          <div><strong>{state.practiceAttempts.length}</strong><span>practice attempts</span></div>
+          <div><strong>{focusHours}h</strong><span>focus time</span></div>
+          <div><strong>{communication}</strong><span>communication reps</span></div>
+        </div>
       </section>
+
+      <IntelligentRecommendations />
 
       {nextUnlock && !state.profile.unlockAll && (
         <section className="unlock-progress-section">

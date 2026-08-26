@@ -119,3 +119,5 @@ export function suggestedStartingWeek(state: StaffPathState): number {
   if (average >= 2) return 2;
   return 1;
 }
+
+export { buildWhatsNextActions, identifyFocusAreas, analyzeLearningPatterns } from './intelligence';
