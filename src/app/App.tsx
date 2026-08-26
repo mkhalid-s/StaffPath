@@ -3,7 +3,11 @@ import { AppShell } from './AppShell';
 import { RouteErrorBoundary } from './RouteErrorBoundary';
 import { DashboardPage } from '../features/dashboard/DashboardPage';
 import { OnboardingGuide } from '../features/onboarding/OnboardingGuide';
+import { UnlockCelebration } from '../components/UnlockCelebration';
+import { LockedFeaturePage } from '../components/LockedFeaturePage';
 import { usePathname } from '../lib/router';
+import { useStaffPathState } from '../lib/appStore';
+import { FEATURE_BY_PATH, isPathUnlocked } from '../lib/featureUnlocks';
 
 const EncyclopediaPage = lazy(() => import('../features/encyclopedia/EncyclopediaPage').then((module) => ({ default: module.EncyclopediaPage })));
 const LifecyclePage = lazy(() => import('../features/lifecycle/LifecyclePage').then((module) => ({ default: module.LifecyclePage })));
@@ -19,21 +23,46 @@ const CurriculumPage = lazy(() => import('../features/curriculum/CurriculumPage'
 const CoachPage = lazy(() => import('../features/coach/CoachPage').then((module) => ({ default: module.CoachPage })));
 const ResourcesPage = lazy(() => import('../features/resources/ResourcesPage').then((module) => ({ default: module.ResourcesPage })));
 
-export function App() {
+const pages: Record<string, React.ReactNode> = {
+  '/': null,
+  '/encyclopedia': <EncyclopediaPage />,
+  '/lifecycle': <LifecyclePage />,
+  '/roadmap': <RoadmapPage />,
+  '/practice': <PracticePage />,
+  '/skills': <AssessmentPage />,
+  '/communication': <CommunicationPage />,
+  '/interviews': <InterviewPage />,
+  '/handbook': <HandbookPage />,
+  '/journal': <JournalPage />,
+  '/settings': <SettingsPage />,
+  '/curriculum': <CurriculumPage />,
+  '/coach': <CoachPage />,
+  '/resources': <ResourcesPage />,
+};
+
+function AppContent() {
   const path = usePathname();
-  const pages: Record<string, React.ReactNode> = {
-    '/': <DashboardPage />, '/encyclopedia': <EncyclopediaPage />, '/lifecycle': <LifecyclePage />,
-    '/roadmap': <RoadmapPage />,
-    '/practice': <PracticePage />,
-    '/skills': <AssessmentPage />,
-    '/communication': <CommunicationPage />,
-    '/interviews': <InterviewPage />,
-    '/handbook': <HandbookPage />,
-    '/journal': <JournalPage />,
-    '/settings': <SettingsPage />,
-    '/curriculum': <CurriculumPage />,
-    '/coach': <CoachPage />,
-    '/resources': <ResourcesPage />,
-  };
-  return <AppShell><OnboardingGuide /><RouteErrorBoundary><Suspense fallback={<div className="page route-loading">Loading workspace…</div>}>{pages[path] || <DashboardPage />}</Suspense></RouteErrorBoundary></AppShell>;
+  const state = useStaffPathState();
+  const feature = FEATURE_BY_PATH[path];
+
+  if (feature && !isPathUnlocked(state, path)) {
+    return <LockedFeaturePage feature={feature} />;
+  }
+
+  if (path === '/') return <DashboardPage />;
+  return pages[path] || <DashboardPage />;
+}
+
+export function App() {
+  return (
+    <AppShell>
+      <OnboardingGuide />
+      <UnlockCelebration />
+      <RouteErrorBoundary>
+        <Suspense fallback={<div className="page route-loading">Loading workspace…</div>}>
+          <AppContent />
+        </Suspense>
+      </RouteErrorBoundary>
+    </AppShell>
+  );
 }

@@ -49,6 +49,25 @@ export function SettingsPage() {
       </div>
 
       <section className="settings-section">
+        <div className="section-heading"><div><p className="eyebrow">FEATURE ACCESS</p><h2>Progressive disclosure</h2></div></div>
+        <p>Features unlock as you build momentum. Power users can unlock everything immediately.</p>
+        <label className="check-row unlock-all-toggle">
+          <input
+            type="checkbox"
+            checked={state.profile.unlockAll}
+            onChange={(event) => {
+              appStore.update((current) => ({
+                ...current,
+                profile: { ...current.profile, unlockAll: event.target.checked },
+              }));
+              setMessage(event.target.checked ? 'All features unlocked.' : 'Progressive unlock restored.');
+            }}
+          />
+          <span><strong>Unlock all features</strong>Skip progressive disclosure and access every section immediately.</span>
+        </label>
+      </section>
+
+      <section className="settings-section">
         <div className="section-heading"><div><p className="eyebrow">PREPARATION MODE</p><h2>Your pace</h2></div></div>
         <div className="mode-cards settings-mode-cards">
           {(Object.values(PREPARATION_MODES) as typeof PREPARATION_MODES[keyof typeof PREPARATION_MODES][]).map((mode) => (

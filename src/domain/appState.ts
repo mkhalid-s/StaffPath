@@ -7,6 +7,8 @@ export interface UserProfile {
   preparationMode: PreparationMode;
   customMode?: CustomModeConfig;
   skillAssessmentComplete: boolean;
+  unlockAll: boolean;
+  celebratedUnlocks: string[];
 }
 
 export interface CompetencyAssessment { score: number; evidence: string; updatedAt: string }
