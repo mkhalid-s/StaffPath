@@ -1,10 +1,61 @@
 import { useSyncExternalStore } from 'react';
-import type { StaffPathState } from '../domain/appState';
+import type { StaffPathState, UserProfile } from '../domain/appState';
+import { FEATURES } from './featureUnlocks';
 
 const KEY = 'staffpath-v2';
 const listeners = new Set<() => void>();
-const blankState = (): StaffPathState => ({ version: 2, assessments: {}, completedChapters: [], mistakes: [], mockInterviews: [], roadmap: {}, practiceAttempts: [], practiceCursor: { design: 0, problem: 0, people: 0, sdlc: 0 }, communicationLessons: {}, journal: [], behavioralStories: [], diagrams: [] });
-const normalizeState = (value: Partial<StaffPathState>): StaffPathState => ({ ...blankState(), ...value, version: 2, roadmap: value.roadmap || {}, practiceCursor: { ...blankState().practiceCursor, ...(value.practiceCursor || {}) } });
+
+function legacyName(): string {
+  try {
+    const value = JSON.parse(localStorage.getItem('staffpath-state') || 'null');
+    return typeof value?.name === 'string' ? value.name.trim() : '';
+  } catch { return ''; }
+}
+
+const defaultProfile = (): UserProfile => ({
+  name: legacyName(),
+  startDate: new Date().toISOString().slice(0, 10),
+  onboardingComplete: Boolean(legacyName()),
+  preparationMode: 'moderate',
+  skillAssessmentComplete: false,
+  unlockAll: false,
+  celebratedUnlocks: [],
+  selectedCompanyPack: 'none',
+});
+
+const blankState = (): StaffPathState => ({
+  version: 2,
+  profile: defaultProfile(),
+  assessments: {},
+  completedChapters: [],
+  mistakes: [],
+  mockInterviews: [],
+  roadmap: {},
+  practiceAttempts: [],
+  practiceCursor: { design: 0, problem: 0, people: 0, sdlc: 0 },
+  communicationLessons: {},
+  journal: [],
+  behavioralStories: [],
+  diagrams: [],
+});
+
+const normalizeState = (value: Partial<StaffPathState>): StaffPathState => ({
+  ...blankState(),
+  ...value,
+  version: 2,
+  profile: { ...defaultProfile(), ...(value.profile || {}) },
+  roadmap: value.roadmap || {},
+  practiceCursor: { ...blankState().practiceCursor, ...(value.practiceCursor || {}) },
+});
+function seedCelebratedUnlocks(state: StaffPathState): StaffPathState {
+  if (state.profile.celebratedUnlocks.length > 0) return state;
+  const hasProgress = Object.values(state.roadmap).some((record) => record.completedAt)
+    || state.practiceAttempts.length > 0
+    || state.profile.onboardingComplete;
+  if (!hasProgress) return state;
+  const unlocked = FEATURES.filter((feature) => feature.isUnlocked(state)).map((feature) => feature.id);
+  return { ...state, profile: { ...state.profile, celebratedUnlocks: unlocked } };
+}
 function legacyRoadmap(): StaffPathState['roadmap'] {
   try {
     const value = JSON.parse(localStorage.getItem('staffpath-state') || 'null');
@@ -44,9 +95,22 @@ function load(): StaffPathState {
   try {
     const value = JSON.parse(localStorage.getItem(KEY) || 'null');
     const evidence = legacyEvidence();
-    if (value?.version === 2) return { ...blankState(), ...value, roadmap: value.roadmap || legacyRoadmap(), practiceAttempts: value.practiceAttempts?.length ? value.practiceAttempts : evidence.practiceAttempts, journal: value.journal?.length ? value.journal : evidence.journal, practiceCursor: { ...blankState().practiceCursor, ...(value.practiceCursor || {}) } };
-    return { ...blankState(), roadmap: legacyRoadmap(), ...evidence };
-  } catch { return { ...blankState(), roadmap: legacyRoadmap() }; }
+    let loaded: StaffPathState;
+    if (value?.version === 2) {
+      loaded = {
+        ...blankState(),
+        ...value,
+        profile: { ...defaultProfile(), ...(value.profile || {}) },
+        roadmap: value.roadmap || legacyRoadmap(),
+        practiceAttempts: value.practiceAttempts?.length ? value.practiceAttempts : evidence.practiceAttempts,
+        journal: value.journal?.length ? value.journal : evidence.journal,
+        practiceCursor: { ...blankState().practiceCursor, ...(value.practiceCursor || {}) },
+      };
+    } else {
+      loaded = { ...blankState(), roadmap: legacyRoadmap(), ...evidence };
+    }
+    return seedCelebratedUnlocks(loaded);
+  } catch { return seedCelebratedUnlocks({ ...blankState(), roadmap: legacyRoadmap() }); }
 }
 let state = typeof localStorage === 'undefined' ? blankState() : load();
 const emit = () => listeners.forEach((listener) => listener());

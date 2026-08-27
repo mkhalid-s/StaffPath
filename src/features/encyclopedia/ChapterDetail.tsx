@@ -6,7 +6,7 @@ function ListSection({ title, items }: { title: string; items: string[] }) {
   return <section className="chapter-section"><h3>{title}</h3><ul>{items.map((item) => <li key={item}>{item}</li>)}</ul></section>;
 }
 
-export function ChapterDetail({ chapter, onClose, completed, onToggleComplete }: { chapter: EncyclopediaChapter; onClose: () => void; completed: boolean; onToggleComplete: () => void }) {
+export function ChapterDetail({ chapter, onClose, completed, onToggleComplete, packAngle }: { chapter: EncyclopediaChapter; onClose: () => void; completed: boolean; onToggleComplete: () => void; packAngle?: string | null }) {
   const closeButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
@@ -23,6 +23,7 @@ export function ChapterDetail({ chapter, onClose, completed, onToggleComplete }:
       <header><div><span className="category-chip">{chapter.category}</span><h2 id="chapter-title">{chapter.title}</h2><p>{chapter.summary}</p></div><button ref={closeButton} onClick={onClose} aria-label="Close chapter">×</button></header>
       <div className="chapter-body">
         <section className="chapter-callout"><span>PROBLEM STATEMENT</span><p>{chapter.problemStatement}</p></section>
+        {packAngle && <section className="chapter-callout pack-angle"><span>COMPANY PACK ANGLE</span><p>{packAngle}</p></section>}
         <section className="chapter-interview"><span>INTERVIEW QUESTION</span><h3>{chapter.interviewQuestion}</h3></section>
         <ListSection title="Core concepts" items={chapter.coreConcepts} />
         <section className="chapter-section full"><h3>Architecture diagram</h3><ArchitectureDiagram source={chapter.architectureDiagram} title={chapter.title} /></section>

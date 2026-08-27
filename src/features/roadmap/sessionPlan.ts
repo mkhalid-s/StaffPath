@@ -10,15 +10,34 @@ const communicationReps = [
   ['Teach back', "Present this week's insight, pause deliberately, and invite questions."],
 ] as const;
 
-export function buildSessionPlan(session: RoadmapSession) {
-  return {
-    blocks: [
-      { minutes: 10, label: 'Recall', prompt: 'Retrieve yesterday’s key idea and name one remaining question.' },
-      { minutes: 20, label: 'Learn', prompt: `Build a precise mental model for ${session.tags[0].toLowerCase()}.` },
-      { minutes: 20, label: 'Apply', prompt: session.description },
-      { minutes: 5, label: 'Communicate', prompt: communicationReps[session.dayOfWeek][1] },
-      { minutes: 5, label: 'Reflect', prompt: `Capture a decision, lesson, or artifact for “${session.outcome}”.` },
-    ],
-    communicationTitle: communicationReps[session.dayOfWeek][0],
-  };
+const BASE_MINUTES = 60;
+const BASE_BLOCKS = [
+  { minutes: 10, label: 'Recall', prompt: 'Retrieve yesterday’s key idea and name one remaining question.' },
+  { minutes: 20, label: 'Learn', prompt: '' },
+  { minutes: 20, label: 'Apply', prompt: '' },
+  { minutes: 5, label: 'Communicate', prompt: '' },
+  { minutes: 5, label: 'Reflect', prompt: '' },
+] as const;
+
+function scaleMinutes(minutes: number, dailyMinutes: number): number {
+  return Math.max(1, Math.round((minutes / BASE_MINUTES) * dailyMinutes));
+}
+
+export function buildSessionPlan(session: RoadmapSession, dailyMinutes = BASE_MINUTES) {
+  const [commTitle, commPrompt] = communicationReps[session.dayOfWeek];
+  const prompts = [
+    'Retrieve yesterday’s key idea and name one remaining question.',
+    `Build a precise mental model for ${session.tags[0].toLowerCase()}.`,
+    session.description,
+    commPrompt,
+    `Capture a decision, lesson, or artifact for “${session.outcome}”.`,
+  ];
+  const blocks = BASE_BLOCKS.map((block, index) => ({
+    minutes: scaleMinutes(block.minutes, dailyMinutes),
+    label: block.label,
+    prompt: prompts[index],
+  }));
+  const total = blocks.reduce((sum, block) => sum + block.minutes, 0);
+  if (total !== dailyMinutes) blocks[1].minutes += dailyMinutes - total;
+  return { blocks, communicationTitle: commTitle, totalMinutes: dailyMinutes };
 }

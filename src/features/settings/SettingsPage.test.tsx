@@ -7,6 +7,15 @@ describe('backup validation', () => {
     expect(isStaffPathBackup({ hello: 'world' })).toBe(false);
   });
   it('accepts the required v2 collections', () => {
-    expect(isStaffPathBackup({ version: 2, roadmap: {}, mistakes: [], mockInterviews: [], practiceAttempts: [], journal: [], behavioralStories: [] })).toBe(true);
+    expect(isStaffPathBackup({
+      version: 2,
+      profile: { name: 'Test', startDate: '2026-01-01', onboardingComplete: true, preparationMode: 'moderate', skillAssessmentComplete: true, unlockAll: false, celebratedUnlocks: [], selectedCompanyPack: 'none' },
+      roadmap: {},
+      mistakes: [],
+      mockInterviews: [],
+      practiceAttempts: [],
+      journal: [],
+      behavioralStories: [],
+    })).toBe(true);
   });
 });

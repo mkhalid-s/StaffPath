@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { roadmapSessions, roadmapWeeks, type SessionCategory } from '../../data/roadmap';
+import { roadmapSessions, roadmapWeeks, ROADMAP_SESSION_COUNT, sessionsPerWeek, type SessionCategory } from '../../data/roadmap';
 import type { RoadmapSessionRecord } from '../../domain/appState';
+import { resolveModeConfig } from '../../domain/preparationModes';
 import { appStore, useStaffPathState } from '../../lib/appStore';
+import { enqueueAction, isOnline } from '../../lib/offlineQueue';
 import { buildSessionPlan } from './sessionPlan';
 
 const emptyRecord = (): RoadmapSessionRecord => ({ focusedSeconds: 0, communicationComplete: false, reflection: '', artifact: '' });
@@ -9,26 +11,29 @@ const formatClock = (seconds: number) => `${String(Math.floor(seconds / 60)).pad
 
 export function RoadmapPage() {
   const state = useStaffPathState();
+  const modeConfig = resolveModeConfig(state.profile.preparationMode, state.profile.customMode);
+  const focusTarget = modeConfig.focusSeconds;
   const completed = roadmapSessions.filter((session) => state.roadmap[String(session.id)]?.completedAt).length;
-  const firstOpen = roadmapSessions.find((session) => !state.roadmap[String(session.id)]?.completedAt) || roadmapSessions[89];
+  const firstOpen = roadmapSessions.find((session) => !state.roadmap[String(session.id)]?.completedAt) || roadmapSessions[ROADMAP_SESSION_COUNT - 1];
   const [selectedId, setSelectedId] = useState(firstOpen.id);
   const [filter, setFilter] = useState<'all' | SessionCategory>('all');
   const [running, setRunning] = useState(false);
   const selected = roadmapSessions[selectedId - 1];
   const record = state.roadmap[String(selectedId)] || emptyRecord();
-  const plan = useMemo(() => buildSessionPlan(selected), [selected]);
-  const remaining = Math.max(0, 3600 - record.focusedSeconds);
+  const plan = useMemo(() => buildSessionPlan(selected, modeConfig.dailyMinutes), [selected, modeConfig.dailyMinutes]);
+  const remaining = Math.max(0, focusTarget - record.focusedSeconds);
+  const weeklyPace = sessionsPerWeek(modeConfig.totalDays);
 
   useEffect(() => {
     if (!running || remaining === 0) return;
     const timer = window.setInterval(() => {
       appStore.update((current) => {
         const previous = current.roadmap[String(selectedId)] || emptyRecord();
-        return { ...current, roadmap: { ...current.roadmap, [selectedId]: { ...previous, focusedSeconds: Math.min(3600, previous.focusedSeconds + 1) } } };
+        return { ...current, roadmap: { ...current.roadmap, [selectedId]: { ...previous, focusedSeconds: Math.min(focusTarget, previous.focusedSeconds + 1) } } };
       });
     }, 1000);
     return () => window.clearInterval(timer);
-  }, [running, remaining, selectedId]);
+  }, [running, remaining, selectedId, focusTarget]);
 
   function updateRecord(patch: Partial<RoadmapSessionRecord>) {
     appStore.update((current) => ({
@@ -39,14 +44,19 @@ export function RoadmapPage() {
 
   function completeSession() {
     updateRecord({ completedAt: record.completedAt || new Date().toISOString() });
+    if (!isOnline()) enqueueAction('roadmap', `Session ${selectedId}: ${selected.title}`);
     setRunning(false);
   }
 
   return (
     <div className="page roadmap-page">
       <div className="page-heading">
-        <div><p className="eyebrow">90 DAYS · ONE FOCUSED HOUR DAILY</p><h1>Your Staff-level roadmap</h1><p>Every session ends with application, communication, and durable evidence—not passive consumption.</p></div>
-        <div className="progress-orb"><strong>{Math.round(completed / 90 * 100)}%</strong><span>{completed} of 90 complete</span></div>
+        <div>
+          <p className="eyebrow">{modeConfig.totalDays} DAYS · {modeConfig.dailyMinutes} MIN DAILY · {modeConfig.label.toUpperCase()}</p>
+          <h1>Your Staff-level roadmap</h1>
+          <p>Every session ends with application, communication, and durable evidence—not passive consumption. Target pace: {weeklyPace} sessions/week.</p>
+        </div>
+        <div className="progress-orb"><strong>{Math.round(completed / ROADMAP_SESSION_COUNT * 100)}%</strong><span>{completed} of {ROADMAP_SESSION_COUNT} complete</span></div>
       </div>
 
       <section className="daily-executor" aria-labelledby="daily-session-title">
@@ -60,7 +70,7 @@ export function RoadmapPage() {
           </div>
         </div>
         <aside className="session-capture">
-          <p className="eyebrow">FOCUS TIMER</p>
+          <p className="eyebrow">FOCUS TIMER · {modeConfig.dailyMinutes} MIN</p>
           <div className="timer-display" aria-live="polite">{formatClock(remaining)}</div>
           <div className="button-row">
             <button className="button primary" onClick={() => setRunning((value) => !value)} disabled={remaining === 0}>{running ? 'Pause' : 'Start focus'}</button>

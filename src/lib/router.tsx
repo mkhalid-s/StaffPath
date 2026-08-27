@@ -11,6 +11,15 @@ export function usePathname() {
   return useSyncExternalStore(subscribe, () => window.location.pathname, () => '/');
 }
 
+export function navigate(to: string) {
+  if (typeof window === 'undefined') return;
+  if (window.location.pathname !== to) {
+    window.history.pushState({}, '', to);
+    window.dispatchEvent(new Event(routeEvent));
+    window.scrollTo({ top: 0 });
+  }
+}
+
 interface LinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> { to: string }
 
 export function Link({ to, onClick, ...props }: LinkProps) {
@@ -18,11 +27,7 @@ export function Link({ to, onClick, ...props }: LinkProps) {
     onClick?.(event);
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
-    if (window.location.pathname !== to) {
-      window.history.pushState({}, '', to);
-      window.dispatchEvent(new Event(routeEvent));
-      window.scrollTo({ top: 0 });
-    }
+    navigate(to);
   };
   return <a {...props} href={to} onClick={handleClick} />;
 }
