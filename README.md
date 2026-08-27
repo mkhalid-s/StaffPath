@@ -46,10 +46,16 @@ The complete product direction is documented in:
 
 - Responsive application shell and custom minimal client router
 - Automatic migration of legacy roadmap progress
-- Preparation lifecycle view
+- Preparation lifecycle view with flexible modes (Intensive, Moderate, Casual, Custom)
+- Onboarding with skill assessment and personalized recommendations
 - Native 90-day, one-hour daily executor with timer, reflection, communication, and artifact evidence
+- Progressive feature disclosure with unlock celebrations
+- Intelligence dashboard with what's-next actions, learning velocity, and analytics
+- Quick Actions FAB for context-aware shortcuts
 - Searchable curriculum map and engineering encyclopedia
 - Complete chapter schema with worked solutions, diagrams, production concerns, Staff discussion, flashcards, and interview answers
+- Detailed foundation chapters for requirements, CAP/PACELC, consensus, distributed transactions, and advanced caching
+- Optional company interview packs: Google, Meta, Netflix, Startup, Amazon, and Atlassian
 - SVG architecture-diagram rendering and download
 - 21 production-quality encyclopedia chapters spanning foundations, distributed systems, production, architecture, AI, and leadership
 - 47-scenario Practice Lab across system design, problem solving, people leadership, and SDLC
@@ -58,6 +64,7 @@ The complete product direction is documented in:
 - Fourteen-lesson Communication Gym with responsible practice guidance
 - Native journal, reusable STAR story bank, evidence aggregation, handbook Markdown export
 - Evidence-aware local coach with curated knowledge and scenario retrieval
+- Enhanced PWA with offline write queue, connection status, and keyboard shortcuts
 - Versioned JSON backup/restore and zero known npm audit vulnerabilities
 
 ## Production deployment

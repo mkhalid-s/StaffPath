@@ -12,7 +12,11 @@ describe('companyPacks', () => {
     expect(getChapterPackAngle('google', 'capacity-estimation')).toContain('Google');
   });
 
-  it('defines all four company packs', () => {
-    expect(Object.keys(COMPANY_PACKS)).toEqual(['google', 'meta', 'netflix', 'startup']);
+  it('defines all company packs', () => {
+    expect(Object.keys(COMPANY_PACKS)).toEqual(['google', 'meta', 'netflix', 'startup', 'amazon', 'atlassian']);
+  });
+
+  it('returns Amazon pack angles for payment topics', () => {
+    expect(getChapterPackAngle('amazon', 'idempotent-webhooks')).toMatch(/payment/i);
   });
 });

@@ -1,4 +1,4 @@
-export type CompanyPackId = 'none' | 'google' | 'meta' | 'netflix' | 'startup';
+export type CompanyPackId = 'none' | 'google' | 'meta' | 'netflix' | 'startup' | 'amazon' | 'atlassian';
 
 export interface CompanyPack {
   id: CompanyPackId;
@@ -79,6 +79,46 @@ export const COMPANY_PACKS: Record<Exclude<CompanyPackId, 'none'>, CompanyPack> 
     behavioralQuestions: [
       'Tell me about a time you shipped something imperfect to learn faster.',
       'How do you decide what not to build?',
+    ],
+  },
+  amazon: {
+    id: 'amazon',
+    label: 'Amazon Pack',
+    company: 'Amazon',
+    description: 'Leadership Principles, ownership at scale, and operational rigor across distributed systems.',
+    focus: ['Leadership Principles', 'Ownership', 'Operational excellence'],
+    chapterAngles: {
+      'distributed-transactions': 'Tie saga and reconciliation to Ownership and Dive Deep — show how you closed ambiguous financial outcomes.',
+      'idempotent-webhooks': 'Payment and fulfillment flows are a common bar-raiser topic; emphasize durable receipts and repair paths.',
+      'slo-observability-incidents': 'Customer Obsession means user-centered SLIs; discuss error budgets and incident leadership with measurable recovery.',
+      'influence-conflict-feedback': 'Use Earn Trust and Disagree and Commit — represent opposing views, then close with a decision owner.',
+      'technical-strategy-decisions': 'Frame strategy with Think Big and Bias for Action, distinguishing one-way from two-way doors.',
+    },
+    practiceContext: 'Structure answers with the situation, your ownership, the customer impact, trade-offs considered, and measurable results.',
+    behavioralQuestions: [
+      'Tell me about a time you took ownership beyond your formal scope to unblock a customer-impacting issue.',
+      'Describe a decision where you had to Dive Deep into data before changing course.',
+      'Give an example of disagreeing with a team and still committing to the outcome.',
+    ],
+  },
+  atlassian: {
+    id: 'atlassian',
+    label: 'Atlassian Pack',
+    company: 'Atlassian',
+    description: 'Collaborative system design, platform thinking, and shipping durable products for teams.',
+    focus: ['Collaboration', 'Platform APIs', 'Sustainable delivery'],
+    chapterAngles: {
+      'api-protocol-selection': 'Atlassian-scale products depend on stable public APIs — discuss versioning, compatibility, and developer experience.',
+      'safe-delivery-migrations': 'Show how you shipped incrementally without breaking ecosystem consumers or internal teams.',
+      'technical-strategy-decisions': 'Demonstrate cross-team alignment: diagnosis, guiding policy, and sequenced actions with clear owners.',
+      'security-multitenancy': 'Multi-tenant SaaS isolation is central — connect tenant context, authorization, and blast-radius containment.',
+      'influence-conflict-feedback': 'Play as a Team: show how you built trust across product, design, and engineering without status games.',
+    },
+    practiceContext: 'Explain how your design supports many teams and customers, not only one service boundary.',
+    behavioralQuestions: [
+      'Describe a time you aligned multiple teams on a technical direction with incomplete information.',
+      'Tell me about improving developer experience for internal or external API consumers.',
+      'How have you balanced shipping quickly with maintaining long-term platform quality?',
     ],
   },
 };
