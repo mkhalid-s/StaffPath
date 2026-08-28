@@ -2,27 +2,199 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { appStore, useStaffPathState } from '../../lib/appStore';
 import type { MockInterviewRecord } from '../../domain/appState';
 import { interviewPrompts } from '../../data/interviewPrompts';
+import { getActivePack } from '../../data/companyPacks';
 
 const criteria = ['Requirements', 'Estimation', 'Architecture', 'Technical depth', 'Trade-offs', 'Failure handling', 'Staff-level judgment', 'Communication'];
 const isoAfter = (days: number) => { const date = new Date(); date.setDate(date.getDate() + days); return date.toISOString().slice(0, 10); };
 
+type InterviewType = MockInterviewRecord['type'] | 'pack-behavioral';
+
 export function InterviewPage() {
   const state = useStaffPathState();
+  const pack = getActivePack(state.profile.selectedCompanyPack);
   const [tab, setTab] = useState<'mock' | 'mistakes'>('mock');
-  const [type, setType] = useState<MockInterviewRecord['type']>('system-design');
+  const [type, setType] = useState<InterviewType>('system-design');
   const [scores, setScores] = useState<Record<string, number>>(() => Object.fromEntries(criteria.map((item) => [item, 3])));
   const [feedback, setFeedback] = useState('');
   const [promptIndex, setPromptIndex] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(45 * 60);
   const [running, setRunning] = useState(false);
   const average = Math.round((Object.values(scores).reduce((sum, score) => sum + score, 0) / criteria.length) * 10) / 10;
-  const prompt = interviewPrompts[type][promptIndex % interviewPrompts[type].length];
+
+  const packBehavioralPool = pack?.behavioralQuestions ?? [];
+  const activePool: string[] = type === 'pack-behavioral'
+    ? packBehavioralPool
+    : interviewPrompts[type as MockInterviewRecord['type']];
+  const prompt = activePool.length > 0 ? activePool[promptIndex % activePool.length] : 'No prompts available.';
 
   useEffect(() => { if (!running || secondsLeft <= 0) return; const timer = window.setInterval(() => setSecondsLeft((value) => value - 1), 1000); return () => window.clearInterval(timer); }, [running, secondsLeft]);
 
-  const saveMock = (event: FormEvent) => { event.preventDefault(); const durationMinutes = Math.max(0, Math.round((45 * 60 - secondsLeft) / 60)); appStore.update((current) => ({ ...current, mockInterviews: [...current.mockInterviews, { id: crypto.randomUUID(), type, score: average, date: new Date().toISOString().slice(0, 10), feedback, prompt, durationMinutes, criteria: { ...scores } }] })); setFeedback(''); setRunning(false); };
-  const saveMistake = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); const data = new FormData(event.currentTarget), prompt = String(data.get('prompt')).trim(); if (!prompt) return; appStore.update((current) => ({ ...current, mistakes: [...current.mistakes, { id: crypto.randomUUID(), prompt, missed: String(data.get('missed')).trim(), correction: String(data.get('correction')).trim(), nextReview: isoAfter(2), reviewCount: 0, resolved: false }] })); event.currentTarget.reset(); };
-  const reviewMistake = (id: string, resolved: boolean) => appStore.update((current) => ({ ...current, mistakes: current.mistakes.map((item) => { if (item.id !== id) return item; const count = item.reviewCount + 1, intervals = [2, 7, 14, 30]; return { ...item, resolved, reviewCount: count, nextReview: isoAfter(intervals[Math.min(count, intervals.length - 1)]) }; }) }));
+  const saveMock = (event: FormEvent) => {
+    event.preventDefault();
+    const durationMinutes = Math.max(0, Math.round((45 * 60 - secondsLeft) / 60));
+    const savedType: MockInterviewRecord['type'] = type === 'pack-behavioral' ? 'behavioral' : type;
+    appStore.update((current) => ({
+      ...current,
+      mockInterviews: [...current.mockInterviews, {
+        id: crypto.randomUUID(), type: savedType, score: average,
+        date: new Date().toISOString().slice(0, 10), feedback, prompt,
+        durationMinutes, criteria: { ...scores }
+      }]
+    }));
+    setFeedback('');
+    setRunning(false);
+  };
 
-  return <div className="page interview-page"><div className="page-heading"><div><p className="eyebrow">INTERVIEW FEEDBACK LOOP</p><h1>Practice. Score. Correct. Repeat.</h1><p>Mocks create evidence; mistakes create the next revision queue.</p></div><div className="chapter-count"><strong>{state.mockInterviews.length}</strong><span>mock interviews</span></div></div><div className="interview-tabs"><button className={tab === 'mock' ? 'active' : ''} onClick={() => setTab('mock')}>Mock scorecard</button><button className={tab === 'mistakes' ? 'active' : ''} onClick={() => setTab('mistakes')}>Mistake journal <span>{state.mistakes.filter((item) => !item.resolved).length}</span></button></div>{tab === 'mock' ? <><section className="mock-runner"><div><span>{type.replace('-', ' ').toUpperCase()}</span><h2>{prompt}</h2><button onClick={() => setPromptIndex((value) => value + 1)}>New prompt ↻</button></div><div><strong>{String(Math.floor(secondsLeft / 60)).padStart(2, '0')}:{String(secondsLeft % 60).padStart(2, '0')}</strong><button className="button primary" onClick={() => setRunning((value) => !value)}>{running ? 'Pause mock' : 'Start mock'}</button><button className="button" onClick={() => { setRunning(false); setSecondsLeft(45 * 60); }}>Reset</button></div></section><div className="interview-layout"><form className="scorecard-panel" onSubmit={saveMock}><div className="form-heading"><div><p className="eyebrow">MOCK REVIEW</p><h2>Structured scorecard</h2></div><div><strong>{average}</strong><small>/ 5</small></div></div><label>Interview type<select value={type} onChange={(event) => { setType(event.target.value as MockInterviewRecord['type']); setPromptIndex(0); }}><option value="system-design">System design</option><option value="ai-design">AI system design</option><option value="behavioral">Behavioral leadership</option><option value="coding">Coding and problem solving</option></select></label><div className="score-criteria">{criteria.map((criterion) => <label key={criterion}><span>{criterion}<strong>{scores[criterion]}</strong></span><input aria-label={`${criterion} score`} type="range" min="1" max="5" value={scores[criterion]} onChange={(event) => setScores((current) => ({ ...current, [criterion]: Number(event.target.value) }))} /></label>)}</div><label>Feedback and next action<textarea value={feedback} onChange={(event) => setFeedback(event.target.value)} placeholder="Strong signals, missed areas, and the next deliberate practice…" /></label><button className="button primary" type="submit">Save mock interview</button></form><section className="mock-history"><p className="eyebrow">HISTORY</p><h2>Recent mocks</h2>{[...state.mockInterviews].reverse().map((mock) => <article key={mock.id}><div><strong>{mock.type.replace('-', ' ')}</strong><span>{mock.date}{mock.durationMinutes ? ` · ${mock.durationMinutes}m` : ''}</span></div>{mock.prompt && <b>{mock.prompt}</b>}<em>{mock.score}/5</em><p>{mock.feedback || 'No written feedback.'}</p></article>)}{!state.mockInterviews.length && <div className="interview-empty">No mock interviews recorded yet.</div>}</section></div></> : <div className="mistake-layout"><form className="mistake-form" onSubmit={saveMistake}><p className="eyebrow">CAPTURE A MISTAKE</p><h2>Turn the miss into a mental model.</h2><label>Question or scenario<textarea name="prompt" required placeholder="What were you trying to answer?" /></label><label>What did you miss?<textarea name="missed" placeholder="Incorrect assumption, omitted risk, weak explanation…" /></label><label>Correct model or response<textarea name="correction" placeholder="What should you recognize and do next time?" /></label><button className="button primary" type="submit">Add to review queue</button></form><section className="mistake-list"><p className="eyebrow">SPACED REVIEW</p><h2>Revision queue</h2>{[...state.mistakes].sort((a, b) => a.nextReview.localeCompare(b.nextReview)).map((item) => <article className={item.resolved ? 'resolved' : ''} key={item.id}><div><span>REVIEW {item.nextReview}</span><strong>{item.prompt}</strong><p>{item.correction || item.missed}</p></div><div><button onClick={() => reviewMistake(item.id, false)}>Reviewed</button><button onClick={() => reviewMistake(item.id, true)}>{item.resolved ? 'Reopen' : 'Resolved'}</button></div></article>)}{!state.mistakes.length && <div className="interview-empty">No mistakes recorded. Your first mock will give you material.</div>}</section></div>}</div>;
+  const saveMistake = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget), p = String(data.get('prompt')).trim();
+    if (!p) return;
+    appStore.update((current) => ({ ...current, mistakes: [...current.mistakes, { id: crypto.randomUUID(), prompt: p, missed: String(data.get('missed')).trim(), correction: String(data.get('correction')).trim(), nextReview: isoAfter(2), reviewCount: 0, resolved: false }] }));
+    event.currentTarget.reset();
+  };
+
+  const reviewMistake = (id: string, resolved: boolean) => appStore.update((current) => ({
+    ...current, mistakes: current.mistakes.map((item) => {
+      if (item.id !== id) return item;
+      const count = item.reviewCount + 1, intervals = [2, 7, 14, 30];
+      return { ...item, resolved, reviewCount: count, nextReview: isoAfter(intervals[Math.min(count, intervals.length - 1)]) };
+    })
+  }));
+
+  const recentMockAvg = (() => {
+    const last3 = [...state.mockInterviews].reverse().slice(0, 3);
+    if (!last3.length) return null;
+    return Math.round((last3.reduce((s, m) => s + m.score, 0) / last3.length) * 10) / 10;
+  })();
+
+  return (
+    <div className="page interview-page">
+      <div className="page-heading">
+        <div>
+          <p className="eyebrow">INTERVIEW FEEDBACK LOOP</p>
+          <h1>Practice. Score. Correct. Repeat.</h1>
+          <p>Mocks create evidence; mistakes create the next revision queue.</p>
+        </div>
+        <div className="chapter-count">
+          <strong>{state.mockInterviews.length}</strong>
+          <span>mock interviews</span>
+          {recentMockAvg !== null && <><strong style={{marginTop:'4px'}}>{recentMockAvg}</strong><span>last 3 avg</span></>}
+        </div>
+      </div>
+
+      {pack && (
+        <div className="pack-context-card" style={{marginBottom:'16px'}}>
+          <span>{pack.label.toUpperCase()}</span>
+          <p>{pack.interviewFormat ?? pack.practiceContext}</p>
+        </div>
+      )}
+
+      <div className="interview-tabs">
+        <button className={tab === 'mock' ? 'active' : ''} onClick={() => setTab('mock')}>Mock scorecard</button>
+        <button className={tab === 'mistakes' ? 'active' : ''} onClick={() => setTab('mistakes')}>
+          Mistake journal <span>{state.mistakes.filter((item) => !item.resolved).length}</span>
+        </button>
+      </div>
+
+      {tab === 'mock' ? (
+        <>
+          <section className="mock-runner">
+            <div>
+              <span>{type === 'pack-behavioral' ? `${pack?.company ?? 'Pack'} behavioral`.toUpperCase() : type.replace('-', ' ').toUpperCase()}</span>
+              <h2>{prompt}</h2>
+              <button onClick={() => setPromptIndex((value) => value + 1)}>New prompt ↻</button>
+            </div>
+            <div>
+              <strong>{String(Math.floor(secondsLeft / 60)).padStart(2, '0')}:{String(secondsLeft % 60).padStart(2, '0')}</strong>
+              <button className="button primary" onClick={() => setRunning((value) => !value)}>{running ? 'Pause mock' : 'Start mock'}</button>
+              <button className="button" onClick={() => { setRunning(false); setSecondsLeft(45 * 60); }}>Reset</button>
+            </div>
+          </section>
+
+          <div className="interview-layout">
+            <form className="scorecard-panel" onSubmit={saveMock}>
+              <div className="form-heading">
+                <div><p className="eyebrow">MOCK REVIEW</p><h2>Structured scorecard</h2></div>
+                <div><strong>{average}</strong><small>/ 5</small></div>
+              </div>
+              <label>
+                Interview type
+                <select value={type} onChange={(event) => { setType(event.target.value as InterviewType); setPromptIndex(0); }}>
+                  <option value="system-design">System design</option>
+                  <option value="ai-design">AI system design</option>
+                  <option value="behavioral">Behavioral leadership</option>
+                  <option value="coding">Coding and problem solving</option>
+                  {pack && packBehavioralPool.length > 0 && (
+                    <option value="pack-behavioral">{pack.company} behavioral ({packBehavioralPool.length} questions)</option>
+                  )}
+                </select>
+              </label>
+
+              {type === 'pack-behavioral' && pack && (
+                <div className="pack-context-card" style={{margin:'0 0 12px'}}>
+                  <span>KEY SIGNALS — {pack.company.toUpperCase()}</span>
+                  <ul style={{margin:'6px 0 0',paddingLeft:'16px',fontSize:'12px',lineHeight:'1.6'}}>
+                    {(pack.keySignals ?? []).map((s) => <li key={s}>{s}</li>)}
+                  </ul>
+                </div>
+              )}
+
+              <div className="score-criteria">
+                {criteria.map((criterion) => (
+                  <label key={criterion}>
+                    <span>{criterion}<strong>{scores[criterion]}</strong></span>
+                    <input aria-label={`${criterion} score`} type="range" min="1" max="5" value={scores[criterion]} onChange={(event) => setScores((current) => ({ ...current, [criterion]: Number(event.target.value) }))} />
+                  </label>
+                ))}
+              </div>
+              <label>
+                Feedback and next action
+                <textarea value={feedback} onChange={(event) => setFeedback(event.target.value)} placeholder="Strong signals, missed areas, and the next deliberate practice…" />
+              </label>
+              <button className="button primary" type="submit">Save mock interview</button>
+            </form>
+
+            <section className="mock-history">
+              <p className="eyebrow">HISTORY</p>
+              <h2>Recent mocks</h2>
+              {[...state.mockInterviews].reverse().map((mock) => (
+                <article key={mock.id}>
+                  <div><strong>{mock.type.replace('-', ' ')}</strong><span>{mock.date}{mock.durationMinutes ? ` · ${mock.durationMinutes}m` : ''}</span></div>
+                  {mock.prompt && <b>{mock.prompt}</b>}
+                  <em>{mock.score}/5</em>
+                  <p>{mock.feedback || 'No written feedback.'}</p>
+                </article>
+              ))}
+              {!state.mockInterviews.length && <div className="interview-empty">No mock interviews recorded yet.</div>}
+            </section>
+          </div>
+        </>
+      ) : (
+        <div className="mistake-layout">
+          <form className="mistake-form" onSubmit={saveMistake}>
+            <p className="eyebrow">CAPTURE A MISTAKE</p>
+            <h2>Turn the miss into a mental model.</h2>
+            <label>Question or scenario<textarea name="prompt" required placeholder="What were you trying to answer?" /></label>
+            <label>What did you miss?<textarea name="missed" placeholder="Incorrect assumption, omitted risk, weak explanation…" /></label>
+            <label>Correct model or response<textarea name="correction" placeholder="What should you recognize and do next time?" /></label>
+            <button className="button primary" type="submit">Add to review queue</button>
+          </form>
+          <section className="mistake-list">
+            <p className="eyebrow">SPACED REVIEW</p>
+            <h2>Revision queue</h2>
+            {[...state.mistakes].sort((a, b) => a.nextReview.localeCompare(b.nextReview)).map((item) => (
+              <article className={item.resolved ? 'resolved' : ''} key={item.id}>
+                <div><span>REVIEW {item.nextReview}</span><strong>{item.prompt}</strong><p>{item.correction || item.missed}</p></div>
+                <div>
+                  <button onClick={() => reviewMistake(item.id, false)}>Reviewed</button>
+                  <button onClick={() => reviewMistake(item.id, true)}>{item.resolved ? 'Reopen' : 'Resolved'}</button>
+                </div>
+              </article>
+            ))}
+            {!state.mistakes.length && <div className="interview-empty">No mistakes recorded. Your first mock will give you material.</div>}
+          </section>
+        </div>
+      )}
+    </div>
+  );
 }
