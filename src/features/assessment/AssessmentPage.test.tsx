@@ -16,6 +16,6 @@ describe('AssessmentPage', () => {
     render(<AssessmentPage />);
     fireEvent.click(screen.getByRole('tab', { name: 'Analytics' }));
     expect(screen.getByText('Competency radar')).toBeInTheDocument();
-    expect(screen.getByText('28-day heatmap')).toBeInTheDocument();
+    expect(screen.getByText('12-week activity heatmap')).toBeInTheDocument();
   });
 });

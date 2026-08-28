@@ -47,7 +47,7 @@ export function AnalyticsPage() {
 
         <section className="analytics-card">
           <p className="eyebrow">ACTIVITY</p>
-          <h3>28-day heatmap</h3>
+          <h3>12-week activity heatmap</h3>
           <TimeHeatmap data={heatmap} />
         </section>
 

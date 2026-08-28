@@ -12,12 +12,25 @@ export interface ShortcutDefinition {
 export const SHORTCUTS: ShortcutDefinition[] = [
   { keys: '⌘ K', label: 'Search', description: 'Open encyclopedia search' },
   { keys: '⌘ 1–8', label: 'Navigate', description: 'Jump to main sections' },
-  { keys: '⌘ N', label: 'New journal', description: 'Open journal for a new entry' },
+  { keys: '⌘ N', label: 'Journal', description: 'Open journal for a new entry' },
   { keys: '⌘ R', label: 'Roadmap', description: 'Start today\'s roadmap session' },
+  { keys: '⌘ I', label: 'Interviews', description: 'Open Interview Studio' },
+  { keys: '⌘ M', label: 'Communication', description: 'Open Communication Gym' },
+  { keys: '⌘ H', label: 'Handbook', description: 'Open Evidence Handbook' },
+  { keys: '⌘ ,', label: 'Settings', description: 'Open Data & Backup settings' },
   { keys: '⌘ ?', label: 'Shortcuts', description: 'Show this help overlay' },
 ];
 
-const NAV_SHORTCUTS = ['/', '/coach', '/roadmap', '/curriculum', '/practice', '/encyclopedia', '/resources', '/lifecycle'] as const;
+const NAV_SHORTCUTS = [
+  { path: '/',              label: 'Today' },
+  { path: '/coach',        label: 'Coach' },
+  { path: '/roadmap',      label: 'Roadmap' },
+  { path: '/curriculum',   label: 'Curriculum' },
+  { path: '/practice',     label: 'Practice Lab' },
+  { path: '/encyclopedia', label: 'Encyclopedia' },
+  { path: '/resources',    label: 'Resources' },
+  { path: '/lifecycle',    label: 'Lifecycle' },
+] as const;
 
 export interface ShortcutHandlers {
   onShowHelp: () => void;
@@ -69,11 +82,40 @@ export function initKeyboardShortcuts(handlers: ShortcutHandlers): () => void {
     if (isMod(event) && /^[1-8]$/.test(event.key)) {
       event.preventDefault();
       const index = Number(event.key) - 1;
-      const path = NAV_SHORTCUTS[index];
-      if (path) {
-        navigate(path);
-        handlers.onToast?.(`Section ${event.key}`);
+      const entry = NAV_SHORTCUTS[index];
+      if (entry) {
+        navigate(entry.path);
+        handlers.onToast?.(entry.label);
       }
+      return;
+    }
+
+    if (isMod(event) && event.key.toLowerCase() === 'i') {
+      event.preventDefault();
+      navigate('/interviews');
+      handlers.onToast?.('Interview Studio');
+      return;
+    }
+
+    if (isMod(event) && event.key.toLowerCase() === 'm') {
+      event.preventDefault();
+      navigate('/communication');
+      handlers.onToast?.('Communication Gym');
+      return;
+    }
+
+    if (isMod(event) && event.key.toLowerCase() === 'h') {
+      event.preventDefault();
+      navigate('/handbook');
+      handlers.onToast?.('Handbook');
+      return;
+    }
+
+    if (isMod(event) && event.key === ',') {
+      event.preventDefault();
+      navigate('/settings');
+      handlers.onToast?.('Settings');
+      return;
     }
   };
 

@@ -354,16 +354,113 @@ export const distributedTransactionsChapter: EncyclopediaChapter = {
     'I define the business invariants first—what must never double-charge or oversell. Across services I avoid classic 2PC and use a saga with an explicit state machine: each step is a local transaction, idempotent, and recorded in durable saga state. I publish events through a transactional outbox and deduplicate consumption with an inbox. Forward steps reserve inventory and authorize payment; compensations release inventory or void authorization when later steps fail. Because some failures remain ambiguous, I add reconciliation against the payment provider and operator tooling for stuck sagas. The user may see asynchronous completion, but the system remains repairable and auditable.',
 };
 
+export const messagingDeliverySemanticsChapter: EncyclopediaChapter = {
+  id: 'messaging-delivery-semantics',
+  title: 'Messaging and delivery semantics',
+  category: 'Data',
+  summary: 'Design reliable message pipelines by choosing the right delivery guarantee, making consumers idempotent, and handling duplicate, reordered, and poison messages without data loss.',
+  problemStatement: 'Distributed systems fail mid-send. Retrying produces duplicates; not retrying causes loss. Without a deliberate delivery contract and idempotent consumers, any transient failure corrupts state.',
+  interviewQuestion: 'How would you design a payment event pipeline that guarantees exactly-once processing despite broker and consumer failures?',
+  coreConcepts: [
+    'At-most-once delivery',
+    'At-least-once delivery',
+    'Effectively-once (idempotent consumer)',
+    'Exactly-once semantics (transactional producers)',
+    'Message ordering and partitioning',
+    'Consumer groups and competing consumers',
+    'Dead-letter queues',
+    'Idempotency keys',
+    'Sequence numbers and deduplication windows',
+    'Backpressure and flow control',
+  ],
+  architectureDiagram:
+    'flowchart LR\n  P[Producer] -->|idempotent write| B[(Broker)]\n  B -->|at-least-once| C[Consumer]\n  C --> I{Seen key?}\n  I -->|yes| D[Discard]\n  I -->|no| W[Write + record key]\n  W --> A[Ack]\n  C -->|unprocessable| DL[Dead-letter queue]\n  DL --> OPS[Operator review]',
+  solutionApproach: [
+    'Choose the weakest guarantee that the business can accept — at-most-once for analytics, at-least-once with idempotent consumers for most systems, transactional exactly-once only when broker support justifies the cost',
+    'Make every consumer operation idempotent: natural idempotency (set operations, upserts) is cheaper than synthetic deduplication',
+    'When natural idempotency is impossible, deduplicate on an idempotency key with a bounded deduplication window backed by a fast store',
+    'Use transactional outbox to atomically commit business state and an event record in the same database transaction before publishing',
+    'Partition by a stable entity key (user ID, order ID) to preserve per-entity ordering without requiring global order',
+    'Design consumer groups so each partition is consumed by exactly one instance; rebalancing protocols must be fencing-safe',
+    'Route unprocessable messages to a dead-letter queue with full context; define SLA for DLQ draining',
+    'Apply backpressure at the consumer: bound in-flight messages and expose lag metrics to the autoscaler',
+  ],
+  designPatterns: [
+    'Transactional outbox',
+    'Idempotent consumer',
+    'Competing consumers',
+    'Dead-letter queue',
+    'Inbox for deduplication',
+    'Saga step as idempotent message handler',
+    'Sequence number fencing',
+  ],
+  tradeoffs: [
+    'Exactly-once transactional semantics versus throughput: transactional producers add coordination overhead; most systems get better ROI from idempotent consumers',
+    'Deduplication window size versus memory: a long window catches more duplicates but requires more storage and lookup latency',
+    'Global ordering versus scalability: total order requires a single partition and is rarely worth the throughput ceiling',
+    'Synchronous versus asynchronous processing: acking before processing loses messages on crash; acking after adds redelivery risk without idempotency',
+  ],
+  failureScenarios: [
+    'Producer retries after a network timeout: the broker received the original but the producer did not get the ack, so the same message arrives twice',
+    'Consumer crashes after processing but before committing offset: on restart it reprocesses the last batch',
+    'Rebalance during processing: a different consumer picks up the partition mid-flight, running the handler concurrently',
+    'Slow consumer causes unbounded lag: upstream buffer fills, producer backpressure kicks in, or older messages expire',
+    'Poison message loops: a malformed message crashes the consumer, is requeued, and crashes it again indefinitely',
+    'Deduplication window expiry: a duplicate arrives after the window, is treated as new, and causes double processing',
+  ],
+  productionConsiderations: [
+    'Instrument consumer lag per partition and alert before it threatens SLAs — lag is the leading indicator of pipeline health',
+    'Set explicit retention and max-delivery-count on the DLQ; an uncapped DLQ masks persistent bugs',
+    'Load-test rebalance behavior: partition reassignment under load often reveals locking bugs and double-processing windows',
+    'Use sequence numbers or logical clocks to detect and reject out-of-order messages where order matters',
+    'Separate the deduplication store from the main datastore: a Redis sorted set with TTL gives O(1) lookups without locking business tables',
+    'Document the delivery guarantee and idempotency contract for each topic — treat it as a schema-level API',
+  ],
+  staffDiscussion: [
+    'Start with the business invariant: what is the cost of a duplicate versus a loss? The answer determines the minimum viable guarantee',
+    'Exactly-once is a property of the full producer-broker-consumer loop, not just the broker — claiming it from the broker while ignoring consumer failures is architectural theater',
+    'Idempotency is usually the right abstraction: it composes with retries, rollbacks, and multi-region failover in ways transactional semantics cannot',
+    'At Staff level the question is not "which guarantee does Kafka support" but "what contract does this pipeline publish, how is it enforced, and who owns the DLQ SLA"',
+    'Backpressure and flow control belong in the design from the start; retrofitting them into a system that has grown to rely on unbounded queues is a multi-quarter project',
+  ],
+  relatedTopics: ['Distributed transactions', 'Idempotency', 'Outbox pattern', 'Event sourcing', 'Saga'],
+  realWorldSystems: ['Payment event streams', 'Order fulfillment pipelines', 'Activity feeds', 'Audit log ingestion', 'Notification delivery'],
+  followUpQuestions: [
+    'How does your deduplication strategy change when the idempotency key must be inferred from message content rather than set by the producer?',
+    'What happens to your exactly-once guarantee during a broker leader election or a consumer group rebalance?',
+    'How would you drain a DLQ that has accumulated millions of messages without overwhelming downstream systems?',
+  ],
+  cheatSheet: [
+    'At-least-once + idempotent consumer = effectively once for most systems',
+    'Idempotency key → deduplication window in fast store → discard duplicates before business logic',
+    'Transactional outbox: commit event record with business state in same DB transaction, publish after commit',
+    'Partition by entity key for per-entity order; never assume global order across partitions',
+    'Dead-letter queue with SLA — a DLQ without drainage is a hidden data loss incident',
+  ],
+  flashcards: [
+    {
+      question: 'Why is "exactly-once" misleading when applied only to the broker?',
+      answer: 'The consumer can still crash after processing but before committing its offset, causing redelivery. True exactly-once requires both transactional producer semantics at the broker and idempotent processing at the consumer.',
+    },
+    {
+      question: 'What is the cheapest form of idempotency and when should you use it?',
+      answer: 'Natural idempotency — operations that produce the same result when repeated (upserts, set membership). Use it by designing state mutations as "set X to Y" rather than "increment X by 1", eliminating the need for a separate deduplication store.',
+    },
+  ],
+  oneMinuteAnswer:
+    'I start by naming the business cost of a duplicate versus a loss — that determines the minimum viable guarantee. For most pipelines, at-least-once delivery with an idempotent consumer is the right answer: the broker retries safely, and the consumer deduplicates on an idempotency key using an upsert or a fast deduplication store with a bounded TTL. I use a transactional outbox to publish events atomically with the business state change, preventing the lost-event class of bug entirely. Partitioning by entity key (user ID, order ID) gives per-entity ordering without the scalability ceiling of a global-ordered log. Any message that fails reprocessing after N attempts goes to a dead-letter queue with an SLA for operator review — an uncapped DLQ is a hidden data loss incident. I instrument consumer lag per partition and treat a rising lag as a pipeline health signal, not just a performance metric.',
+};
+
 export const detailedFoundationChapters: EncyclopediaChapter[] = [
   requirementsQualityAttributesChapter,
   capPacelcConsistencyChapter,
   consensusCoordinationChapter,
   distributedTransactionsChapter,
+  messagingDeliverySemanticsChapter,
 ];
 
 export const REPLACED_FOUNDATION_IDS = new Set([
   'requirements-quality-attributes',
   'cap-pacelc-consistency',
   'consensus-coordination',
-  'messaging-delivery-semantics',
 ]);

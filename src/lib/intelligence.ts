@@ -263,7 +263,7 @@ export function computeMilestones(state: StaffPathState): Milestone[] {
   ];
 }
 
-export function getActivityHeatmap(state: StaffPathState, days = 28, today = new Date()): ActivityDay[] {
+export function getActivityHeatmap(state: StaffPathState, days = 84, today = new Date()): ActivityDay[] {
   const map = new Map<string, ActivityDay>();
 
   for (let i = days - 1; i >= 0; i--) {

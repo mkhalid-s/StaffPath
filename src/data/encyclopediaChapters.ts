@@ -1,5 +1,6 @@
 import type { EncyclopediaChapter } from '../domain/encyclopedia';
 import { detailedFoundationChapters } from './encyclopediaDetailedFoundations';
+import { expandedFoundationChapters } from './encyclopediaExpandedFoundations';
 import { foundationChapters } from './encyclopediaFoundations';
 
 export const encyclopediaChapters: EncyclopediaChapter[] = [
@@ -194,5 +195,6 @@ export const encyclopediaChapters: EncyclopediaChapter[] = [
     oneMinuteAnswer: 'I classify requests by intent, complexity, context size, user tier, domain, and risk, then apply versioned policy to select a model or workflow. High-risk or low-confidence responses pass a verification gate and may fall back to a stronger model or human. Provider health, latency, budget, and data policy constrain the options. Routing changes are shadow-tested against task-specific evaluations, and I monitor quality, escalation, latency, cost, and misrouting—not just model accuracy.'
   },
   ...detailedFoundationChapters,
+  ...expandedFoundationChapters,
   ...foundationChapters,
 ];

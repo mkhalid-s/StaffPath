@@ -13,7 +13,7 @@ describe('complete preparation content contract', () => {
     expect(curriculumModules).toHaveLength(12);
     expect(Object.values(practiceCatalog).flat()).toHaveLength(47);
     expect(communicationLessons).toHaveLength(14);
-    expect(encyclopediaChapters).toHaveLength(21);
+    expect(encyclopediaChapters).toHaveLength(22);
     expect(learningResources).toHaveLength(16);
     for (const prompts of Object.values(interviewPrompts)) expect(prompts.length).toBeGreaterThanOrEqual(6);
   });
