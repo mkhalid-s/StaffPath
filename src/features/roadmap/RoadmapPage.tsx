@@ -23,6 +23,8 @@ export function RoadmapPage() {
   const plan = useMemo(() => buildSessionPlan(selected, modeConfig.dailyMinutes), [selected, modeConfig.dailyMinutes]);
   const remaining = Math.max(0, focusTarget - record.focusedSeconds);
   const weeklyPace = sessionsPerWeek(modeConfig.totalDays);
+  const currentWeek = roadmapWeeks[selected.week - 1];
+  const masteryQuestions = currentWeek?.masteryQuestions ?? [];
 
   useEffect(() => {
     if (!running || remaining === 0) return;
@@ -68,6 +70,14 @@ export function RoadmapPage() {
           <div className="focus-blocks">
             {plan.blocks.map((block) => <article key={block.label}><strong>{block.minutes}m</strong><div><span>{block.label}</span><p>{block.prompt}</p></div></article>)}
           </div>
+          {masteryQuestions.length > 0 && (
+            <div className="mastery-questions">
+              <p className="eyebrow">WEEK {selected.week} MASTERY QUESTIONS</p>
+              <ul>
+                {masteryQuestions.map((question) => <li key={question}>{question}</li>)}
+              </ul>
+            </div>
+          )}
         </div>
         <aside className="session-capture">
           <p className="eyebrow">FOCUS TIMER · {modeConfig.dailyMinutes} MIN</p>

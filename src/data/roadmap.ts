@@ -139,13 +139,96 @@ export interface RoadmapWeek {
   week: number;
   title: string;
   outcome: string;
+  masteryQuestions: string[];
   sessions: RoadmapSession[];
 }
+
+const MASTERY_QUESTIONS: Record<number, string[]> = {
+  // Week 1 — Understand the Staff role
+  1: [
+    'What does Staff-level scope mean at your target company, and how does it differ from Senior?',
+    'What is your biggest gap between your current impact and Staff-level expectations?',
+    'What would stop a respected peer from endorsing you as Staff-ready today?',
+  ],
+  // Week 2 — Business and product thinking
+  2: [
+    'How do you connect a technical decision directly to a measurable business outcome?',
+    'What metrics would prove your architecture is actually working for users — not just for ops?',
+    'How do you decide what not to build when a stakeholder asks for everything?',
+  ],
+  // Week 3 — Architecture fundamentals
+  3: [
+    'What is the hardest trade-off in this architecture, and what would you sacrifice first?',
+    'Which decision would you document in an ADR, and what makes it a one-way door?',
+    'Why choose gRPC over REST for an internal service boundary — or would you not?',
+  ],
+  // Week 4 — Distributed systems
+  4: [
+    'What happens during a network partition, and what does your system guarantee?',
+    'How do fencing tokens prevent a stale leader from corrupting shared state?',
+    'Which operations in your design require strong consistency, and at what cost?',
+  ],
+  // Week 5 — Data architecture
+  5: [
+    'What is the single source of truth, and what happens when two systems disagree?',
+    'How do you prevent overselling or double-spending without a global lock?',
+    'How will you migrate a high-traffic schema without downtime or dual-write divergence?',
+  ],
+  // Week 6 — Scale, performance, and cost
+  6: [
+    'How does your design change at 10× traffic — what breaks first?',
+    'Where should rate limiting live in the stack, and what happens when the enforcement store fails?',
+    'How do retries interact with non-idempotent APIs, and what is the amplification risk?',
+  ],
+  // Week 7 — Reliability and operations
+  7: [
+    'What is your error budget, who owns it, and how does it affect deployment decisions?',
+    'How will you detect silent data loss — the failure that returns 200 but corrupts state?',
+    'What fails gracefully in your system, and what must never degrade under any load?',
+  ],
+  // Week 8 — Security and resilience
+  8: [
+    'What is the tenant isolation model, and what is the blast radius of a breach?',
+    'How do you enforce least privilege across service-to-service calls at runtime?',
+    'How do you handle regional data residency without duplicating the entire platform?',
+  ],
+  // Week 9 — Technical decisions and strategy
+  9: [
+    'What is the migration sequence for your most complex open initiative, and who owns each step?',
+    'How do you create genuine adoption across teams — not compliance theater?',
+    'What metrics would tell you in six months whether your technical strategy is actually working?',
+  ],
+  // Week 10 — Cross-team execution
+  10: [
+    'Who disagreed with your last major decision, why, and what did you do about it?',
+    'What was your personal contribution vs the team\'s — and how do you demonstrate that distinction?',
+    'What data changed your mind on a technical decision you had already advocated for?',
+  ],
+  // Week 11 — Influence and communication
+  11: [
+    'Where is the measurable impact in your strongest story — what number changed because of you?',
+    'What would you do differently in hindsight, and what does that reveal about your judgment?',
+    'How did the outcome continue after you moved on — what leverage did you leave behind?',
+  ],
+  // Week 12 — Engineering leadership
+  12: [
+    'How do you measure whether a junior engineer you are developing is actually growing?',
+    'What is the highest-leverage thing you could stop doing to create room for Staff-level work?',
+    'How would you explain this architecture decision to engineers, product, security, and executives — in one conversation?',
+  ],
+  // Week 13 — Final revision and mocks
+  13: [
+    'Can you explain any design you have practised clearly in five minutes without losing structure?',
+    'Can you defend every rejected alternative with data, not preference?',
+    'Can you stay structured under interruptions and still close with a clean trade-off summary?',
+  ],
+};
 
 export const roadmapWeeks: RoadmapWeek[] = rawPlan.map((entry, weekIndex) => ({
   week: weekIndex + 1,
   title: entry.title,
   outcome: entry.outcome,
+  masteryQuestions: MASTERY_QUESTIONS[weekIndex + 1] ?? [],
   sessions: entry.days.map((day, dayIndex) => ({
     id: weekIndex * 7 + dayIndex + 1,
     week: weekIndex + 1,
