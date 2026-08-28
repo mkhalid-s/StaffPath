@@ -2,6 +2,12 @@ import type { CompanyPackId } from '../../data/companyPacks';
 import { COMPANY_PACKS } from '../../data/companyPacks';
 import { appStore, useStaffPathState } from '../../lib/appStore';
 
+interface PackWithDetails {
+  interviewFormat?: string;
+  keySignals?: string[];
+  commonMistakes?: string[];
+}
+
 export function CompanyPackSelection() {
   const state = useStaffPathState();
   const selected = state.profile.selectedCompanyPack;
@@ -40,6 +46,28 @@ export function CompanyPackSelection() {
           <div className="topic-cloud">
             {COMPANY_PACKS[selected].focus.map((item) => <span key={item}>{item}</span>)}
           </div>
+          {(COMPANY_PACKS[selected] as PackWithDetails).interviewFormat && (
+            <>
+              <p className="eyebrow">INTERVIEW FORMAT</p>
+              <p>{(COMPANY_PACKS[selected] as PackWithDetails).interviewFormat}</p>
+            </>
+          )}
+          {((COMPANY_PACKS[selected] as PackWithDetails).keySignals?.length ?? 0) > 0 && (
+            <>
+              <p className="eyebrow">WHAT THEY LOOK FOR</p>
+              <ul className="pack-questions">
+                {(COMPANY_PACKS[selected] as PackWithDetails).keySignals!.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            </>
+          )}
+          {((COMPANY_PACKS[selected] as PackWithDetails).commonMistakes?.length ?? 0) > 0 && (
+            <>
+              <p className="eyebrow">COMMON MISTAKES</p>
+              <ul className="pack-questions">
+                {(COMPANY_PACKS[selected] as PackWithDetails).commonMistakes!.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            </>
+          )}
           <p className="eyebrow">SAMPLE BEHAVIORAL QUESTIONS</p>
           <ul className="pack-questions">
             {COMPANY_PACKS[selected].behavioralQuestions.map((q) => <li key={q}>{q}</li>)}

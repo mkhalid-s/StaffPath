@@ -11,6 +11,19 @@ const labels: Record<PracticeTrack, [string, string]> = {
   sdlc: ['SDLC practice', 'Lifecycle plan and decisions'],
 };
 
+interface PackScenario {
+  track: PracticeTrack;
+  title: string;
+  prompt: string;
+  variations: string[];
+  coachingPrompts: string[];
+}
+
+interface PackWithScenarios {
+  practiceScenarios?: PackScenario[];
+  behavioralQuestions?: string[];
+}
+
 export function PracticePage() {
   const state = useStaffPathState();
   const [track, setTrack] = useState<PracticeTrack>('design');
@@ -24,6 +37,9 @@ export function PracticePage() {
   const variation = challenge.variations[Math.floor(cursor / challenges.length) % challenge.variations.length];
   const rubric = practiceRubrics[track];
   const pack = getActivePack(state.profile.selectedCompanyPack);
+  const [packQOpen, setPackQOpen] = useState(false);
+  const packScenarios = (pack as (typeof pack & PackWithScenarios) | null)?.practiceScenarios ?? [];
+  const packQuestions = (pack as (typeof pack & PackWithScenarios) | null)?.behavioralQuestions ?? [];
 
   function switchTrack(next: PracticeTrack) { setTrack(next); setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false); }
   function move(delta: number) {
@@ -49,7 +65,24 @@ export function PracticePage() {
       <section className="challenge-panel">
         <div className="session-meta"><span>{labels[track][0].toUpperCase()}</span><span>CHALLENGE {cursor % challenges.length + 1} / {challenges.length}</span></div>
         <h2>{challenge.title}</h2><p>{challenge.prompt}</p>
-        {pack && <div className="pack-context-card"><span>{pack.label.toUpperCase()}</span><p>{pack.practiceContext}</p></div>}
+        {pack && (
+          <div className="pack-context-card">
+            <span>{pack.label.toUpperCase()}</span>
+            <p>{pack.practiceContext}</p>
+            {packQuestions.length > 0 && (
+              <>
+                <button className="coach-toggle" type="button" onClick={() => setPackQOpen((value) => !value)}>
+                  {packQOpen ? 'Hide behavioral questions' : `Behavioral questions for ${pack.company}`}
+                </button>
+                {packQOpen && (
+                  <ul className="coach-prompts">
+                    {packQuestions.map((q) => <li key={q}>{q}</li>)}
+                  </ul>
+                )}
+              </>
+            )}
+          </div>
+        )}
         <div className="variation-card"><span>CONSTRAINT VARIATION</span><strong>{variation}</strong></div>
         <label>{labels[track][1]}<textarea aria-label="Practice response" required value={response} onChange={(event) => setResponse(event.target.value)} placeholder="Clarify the problem, state assumptions, reason through options, make a recommendation…" /></label>
         <label>Post-attempt reflection<textarea aria-label="Practice reflection" value={reflection} onChange={(event) => setReflection(event.target.value)} placeholder="What was weak? What will you do differently next time?" /></label>
@@ -65,5 +98,19 @@ export function PracticePage() {
       </aside>
     </form>
     <section><div className="section-heading"><p className="eyebrow">RECENT EVIDENCE</p><h2>Practice history</h2></div><div className="attempt-grid">{state.practiceAttempts.slice().reverse().slice(0, 8).map((attempt) => <article key={attempt.id}><span>{labels[attempt.track][0]} · {new Date(attempt.date).toLocaleDateString()}</span><h3>{attempt.title}</h3><p>{attempt.variation}</p><strong>{attempt.score}/{attempt.maxScore}</strong></article>)}{!state.practiceAttempts.length && <div className="interview-empty">Your saved attempts will become handbook evidence here.</div>}</div></section>
+    {pack && packScenarios.length > 0 && (
+      <section>
+        <div className="section-heading"><p className="eyebrow">{pack.label.toUpperCase()} SCENARIOS</p><h2>Company-specific practice</h2></div>
+        <div className="attempt-grid">
+          {packScenarios.map((scenario) => (
+            <article key={scenario.title}>
+              <span>[{pack.label}] · {labels[scenario.track][0]}</span>
+              <h3>{scenario.title}</h3>
+              <p>{scenario.prompt}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
   </div>;
 }
