@@ -6,6 +6,7 @@ export interface PracticeChallenge {
   prompt: string;
   variations: string[];
   coachingPrompts: string[];
+  solutionGuide?: string[];
 }
 
 const rawCatalog = {
@@ -124,6 +125,7 @@ export const practiceCatalog: Record<PracticeTrack, PracticeChallenge[]> = Objec
       prompt: challenge[1] as string,
       variations: challenge[2] as string[],
       coachingPrompts: challenge[3] as string[],
+      solutionGuide: challenge[4] as string[] | undefined,
     })),
   ]),
 ) as Record<PracticeTrack, PracticeChallenge[]>;

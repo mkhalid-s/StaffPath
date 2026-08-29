@@ -281,3 +281,105 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .pack-context-card { margin: 14px 0; padding: 14px 16px; border: 1px solid rgba(45,90,61,.25); border-radius: 10px; background: #f0f7f0; }
 .pack-context-card span { display: block; font-size: 8px; font-weight: 800; letter-spacing: .06em; color: var(--green); margin-bottom: 6px; }
 .pack-context-card p { margin: 0; font-size: 10px; color: var(--muted); line-height: 1.5; }
+
+/* ── Solution guide ── */
+.solution-guide { margin-top: 14px; padding: 14px 16px; border: 1px solid rgba(45,90,61,.3); border-radius: 9px; background: #f0f7f0; }
+.solution-guide .eyebrow { margin-bottom: 10px; color: var(--green); }
+.solution-guide ul { padding: 0 0 0 16px; margin: 0; }
+.solution-guide ul li { margin: 7px 0; color: #3a5540; font-size: 9px; line-height: 1.55; }
+
+/* ── Lifecycle readiness tracker ── */
+.lifecycle-page .stage-list article { align-items: flex-start; }
+.stage-evidence { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.stage-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 20px; font-size: 8px; font-weight: 700; white-space: nowrap; }
+.stage-badge--pass { background: #e2f0e4; color: var(--green); }
+.stage-badge--open { background: var(--cream); color: var(--muted); }
+.stage-link { color: var(--green); font-size: 9px; text-decoration: none; font-weight: 700; }
+.stage-link:hover { text-decoration: underline; }
+.readiness-gates { margin-top: 40px; padding: 28px; border-radius: 13px; background: var(--green-dark); color: white; }
+.readiness-gates h2 { margin: 7px 0 5px; font-size: 20px; }
+.readiness-gates > p { color: #b9c9c0; font-size: 10px; margin: 0 0 16px; }
+.gates-progress { margin: 16px 0; }
+.gates-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.15); overflow: hidden; }
+.gates-fill { height: 100%; border-radius: 3px; background: var(--lime); transition: width .4s ease; }
+.gates-list { display: grid; gap: 7px; margin-top: 16px; }
+.gate-item { display: grid; grid-template-columns: 22px 1fr; gap: 10px; padding: 11px 13px; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; align-items: flex-start; opacity: .6; }
+.gate-item--pass { border-color: rgba(223,235,169,.4); opacity: 1; }
+.gate-check { color: var(--lime); font-size: 11px; font-weight: 700; line-height: 1.4; }
+.gate-label { font-size: 10px; line-height: 1.4; }
+.gate-evidence { margin-top: 3px; color: #9db8a8; font-size: 8px; }
+
+/* ── Curriculum progress ── */
+.curriculum-progress { margin: 11px 0 8px; }
+.curriculum-progress-bar { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.curriculum-progress-fill { height: 100%; border-radius: 2px; background: var(--green); transition: width .3s ease; }
+.curriculum-progress-fill[data-done="true"] { background: #6cba7f; }
+.curriculum-progress-label { display: block; margin-top: 5px; color: var(--muted); font-size: 8px; }
+.curriculum-grid article[data-done] { border-color: rgba(45,90,61,.3); }
+.week-badge { padding: 2px 7px; border-radius: 10px; background: #e2f0e4; color: var(--green); font-size: 8px; font-weight: 700; }
+
+/* ── Roadmap mastery questions ── */
+.mastery-questions { margin-top: 18px; padding: 16px; border-radius: 8px; background: rgba(255,255,255,.07); }
+.mastery-questions .eyebrow { color: var(--lime); }
+.mastery-questions ul { padding: 0 0 0 14px; margin: 9px 0 0; }
+.mastery-questions ul li { margin: 7px 0; color: #c7d4cc; font-size: 10px; line-height: 1.5; }
+
+/* ── Coach focus areas ── */
+.coach-focus { margin-top: 18px; padding: 22px; border-radius: 12px; background: white; border: 1px solid var(--line); }
+.coach-focus h2 { margin: 0 0 14px; font-size: 18px; }
+.coach-focus-item { display: grid; grid-template-columns: auto 1fr; gap: 10px; padding: 11px; margin-bottom: 7px; border-radius: 8px; background: var(--cream); }
+.coach-focus-item strong { display: block; font-size: 10px; }
+.coach-focus-item p { margin: 4px 0 0; color: var(--muted); font-size: 9px; line-height: 1.45; }
+.coach-focus-rank { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--green); color: white; font-size: 9px; font-weight: 750; }
+
+/* ── Dark mode ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #e8ede6;
+    background: #141917;
+    --ink: #e8ede6;
+    --muted: #8a9487;
+    --line: #2a302a;
+    --paper: #141917;
+    --card: #1c2220;
+    --green: #6db88a;
+    --green-dark: #1a2b22;
+    --lime: #c8dc7a;
+    --cream: #1e2620;
+    --shadow: 0 18px 55px rgba(0,0,0,.4);
+  }
+  .sidebar { background: #161c18; }
+  .sidebar nav a:hover, .sidebar nav a.active { background: #232e27; }
+  .chapter-card, .coaching-panel, .scorecard-panel, .mock-history, .mistake-form,
+  .mistake-list, .journal-form, .journal-entries, .story-form, .story-bank,
+  .settings-grid article, .curriculum-grid>article, .catalog-grid article,
+  .resource-grid>a, .roadmap-week, .attempt-grid article, .diagram-studio>section,
+  .template-card, .evidence-card, .handbook-stats div, .communication-layout>nav,
+  .coach-focus, .coach-search { background: #1c2220; border-color: #2a302a; }
+  .challenge-panel, .hero-panel, .communication-workout, .daily-executor,
+  .coach-priorities, .readiness-gates, .coverage-callout { background: #1a2b22; }
+  .button { background: #1c2220; border-color: #2a302a; color: var(--ink); }
+  .button.primary { background: #c8dc7a; border-color: #c8dc7a; color: #141917; }
+  .search-panel { background: rgba(20,25,23,.92); border-color: #2a302a; }
+  .search-panel>label { background: #1c2220; border-color: #2a302a; }
+  .search-panel input { color: var(--ink); }
+  .stage-badge--pass { background: #1e3228; color: var(--green); }
+  .stage-badge--open { background: #1e2620; color: var(--muted); }
+  .gate-item { border-color: rgba(255,255,255,.07); }
+  .gate-item--pass { border-color: rgba(200,220,122,.2); }
+  .solution-guide { background: #1e3228; border-color: rgba(109,184,138,.2); }
+  .solution-guide ul li { color: #a8c8b4; }
+  .pack-context-card { background: #1e3228; border-color: rgba(109,184,138,.2); }
+  .chapter-callout { background: #1e3228; }
+  .minute-answer { background: #28221a; border-color: #3a2e22; }
+  .minute-answer p { color: #b8a898; }
+  .category-chip { background: #1e3228; }
+  .chapter-section { background: #1c2220; border-color: #2a302a; }
+  .flashcards details { background: #1e2620; }
+  textarea, input[type="text"], select { background: #1a1f1c; border-color: #2a302a; color: var(--ink); }
+  .mastery-questions { background: rgba(255,255,255,.05); }
+  .curriculum-progress-bar { background: #2a302a; }
+  .week-badge { background: #1e3228; }
+  .curriculum-grid article[data-done] { border-color: rgba(109,184,138,.3); }
+  .resource-policy { background: #1e3228; }
+}

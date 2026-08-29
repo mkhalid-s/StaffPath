@@ -43,6 +43,7 @@ export function PracticePage() {
   const [checked, setChecked] = useState<number[]>([]);
   const [coachOpen, setCoachOpen] = useState(false);
   const [probesOpen, setProbesOpen] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
   const cursor = state.practiceCursor[track];
   const challenges = practiceCatalog[track];
   const challenge = challenges[cursor % challenges.length];
@@ -53,7 +54,7 @@ export function PracticePage() {
   const packScenarios = (pack as (typeof pack & PackWithScenarios) | null)?.practiceScenarios ?? [];
   const packQuestions = (pack as (typeof pack & PackWithScenarios) | null)?.behavioralQuestions ?? [];
 
-  function switchTrack(next: PracticeTrack) { setTrack(next); setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false); setProbesOpen(false); }
+  function switchTrack(next: PracticeTrack) { setTrack(next); setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false); setProbesOpen(false); setGuideOpen(false); }
   function move(delta: number) {
     appStore.update((current) => ({ ...current, practiceCursor: { ...current.practiceCursor, [track]: Math.max(0, current.practiceCursor[track] + delta) } }));
     setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false); setProbesOpen(false);
@@ -119,6 +120,17 @@ export function PracticePage() {
         {coachOpen && <ul className="coach-prompts">{challenge.coachingPrompts.map((prompt) => <li key={prompt}>{prompt}</li>)}</ul>}
         <div className="score-preview"><strong>{checked.length}/{rubric.length}</strong><span>self-review evidence</span></div>
         <button className="button primary complete-button" type="submit" disabled={!response.trim()}>Save attempt to handbook</button>
+        {challenge.solutionGuide && challenge.solutionGuide.length > 0 && (
+          <>
+            <button className="coach-toggle" type="button" onClick={() => setGuideOpen((v) => !v)}>{guideOpen ? 'Hide solution guide ↑' : 'Reveal solution guide ↓'}</button>
+            {guideOpen && (
+              <div className="solution-guide">
+                <p className="eyebrow">STAFF-LEVEL SOLUTION GUIDE</p>
+                <ul>{challenge.solutionGuide.map((point) => <li key={point}>{point}</li>)}</ul>
+              </div>
+            )}
+          </>
+        )}
       </aside>
     </form>
     <section><div className="section-heading"><p className="eyebrow">RECENT EVIDENCE</p><h2>Practice history</h2></div><div className="attempt-grid">{state.practiceAttempts.slice().reverse().slice(0, 8).map((attempt) => <article key={attempt.id}><span>{labels[attempt.track][0]} · {new Date(attempt.date).toLocaleDateString()}</span><h3>{attempt.title}</h3><p>{attempt.variation}</p><strong>{attempt.score}/{attempt.maxScore}</strong></article>)}{!state.practiceAttempts.length && <div className="interview-empty">Your saved attempts will become handbook evidence here.</div>}</div></section>
