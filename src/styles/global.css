@@ -528,6 +528,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 /* ── Dashboard copy — context line replaced by eyebrow only ── */
 .dashboard-page .page-heading p:not(.eyebrow) { color: var(--muted); font-size: 13px; max-width: 540px; }
 
+/* ── Category chip icon ── */
+.category-chip { display: inline-flex; align-items: center; gap: 4px; }
+.category-chip svg { flex-shrink: 0; }
+
+/* ── Mock interview score sparkline ── */
+.score-sparkline { display: block; margin: 4px 0 10px; }
+
 /* ── Empty state improvements ── */
 .interview-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 48px 32px; }
 .interview-empty::before { content: ''; display: block; width: 32px; height: 2px; border-radius: 1px; background: var(--line); }
@@ -573,3 +580,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .chapter-detail header[data-category="AI"]           { border-top: 3px solid #6b4fa8; }
 .chapter-detail header[data-category="Architecture"] { border-top: 3px solid #285b43; }
 .chapter-detail header[data-category="Leadership"]   { border-top: 3px solid #8b3a3a; }
+
+/* ── Lucide icons in shell chrome (lock, shortcuts, mobile menu) ── */
+.nav-locked svg.nav-lock { margin-left: auto; opacity: 0.6; }
+.shortcut-hint-link { display: inline-flex; align-items: center; gap: 6px; }
+.mobile-header button svg { display: block; }

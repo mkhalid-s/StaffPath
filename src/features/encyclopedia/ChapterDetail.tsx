@@ -1,7 +1,17 @@
 import { useEffect, useRef } from 'react';
+import { Server, Database, Shield, Cpu, Layout, Users, type LucideIcon } from 'lucide-react';
 import type { EncyclopediaChapter } from '../../domain/encyclopedia';
 import { practiceCatalog } from '../../data/practiceCatalog';
 import { ArchitectureDiagram } from './ArchitectureDiagram';
+
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  Systems: Server,
+  Data: Database,
+  Reliability: Shield,
+  AI: Cpu,
+  Architecture: Layout,
+  Leadership: Users,
+};
 
 function findRelatedScenarios(chapter: EncyclopediaChapter) {
   const keywords = chapter.id.replace(/-/g, ' ').split(' ').filter((w) => w.length > 3);
@@ -32,7 +42,7 @@ export function ChapterDetail({ chapter, onClose, completed, onToggleComplete, p
   return <div className="chapter-overlay" role="dialog" aria-modal="true" aria-labelledby="chapter-title">
     <button className="chapter-backdrop" onClick={onClose} aria-label="Close chapter" />
     <article className="chapter-detail">
-      <header data-category={chapter.category}><div><span className="category-chip" data-cat={chapter.category}>{chapter.category}</span><h2 id="chapter-title">{chapter.title}</h2><p>{chapter.summary}</p></div><button ref={closeButton} onClick={onClose} aria-label="Close chapter">×</button></header>
+      <header data-category={chapter.category}><div><span className="category-chip" data-cat={chapter.category}>{(() => { const Icon = CATEGORY_ICONS[chapter.category]; return Icon ? <Icon size={10} /> : null; })()}{chapter.category}</span><h2 id="chapter-title">{chapter.title}</h2><p>{chapter.summary}</p></div><button ref={closeButton} onClick={onClose} aria-label="Close chapter">×</button></header>
       <div className="chapter-body">
         <section className="chapter-callout"><span>PROBLEM STATEMENT</span><p>{chapter.problemStatement}</p></section>
         {packAngle && <section className="chapter-callout pack-angle"><span>COMPANY PACK ANGLE</span><p>{packAngle}</p></section>}

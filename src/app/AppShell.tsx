@@ -2,7 +2,8 @@ import { type ReactNode, useState } from 'react';
 import {
   LayoutDashboard, Map, Target, BookOpen, Zap,
   Search, CreditCard, Link2, TrendingUp, Mic,
-  Brain, MessageSquare, Notebook, PenLine, Database, Settings,
+  Brain, MessageSquare, Notebook, PenLine, Settings,
+  Lock, Menu, Keyboard,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -21,7 +22,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   communication: MessageSquare,
   handbook:      Notebook,
   journal:       PenLine,
-  settings:      Database,
+  settings:      Settings,
 };
 
 const NAV_GROUPS = [
@@ -72,7 +73,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     >
                       {iconEl}
                       <span className="nav-label">{label}</span>
-                      <span className="nav-lock" aria-hidden="true">🔒</span>
+                      <Lock className="nav-lock" size={12} strokeWidth={2} aria-hidden="true" />
                       {progress && progress.percent < 100 && (
                         <span className="nav-progress" aria-hidden="true">{progress.current}/{progress.target}</span>
                       )}
@@ -92,14 +93,14 @@ export function AppShell({ children }: { children: ReactNode }) {
           <small>PREPARATION SYSTEM</small>
           <strong>Local-first workspace</strong>
           <span>Your learning data stays in this browser.</span>
-          <button type="button" className="shortcut-hint-link" onClick={() => window.dispatchEvent(new Event(SHOW_SHORTCUTS_EVENT))}>⌘ ? Shortcuts</button>
+          <button type="button" className="shortcut-hint-link" onClick={() => window.dispatchEvent(new Event(SHOW_SHORTCUTS_EVENT))}><Keyboard size={13} strokeWidth={1.75} aria-hidden="true" /> Shortcuts</button>
         </div>
       </aside>
       <main>
         <ConnectionStatus />
         <header className="mobile-header">
           <Link className="brand" to="/"><span>S</span>StaffPath</Link>
-          <button onClick={() => setMenuOpen((value) => !value)} aria-label="Toggle navigation">☰</button>
+          <button onClick={() => setMenuOpen((value) => !value)} aria-label="Toggle navigation"><Menu size={20} strokeWidth={1.75} /></button>
         </header>
         {children}
         <QuickActionsFab />
