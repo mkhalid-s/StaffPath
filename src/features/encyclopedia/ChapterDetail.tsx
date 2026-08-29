@@ -1,6 +1,17 @@
 import { useEffect, useRef } from 'react';
 import type { EncyclopediaChapter } from '../../domain/encyclopedia';
+import { practiceCatalog } from '../../data/practiceCatalog';
 import { ArchitectureDiagram } from './ArchitectureDiagram';
+
+function findRelatedScenarios(chapter: EncyclopediaChapter) {
+  const keywords = chapter.id.replace(/-/g, ' ').split(' ').filter((w) => w.length > 3);
+  const titleWords = chapter.title.toLowerCase().split(/\W+/).filter((w) => w.length > 3);
+  const allKeywords = [...new Set([...keywords, ...titleWords])];
+  return Object.values(practiceCatalog).flat().filter((s) => {
+    const stl = s.title.toLowerCase();
+    return allKeywords.some((k) => stl.includes(k));
+  }).slice(0, 3);
+}
 
 function ListSection({ title, items }: { title: string; items: string[] }) {
   return <section className="chapter-section"><h3>{title}</h3><ul>{items.map((item) => <li key={item}>{item}</li>)}</ul></section>;
@@ -8,6 +19,7 @@ function ListSection({ title, items }: { title: string; items: string[] }) {
 
 export function ChapterDetail({ chapter, onClose, completed, onToggleComplete, packAngle }: { chapter: EncyclopediaChapter; onClose: () => void; completed: boolean; onToggleComplete: () => void; packAngle?: string | null }) {
   const closeButton = useRef<HTMLButtonElement>(null);
+  const relatedScenarios = findRelatedScenarios(chapter);
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
     const oldOverflow = document.body.style.overflow;
@@ -39,6 +51,20 @@ export function ChapterDetail({ chapter, onClose, completed, onToggleComplete, p
         <ListSection title="Cheat sheet" items={chapter.cheatSheet} />
         <section className="chapter-section full"><h3>Flashcards</h3><div className="flashcards">{chapter.flashcards.map((card) => <details key={card.question}><summary>{card.question}</summary><p>{card.answer}</p></details>)}</div></section>
         <section className="minute-answer full"><span>ONE-MINUTE INTERVIEW ANSWER</span><p>{chapter.oneMinuteAnswer}</p></section>
+        {relatedScenarios.length > 0 && (
+          <section className="chapter-section full">
+            <h3>Practice this concept</h3>
+            <div className="related-scenarios">
+              {relatedScenarios.map((s) => (
+                <a key={s.id} href="/practice" className="related-scenario-link" onClick={onClose}>
+                  <span className="category-chip">{s.track}</span>
+                  <strong>{s.title}</strong>
+                  <em>→ Practice Lab</em>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
         <section className="chapter-completion"><div><strong>{completed ? 'Chapter evidenced' : 'Finish with retrieval'}</strong><p>Explain the answer aloud, then mark complete. Reading alone is not mastery.</p></div><button className="button primary" onClick={onToggleComplete}>{completed ? 'Reopen chapter' : 'Mark chapter complete'}</button></section>
       </div>
     </article>

@@ -423,3 +423,22 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .curriculum-grid article[data-done] { border-color: rgba(109,184,138,.3); }
   .resource-policy { background: #1e3228; }
 }
+
+/* ── Related practice scenarios in chapter detail ── */
+.related-scenarios { display: grid; gap: 7px; }
+.related-scenario-link { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--cream); text-decoration: none; color: var(--ink); }
+.related-scenario-link:hover { border-color: var(--green); background: #e9f0e5; }
+.related-scenario-link strong { font-size: 11px; }
+.related-scenario-link em { color: var(--green); font-size: 9px; font-style: normal; font-weight: 700; white-space: nowrap; }
+
+/* ── Journal prompts + tag suggestions ── */
+.journal-prompts { margin-bottom: 18px; padding: 16px; border-radius: 10px; background: var(--green-dark); color: white; }
+.journal-prompts p { margin: 0 0 9px; font-size: 9px; font-weight: 750; letter-spacing: .1em; color: var(--lime); }
+.journal-prompts ul { padding: 0 0 0 15px; margin: 0 0 10px; }
+.journal-prompts ul li { margin: 5px 0; font-size: 10px; color: #c3d0c8; line-height: 1.45; }
+.prompt-shuffle { padding: 0; border: 0; background: none; color: var(--lime); font-size: 9px; font-weight: 700; cursor: pointer; }
+.tag-suggestions { display: flex; gap: 5px; flex-wrap: wrap; margin: 8px 0 14px; }
+.tag-suggestions button { padding: 4px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--cream); color: var(--muted); font-size: 8px; cursor: pointer; }
+.tag-suggestions button:hover { border-color: var(--green); color: var(--green); }
+.journal-entries-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.journal-search { margin-bottom: 12px; }
