@@ -1,0 +1,198 @@
+import type { EncyclopediaChapter } from '../domain/encyclopedia';
+
+export const zeroTrustNetworkingChapter: EncyclopediaChapter = {
+  id: 'zero-trust-networking',
+  title: 'Zero-trust networking',
+  category: 'Architecture',
+  summary: 'Authenticate and authorize every request at the application layer regardless of network location, replacing the perimeter model with continuous, identity-and-device-aware verification.',
+  problemStatement: 'A VPN-based perimeter grants broad internal network trust to anyone who authenticates once, so a single compromised credential or device gives an attacker lateral access to everything inside — and the model collapses entirely once remote workers, contractors, and SaaS services no longer sit inside any perimeter at all.',
+  interviewQuestion: 'Your company is moving to a fully remote workforce and SaaS-first model. The current VPN-based network perimeter is failing — engineers bypass it, contractors cannot use it, and a single VPN credential compromise exposes your entire internal network. Design a zero-trust access architecture.',
+  coreConcepts: [
+    'Perimeter security model versus zero-trust model',
+    'BeyondCorp — Google\'s original zero-trust implementation',
+    'Identity-aware proxy (IAP)',
+    'Device trust and certificate-based device identity',
+    'User and device context in access decisions (attribute-based access at the network layer)',
+    'Mutual TLS (mTLS) for service-to-service authentication',
+    'Software-defined perimeter (SDP)',
+    'Micro-segmentation and east-west traffic control',
+    'Kubernetes network policies (L3/L4 enforcement)',
+    'Service mesh as a zero-trust implementation (Istio mTLS)',
+    'CISA Zero Trust Maturity Model',
+    'Continuous verification versus perimeter once-and-done',
+  ],
+  architectureDiagram:
+    'flowchart LR\n  U[User + device] --> C{Certificate + identity check}\n  C -->|valid| IAP[Identity-aware proxy]\n  C -->|invalid| DENY[Deny]\n  IAP --> POL{Policy engine: user, device, context}\n  POL -->|allow| SVC[Target service]\n  POL -->|deny| DENY\n  SVC <-->|mTLS| SVC2[Downstream service]\n  MESH[Service mesh control plane] -.issues certs.-> SVC\n  MESH -.issues certs.-> SVC2',
+  solutionApproach: [
+    'Replace network-location trust with per-request identity and device verification — every request, internal or external, is authenticated and authorized independently of where it originates',
+    'Deploy an identity-aware proxy in front of internal applications so user access is brokered through a policy engine evaluating identity, device posture, and context, not just network membership',
+    'Issue short-lived device certificates through an internal certificate authority as the basis of device trust, with an enrollment workflow and a revocation path for lost or compromised devices',
+    'Implement mTLS between services via a service mesh so service-to-service traffic is authenticated and encrypted by default, independent of network segmentation',
+    'Micro-segment east-west traffic with explicit network policies (Kubernetes NetworkPolicy or equivalent) so a compromised service cannot reach every other service by default — only the paths it is explicitly allowed',
+    'Define access policy as code (user role, device compliance state, resource sensitivity, time and location context) so authorization decisions are auditable and consistently enforced across every access path',
+    'Migrate incrementally starting with the highest-risk exposure — typically VPN-based access to production systems — before extending zero-trust to lower-risk internal tooling',
+    'Continuously re-evaluate trust rather than granting a session-long grant — revoke access immediately when device posture changes or a credential is flagged, not only at next login',
+  ],
+  designPatterns: [
+    'Identity-aware proxy — brokers every access decision through a policy engine, not the network layer',
+    'mTLS via service mesh — every service-to-service call is mutually authenticated and encrypted by default',
+    'Micro-segmentation — explicit allow-list network policies replace flat internal network trust',
+    'Software-defined perimeter — resources are invisible until a client proves identity and authorization',
+    'Continuous verification — access is re-evaluated on every request or short interval, not granted once per session',
+  ],
+  tradeoffs: [
+    'Continuous verification versus latency: evaluating identity, device posture, and policy on every request adds overhead that a single perimeter check does not — the policy engine must be fast and highly available or it becomes the new single point of failure',
+    'Device trust enrollment friction versus security: strong device-based trust requires an enrollment and certificate lifecycle that adds operational burden for users and IT, especially for contractors and BYOD scenarios',
+    'Migration disruption versus risk reduction: cutting over from VPN to zero-trust access is itself a risky, multi-quarter migration that can break workflows if done without a parallel-run period',
+    'Granular micro-segmentation versus operational complexity: fine-grained network policies reduce blast radius but multiply the number of explicit rules that must be maintained as services are added or refactored',
+  ],
+  failureScenarios: [
+    'A device certificate is never revoked after an employee\'s laptop is reported stolen, and the certificate remains valid for internal access for weeks because the revocation process is manual and unowned',
+    'The identity-aware proxy becomes a single point of failure — a policy engine outage blocks all internal access simultaneously, which is a worse availability profile than the VPN it replaced',
+    'Micro-segmentation network policies are copied from a template and never updated as new services are added, so a newly deployed service either cannot reach a legitimate dependency or is left with an overly permissive default-allow rule',
+    'mTLS certificate rotation in the service mesh fails silently for one service, and it continues serving traffic on an expired or soon-to-expire certificate until a client starts rejecting the connection during a peak traffic window',
+    'A contractor with a BYOD laptop cannot complete device enrollment, so the team grants a manual exception that becomes permanent and undocumented, quietly reintroducing an unmonitored access path',
+    'Policy rules reference stale group membership — an employee who left a sensitive project six months ago still has access because the ABAC policy was never re-evaluated against current role assignment',
+  ],
+  productionConsiderations: [
+    'Run the identity-aware proxy and policy engine with the same availability rigor as any other critical-path production service — an outage here blocks all access, not just one feature',
+    'Automate device certificate issuance, rotation, and revocation as a lifecycle, tied to your device management and HR offboarding systems rather than a manual ticket process',
+    'Instrument access decisions (allow/deny, and why) so that a denied legitimate request can be diagnosed quickly and an anomalous access pattern can be detected quickly',
+    'Test the network policy set with intentional negative cases in CI — verify a service cannot reach a dependency it was not explicitly granted, not only that it can reach the ones it needs',
+    'Run VPN and zero-trust access in parallel during migration, with clear per-team cutover milestones and a rollback path, rather than a single cutover date across the whole organization',
+  ],
+  staffDiscussion: [
+    'Zero-trust is an incremental architectural migration, not a product purchase — buying an identity-aware proxy without redesigning the underlying trust model just moves the perimeter, it does not eliminate it',
+    'The hardest part at enterprise scale is the device trust lifecycle, not the proxy or the policy engine — enrollment, rotation, and revocation for a heterogeneous fleet of company-owned, BYOD, and contractor devices requires sustained operational investment',
+    'At Staff level the sequencing decision matters more than the target architecture: starting with the highest-risk exposure (VPN access to production) and expanding rather than attempting a single big-bang cutover is what separates a successful migration from an outage-prone one',
+    'mTLS between services (via a service mesh) and identity-aware proxying for user access are largely independent workstreams that are often conflated into one project — sequencing and resourcing them separately reduces the blast radius of either effort failing',
+    'A zero-trust architecture that has never been tested with an intentional negative access case is unverified — the team should be able to demonstrate that a compromised credential or device cannot reach a resource it was not explicitly granted',
+  ],
+  relatedTopics: ['Security and multi-tenancy', 'Cryptography primitives', 'Microservices and service mesh', 'Platform engineering and developer experience', 'Distributed locks and leader election in practice'],
+  realWorldSystems: ['Google BeyondCorp', 'Cloudflare Zero Trust (formerly Cloudflare Access)', 'Zscaler Private Access', 'Istio service mesh mTLS', 'HashiCorp Boundary', 'Tailscale (WireGuard-based mesh)'],
+  followUpQuestions: [
+    'How would you sequence a migration from VPN-based access to zero-trust across a 500-person engineering organization without a single cutover date?',
+    'A contractor cannot complete device enrollment on their personal laptop. How do you grant access without reintroducing an unmonitored exception?',
+    'Your identity-aware proxy just had a 20-minute outage. Walk me through the blast radius and how you would design against a repeat.',
+  ],
+  cheatSheet: [
+    'Zero-trust is architecture, not a product — implement it incrementally starting with the highest-risk exposure',
+    'mTLS via service mesh for service-to-service; identity-aware proxy + device trust for user-to-service',
+    'Device trust lifecycle (enrollment, rotation, revocation) is the hardest and most operationally expensive part',
+    'Micro-segment east-west traffic with explicit allow-lists, not a flat internal-trust network',
+    'Continuous verification, not session-long grants — revoke on posture change, not only at next login',
+  ],
+  flashcards: [
+    {
+      question: 'What is the core architectural shift zero-trust makes compared to a perimeter (VPN) model?',
+      answer: 'A perimeter model grants broad internal trust once a user authenticates onto the network. Zero-trust authenticates and authorizes every individual request based on identity, device posture, and context, independent of network location — there is no location-based trust to exploit once a credential or device is compromised.',
+    },
+    {
+      question: 'Why is device trust harder to implement at scale than the identity-aware proxy itself?',
+      answer: 'The proxy and policy engine are centralized services you control end-to-end. Device trust requires a certificate lifecycle (issuance, enrollment, rotation, revocation) across a heterogeneous fleet of company-owned, BYOD, and contractor devices, tied to real-world events like device loss or employee offboarding — the operational surface is much larger and harder to automate fully.',
+    },
+  ],
+  oneMinuteAnswer:
+    'I replace network-location trust with per-request identity and device verification: every access decision, whether user-to-service or service-to-service, is authenticated and authorized independently of where the request originates. For user access, I deploy an identity-aware proxy in front of internal applications, brokering every request through a policy engine that evaluates identity, device certificate, and context rather than VPN network membership. Device trust is issued via short-lived certificates from an internal CA, with an enrollment flow and a revocation path tied to device management and offboarding systems, because that lifecycle is the hardest part to get right at scale. For service-to-service traffic, I implement mTLS through a service mesh so every call is mutually authenticated and encrypted by default, and I micro-segment east-west traffic with explicit network policies so a compromised service cannot reach everything else by default. I migrate incrementally, starting with the highest-risk exposure — typically VPN access to production — running the old and new paths in parallel with team-level cutover milestones rather than attempting a single big-bang migration, and I run the proxy and policy engine with production-grade availability because an outage there blocks all access.',
+};
+
+export const costOptimizationFinOpsChapter: EncyclopediaChapter = {
+  id: 'cost-optimization-finops',
+  title: 'Cost optimization and FinOps',
+  category: 'Leadership',
+  summary: 'Treat cloud cost as a first-class engineering signal — connect unit economics to architecture and investment decisions, and use rightsizing, commitment strategy, and egress design as the highest-leverage levers.',
+  problemStatement: 'Cloud spend grows disproportionately to traffic because workloads are rightsized once and never revisited, egress and data-transfer architecture is decided implicitly rather than deliberately, and no one owns cost as an engineering metric until a leadership escalation forces a reactive, disruptive cut.',
+  interviewQuestion: 'Your team\'s monthly AWS bill has grown from $50k to $800k over 18 months with only 3x traffic growth. The CTO asks you to reduce cloud spend by 40% without impacting reliability. How do you approach the investigation and what levers do you pull?',
+  coreConcepts: [
+    'Unit economics — cost per transaction, cost per user, cost per request',
+    'Cost attribution and tagging strategy',
+    'Rightsizing — CPU, memory, and storage versus actual utilization',
+    'Reserved instances versus savings plans versus spot instances',
+    'Data transfer (egress) cost model',
+    'Storage tier optimization — hot, warm, cold, and archive lifecycle',
+    'Idle resource detection and automated cleanup',
+    'Cost anomaly detection',
+    'Kubernetes resource requests and limits as a cost lever',
+    'Multi-cloud cost comparison',
+    'FinOps maturity model — inform, optimize, operate',
+    'Cost as an engineering SLO',
+  ],
+  architectureDiagram:
+    'flowchart LR\n  U[Usage + billing data] --> TAG{Tagged by team/service?}\n  TAG -->|yes| ATTR[Cost attribution dashboard]\n  TAG -->|no| GAP[Unattributed spend — investigate]\n  ATTR --> ANOM{Anomaly vs baseline?}\n  ANOM -->|yes| INV[Investigate: rightsizing, egress, idle, commitment gap]\n  ANOM -->|no| UNIT[Unit economics: cost per transaction]\n  INV --> LEVER[Pull lever: rightsize, commit, tier, redesign egress]\n  LEVER --> UNIT\n  UNIT --> REPORT[Report cost trend vs revenue/traffic]',
+  solutionApproach: [
+    'Establish cost attribution first — tag every resource by team, service, and environment so spend can be traced to an owner before attempting any optimization',
+    'Compute unit economics (cost per transaction, per user, or per request) and track the trend relative to traffic and revenue growth rather than looking at absolute spend alone',
+    'Audit rightsizing across compute, memory, and storage against actual utilization telemetry — most production workloads are provisioned 2 to 4 times larger than their observed peak usage',
+    'Map data transfer paths explicitly and identify unnecessary cross-region or cross-AZ egress, which is consistently the least visible and most expensive line item once traffic scales',
+    'Match commitment strategy (reserved instances, savings plans, spot) to workload predictability — stable baseline load gets committed pricing, elastic and interruption-tolerant load gets spot',
+    'Apply storage lifecycle policies that automatically transition data through hot, warm, cold, and archive tiers based on access patterns rather than leaving everything on the most expensive tier indefinitely',
+    'Detect and eliminate idle resources (unattached volumes, unused load balancers, forgotten dev environments) with automated scanning rather than periodic manual audits',
+    'Report cost trend alongside reliability and delivery metrics on a standing cadence, so cost becomes a normal engineering signal reviewed continuously rather than a crisis response',
+  ],
+  designPatterns: [
+    'Cost attribution tagging — every resource traceable to an owning team and service',
+    'Rightsizing loop — continuous comparison of provisioned capacity against observed utilization',
+    'Tiered storage lifecycle — automatic data movement based on access recency',
+    'Commitment laddering — a mix of reserved, savings-plan, and spot capacity matched to workload predictability',
+    'FinOps maturity progression — inform (visibility) before optimize (levers) before operate (continuous process)',
+  ],
+  tradeoffs: [
+    'Aggressive rightsizing versus headroom for traffic spikes: reducing provisioned capacity to match average utilization saves money but reduces the buffer available for unexpected load, which can convert a cost win into a reliability incident',
+    'Spot instances versus availability guarantees: spot pricing is dramatically cheaper but comes with interruption risk, so workloads must tolerate preemption or the savings are not usable for critical paths',
+    'Reserved commitment versus flexibility: committing to reserved instances or savings plans locks in a discount but reduces the ability to change instance families or regions without stranding the commitment',
+    'Centralized cost governance versus team autonomy: mandating specific instance types or commitment purchases centrally can conflict with a team\'s specific workload needs and slow down legitimate architectural changes',
+  ],
+  failureScenarios: [
+    'A workload is rightsized down to match average utilization, and the next unexpected traffic spike causes cascading throttling because the removed headroom was the only thing absorbing the burst',
+    'Spend triples after a new feature silently introduces cross-region replication traffic that was never modeled at design time, and the egress cost is only discovered when the monthly bill anomaly triggers a finance escalation',
+    'A team purchases a large reserved instance commitment for a workload that is later migrated to a different instance family, stranding the commitment and paying for capacity that is no longer used',
+    'Untagged resources accumulate for years across dozens of teams, so a cost reduction mandate cannot even identify which team owns the largest line items without a multi-week manual audit',
+    'An automated idle-resource cleanup script deletes a load balancer that was intentionally provisioned for an infrequent but business-critical batch job, causing an outage during the next scheduled run',
+    'Storage lifecycle policies move data to archive tier based on age alone, and a compliance or debugging request later requires that data with minutes of notice, incurring expensive retrieval fees or unacceptable retrieval latency',
+  ],
+  productionConsiderations: [
+    'Require resource tagging (team, service, environment) as a deployment gate, not an optional convention, so cost attribution never depends on retroactive archaeology',
+    'Set up cost anomaly detection alerts tied to the same on-call rotation as reliability alerts, so a spend spike is investigated with the same urgency as a latency regression',
+    'Review rightsizing recommendations on a recurring cadence against real utilization telemetry, not as a one-time exercise at initial provisioning',
+    'Model and monitor cross-region and cross-AZ data transfer paths explicitly during design review for any new service, since egress is the cost category most often introduced silently',
+    'Track cost per transaction (or equivalent unit metric) on the same dashboard as reliability SLOs, so cost trend is visible to the same audience making architectural trade-off decisions',
+  ],
+  staffDiscussion: [
+    'The Staff-level framing is never "reduce the AWS bill" in isolation — it is "what is our cost per transaction, is the trend improving relative to revenue and traffic, and what investment moves it most" — connecting cost to business metrics makes it a product conversation, not just an ops chore',
+    'Egress cost decisions are architectural decisions made implicitly at design time — by the time a cost review surfaces a cross-region replication cost problem, fixing it usually means a non-trivial redesign, not a configuration change',
+    'Rightsizing is consistently the highest-ROI lever precisely because it requires no architectural change, only revisiting a provisioning decision that was made conservatively once and never re-examined',
+    'A cost optimization mandate handed down without attribution data first is set up to fail or to cut the wrong things — cost governance without visibility produces guesses, not decisions',
+    'Cost should be treated with the same operational rigor as an SLO: instrumented continuously, alerted on anomaly, and reviewed on a standing cadence, rather than surfaced only when a leadership escalation forces a reactive investigation',
+  ],
+  relatedTopics: ['Capacity estimation', 'Platform engineering and developer experience', 'Technical strategy, RFCs, and ADRs', 'Kubernetes patterns for engineers', 'Multi-region active-active architecture'],
+  realWorldSystems: ['AWS Cost Explorer', 'GCP FinOps Hub', 'Infracost (pre-deploy cost estimation)', 'OpenCost (Kubernetes cost attribution)', 'FOCUS (FinOps Open Cost and Usage Specification)', 'CloudHealth by VMware'],
+  followUpQuestions: [
+    'Your investigation finds that egress cost between two regions accounts for 30% of the unexplained growth. Walk me through how you would redesign the data flow to eliminate it without a service outage.',
+    'A team resists a rightsizing recommendation because they are worried about traffic spikes. How do you resolve this without either ignoring the cost signal or accepting a reliability risk?',
+    'How do you build a standing cost-review process that does not become another meeting no one values?',
+  ],
+  cheatSheet: [
+    'Attribution before optimization — tag every resource by team/service before anything else',
+    'Track cost per transaction/user, not absolute spend, relative to traffic and revenue trend',
+    'Rightsizing is the highest-ROI lever — most workloads are 2-4x over-provisioned against real utilization',
+    'Egress/data-transfer cost is an architectural decision made at design time, not a config fix later',
+    'Match commitment strategy to workload predictability: reserved/savings-plan for stable baseline, spot for elastic',
+  ],
+  flashcards: [
+    {
+      question: 'Why is rightsizing typically the highest-ROI cost optimization lever?',
+      answer: 'It requires no architectural redesign, only revisiting a provisioning decision (CPU, memory, storage) that was set conservatively once and rarely revisited. Most production workloads are provisioned 2-4x larger than their observed peak utilization, so comparing actual telemetry against provisioned capacity typically surfaces immediate, low-risk savings.',
+    },
+    {
+      question: 'Why is egress (data transfer) cost described as "an architectural decision made at design time"?',
+      answer: 'Cross-region or cross-AZ data transfer patterns are baked into a system\'s architecture — which services call which, and across which network boundaries. By the time a cost review surfaces a large egress line item, eliminating it usually requires redesigning the data flow (e.g., co-locating services, changing replication topology) rather than a simple configuration change, so the cost is effectively locked in until a redesign is prioritized.',
+    },
+  ],
+  oneMinuteAnswer:
+    'I start with attribution: every resource must be tagged by team, service, and environment so spend can be traced to an owner before I attempt any optimization — without that, a 40% reduction mandate is guesswork. Next I compute unit economics, cost per transaction or per user, and check whether that trend is improving or worsening relative to traffic and revenue growth, since 3x traffic growth against a 16x cost increase points to a structural problem, not organic scaling. I audit rightsizing first because it is consistently the highest-ROI lever with no architectural risk — comparing provisioned CPU, memory, and storage against actual utilization telemetry usually reveals workloads provisioned 2 to 4 times larger than needed. I map data transfer paths explicitly, since cross-region or cross-AZ egress is the most common silently-introduced cost and usually requires a genuine redesign, not a config change, once discovered. I match commitment strategy to workload predictability — reserved instances or savings plans for stable baseline load, spot for elastic or interruption-tolerant workloads — and apply storage lifecycle policies so data ages into cheaper tiers automatically. Finally I put cost on the same standing dashboard and alerting rotation as reliability SLOs, because treating it as a continuous engineering signal rather than a reactive crisis response is what prevents the next 16x cost overrun from recurring.',
+};
+
+export const phase13BChapters: EncyclopediaChapter[] = [
+  zeroTrustNetworkingChapter,
+  costOptimizationFinOpsChapter,
+];
