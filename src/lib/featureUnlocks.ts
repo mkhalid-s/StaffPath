@@ -7,6 +7,7 @@ export type FeatureId =
   | 'curriculum'
   | 'practice'
   | 'encyclopedia'
+  | 'flashcards'
   | 'resources'
   | 'lifecycle'
   | 'interviews'
@@ -80,6 +81,15 @@ export const FEATURES: FeatureDefinition[] = [
     path: '/encyclopedia',
     label: 'Encyclopedia',
     icon: '⌕',
+    requirement: 'Complete onboarding',
+    isUnlocked: (state) => state.profile.onboardingComplete,
+    progress: (state) => ({ current: state.profile.onboardingComplete ? 1 : 0, target: 1 }),
+  },
+  {
+    id: 'flashcards',
+    path: '/flashcards',
+    label: 'Flashcards',
+    icon: '🃏',
     requirement: 'Complete onboarding',
     isUnlocked: (state) => state.profile.onboardingComplete,
     progress: (state) => ({ current: state.profile.onboardingComplete ? 1 : 0, target: 1 }),

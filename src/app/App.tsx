@@ -26,6 +26,7 @@ const SettingsPage = lazy(() => import('../features/settings/SettingsPage').then
 const CurriculumPage = lazy(() => import('../features/curriculum/CurriculumPage').then((module) => ({ default: module.CurriculumPage })));
 const CoachPage = lazy(() => import('../features/coach/CoachPage').then((module) => ({ default: module.CoachPage })));
 const ResourcesPage = lazy(() => import('../features/resources/ResourcesPage').then((module) => ({ default: module.ResourcesPage })));
+const FlashcardsPage = lazy(() => import('../features/flashcards/FlashcardsPage').then((module) => ({ default: module.FlashcardsPage })));
 
 const pages: Record<string, React.ReactNode> = {
   '/': null,
@@ -42,6 +43,7 @@ const pages: Record<string, React.ReactNode> = {
   '/curriculum': <CurriculumPage />,
   '/coach': <CoachPage />,
   '/resources': <ResourcesPage />,
+  '/flashcards': <FlashcardsPage />,
 };
 
 function AppContent() {

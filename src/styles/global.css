@@ -332,6 +332,30 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .coach-focus-item p { margin: 4px 0 0; color: var(--muted); font-size: 9px; line-height: 1.45; }
 .coach-focus-rank { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--green); color: white; font-size: 9px; font-weight: 750; }
 
+/* ── Flashcard review ── */
+.flashcard-controls { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+.flashcard-progress { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 10px; font-weight: 700; }
+.flashcard-viewport { display: grid; place-items: center; min-height: 340px; margin: 10px 0 20px; perspective: 1400px; }
+.flashcard { width: min(640px, 100%); min-height: 300px; cursor: pointer; }
+.flashcard-inner { position: relative; width: 100%; min-height: 300px; transition: transform .5s; transform-style: preserve-3d; }
+.flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+.flashcard-face { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: clamp(28px, 4vw, 40px); border: 1px solid var(--line); border-radius: 15px; background: var(--card); box-shadow: var(--shadow); backface-visibility: hidden; }
+.flashcard-face .eyebrow { color: var(--green); }
+.flashcard-face p { margin: 14px 0 0; font-size: clamp(16px, 2.2vw, 20px); line-height: 1.5; letter-spacing: -.01em; }
+.flashcard-question em { display: block; margin-top: 20px; color: var(--muted); font-size: 10px; font-style: normal; font-weight: 650; }
+.flashcard-answer { transform: rotateY(180deg); background: var(--green-dark); color: white; border-color: var(--green-dark); }
+.flashcard-answer .eyebrow { color: var(--lime); }
+.flashcard-known-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 14px; }
+.flashcard-nav { display: flex; justify-content: center; gap: 8px; }
+.flashcard-summary { display: grid; place-items: center; gap: 16px; min-height: 340px; padding: 40px; border: 1px dashed var(--line); border-radius: 15px; text-align: center; }
+.flashcard-summary h2 { margin: 0; font-size: 22px; }
+.flashcard-summary-stats { display: flex; gap: 24px; }
+.flashcard-summary-stats > div { text-align: center; }
+.flashcard-summary-stats strong { display: block; font-size: 26px; color: var(--green); }
+.flashcard-summary-stats span { color: var(--muted); font-size: 9px; }
+@media (prefers-reduced-motion: reduce) { .flashcard-inner { transition: none; } .flashcard.flipped .flashcard-inner { transform: none; } .flashcard.flipped .flashcard-question { display: none; } .flashcard:not(.flipped) .flashcard-answer { display: none; } .flashcard-answer { position: static; transform: none; } }
+@media (max-width: 680px) { .flashcard-controls { display: block; } .flashcard-progress { margin-top: 10px; } }
+
 /* ── Dark mode ── */
 @media (prefers-color-scheme: dark) {
   :root {
