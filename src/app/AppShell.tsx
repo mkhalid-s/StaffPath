@@ -1,4 +1,28 @@
 import { type ReactNode, useState } from 'react';
+import {
+  LayoutDashboard, Map, Target, BookOpen, Zap,
+  Search, CreditCard, Link2, TrendingUp, Mic,
+  Brain, MessageSquare, Notebook, PenLine, Database, Settings,
+  type LucideIcon,
+} from 'lucide-react';
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  dashboard:     LayoutDashboard,
+  roadmap:       Map,
+  coach:         Target,
+  curriculum:    BookOpen,
+  practice:      Zap,
+  encyclopedia:  Search,
+  flashcards:    CreditCard,
+  resources:     Link2,
+  lifecycle:     TrendingUp,
+  interviews:    Mic,
+  skills:        Brain,
+  communication: MessageSquare,
+  handbook:      Notebook,
+  journal:       PenLine,
+  settings:      Database,
+};
 
 const NAV_GROUPS = [
   { label: 'PREPARE', paths: ['/', '/roadmap', '/coach', '/curriculum'] },
@@ -33,6 +57,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                 const unlocked = isPathUnlocked(state, to);
                 const feature = FEATURE_BY_PATH[to];
                 const progress = feature ? getUnlockProgress(state, feature.id) : null;
+                const featureId = feature?.id ?? '';
+                const NavIcon = ICON_MAP[featureId];
+                const iconEl = NavIcon
+                  ? <NavIcon size={15} strokeWidth={1.75} aria-hidden="true" />
+                  : <span aria-hidden="true">{icon}</span>;
                 if (!unlocked) {
                   return (
                     <span
@@ -41,7 +70,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                       title={`Locked: ${feature?.requirement ?? 'Complete more sessions to unlock'}`}
                       aria-label={`${label} locked. ${feature?.requirement ?? ''}`}
                     >
-                      <span aria-hidden="true">{icon}</span>
+                      {iconEl}
                       <span className="nav-label">{label}</span>
                       <span className="nav-lock" aria-hidden="true">🔒</span>
                       {progress && progress.percent < 100 && (
@@ -52,7 +81,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 }
                 return (
                   <Link key={to} to={to} className={path === to ? 'active' : ''} onClick={() => setMenuOpen(false)}>
-                    <span aria-hidden="true">{icon}</span>{label}
+                    {iconEl}{label}
                   </Link>
                 );
               })}

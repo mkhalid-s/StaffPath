@@ -32,7 +32,7 @@ export function ChapterDetail({ chapter, onClose, completed, onToggleComplete, p
   return <div className="chapter-overlay" role="dialog" aria-modal="true" aria-labelledby="chapter-title">
     <button className="chapter-backdrop" onClick={onClose} aria-label="Close chapter" />
     <article className="chapter-detail">
-      <header><div><span className="category-chip">{chapter.category}</span><h2 id="chapter-title">{chapter.title}</h2><p>{chapter.summary}</p></div><button ref={closeButton} onClick={onClose} aria-label="Close chapter">×</button></header>
+      <header data-category={chapter.category}><div><span className="category-chip" data-cat={chapter.category}>{chapter.category}</span><h2 id="chapter-title">{chapter.title}</h2><p>{chapter.summary}</p></div><button ref={closeButton} onClick={onClose} aria-label="Close chapter">×</button></header>
       <div className="chapter-body">
         <section className="chapter-callout"><span>PROBLEM STATEMENT</span><p>{chapter.problemStatement}</p></section>
         {packAngle && <section className="chapter-callout pack-angle"><span>COMPANY PACK ANGLE</span><p>{packAngle}</p></section>}

@@ -53,7 +53,7 @@ export const FEATURES: FeatureDefinition[] = [
     id: 'coach',
     path: '/coach',
     label: 'Coach',
-    icon: '✦',
+    icon: '🎯',
     requirement: 'Complete onboarding',
     isUnlocked: (state) => state.profile.onboardingComplete,
     progress: (state) => ({ current: state.profile.onboardingComplete ? 1 : 0, target: 1 }),
