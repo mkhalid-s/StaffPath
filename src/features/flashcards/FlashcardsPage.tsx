@@ -79,6 +79,17 @@ export function FlashcardsPage() {
     buildDeck(filteredCards, false);
   }, [filteredCards, buildDeck]);
 
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === 'ArrowRight' || e.key === 'l') goNext();
+      else if (e.key === 'ArrowLeft' || e.key === 'h') goPrev();
+      else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setFlipped((f) => !f); }
+    }
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [index, deck.length]);
+
   const current = deck[index];
 
   function goNext() {

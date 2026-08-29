@@ -17,6 +17,7 @@ export const SHORTCUTS: ShortcutDefinition[] = [
   { keys: '⌘ I', label: 'Interviews', description: 'Open Interview Studio' },
   { keys: '⌘ M', label: 'Communication', description: 'Open Communication Gym' },
   { keys: '⌘ H', label: 'Handbook', description: 'Open Evidence Handbook' },
+  { keys: '⌘ F', label: 'Flashcards', description: 'Open flashcard review' },
   { keys: '⌘ ,', label: 'Settings', description: 'Open Data & Backup settings' },
   { keys: '⌘ ?', label: 'Shortcuts', description: 'Show this help overlay' },
 ];
@@ -108,6 +109,13 @@ export function initKeyboardShortcuts(handlers: ShortcutHandlers): () => void {
       event.preventDefault();
       navigate('/handbook');
       handlers.onToast?.('Handbook');
+      return;
+    }
+
+    if (isMod(event) && event.key.toLowerCase() === 'f') {
+      event.preventDefault();
+      navigate('/flashcards');
+      handlers.onToast?.('Flashcards');
       return;
     }
 

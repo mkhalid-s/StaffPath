@@ -25,7 +25,7 @@ export function EncyclopediaPage() {
   }, []);
 
   return <div className="page encyclopedia-page">
-    <div className="page-heading"><div><p className="eyebrow">ENGINEERING ENCYCLOPEDIA</p><h1>Search concepts. Connect judgment.</h1><p>Every chapter follows one interview-to-production structure.{pack && ` ${pack.label} overlay active.`}</p></div><div className="chapter-count"><strong>{encyclopediaChapters.length}</strong><span>curated chapters</span></div></div>
+    <div className="page-heading"><div><p className="eyebrow">ENGINEERING ENCYCLOPEDIA</p><h1>Search concepts. Connect judgment.</h1><p>Every chapter follows one interview-to-production structure.{pack && ` ${pack.label} overlay active.`}</p></div><div className="chapter-count"><strong>{state.completedChapters.length}/{encyclopediaChapters.length}</strong><span>chapters complete</span></div></div>
     <div className="search-panel">
       <label><span>⌕</span><input ref={searchInput} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search idempotency, hot keys, routing, failure scenarios…" aria-label="Search encyclopedia" /><kbd>⌘ K</kbd></label>
       <div className="category-filters">{categories.map((item) => <button key={item} className={category === item ? 'active' : ''} onClick={() => setCategory(item)}>{item}</button>)}</div>
