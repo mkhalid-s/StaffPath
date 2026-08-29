@@ -863,6 +863,7 @@ export const productionRagChapter: EncyclopediaChapter = {
     'Answerability gate: decline rather than hallucinate when confidence is below threshold',
     'Post-generation grounding: verify every claim maps to a retrieved chunk before serving',
     'Deletion SLA + eval pipeline are production requirements, not nice-to-haves',
+    'Retrieval eval metrics: Recall@K (fraction of relevant docs in top-K), MRR (mean reciprocal rank of first relevant), nDCG (normalized discounted cumulative gain — penalises relevant docs ranked lower)',
   ],
   flashcards: [
     {

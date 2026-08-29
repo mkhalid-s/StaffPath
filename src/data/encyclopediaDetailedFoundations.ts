@@ -155,10 +155,11 @@ export const capPacelcConsistencyChapter: EncyclopediaChapter = {
     'What happens to checkout if the inventory region is partitioned?',
   ],
   cheatSheet: [
-    'CAP applies during partitions; PACELC applies on the normal path',
-    'Pick consistency per dataset and user journey',
-    'Session guarantees often matter more than global linearizability',
-    'Document conflict and staleness behavior in APIs',
+    'CAP applies during partitions; PACELC applies on the normal path — most systems spend 99.9% of time on the normal path',
+    'Pick consistency per dataset and user journey — not one model for the whole system',
+    'Session guarantees (read-your-writes, monotonic reads) often matter more than global linearizability',
+    'Document conflict and staleness behavior in APIs — clients need to know what they can rely on',
+    'DB positioning: DynamoDB (AP, EL — high A, lower C); Spanner (CP, PC — strong C, higher L); Cassandra (AP, EL — tunable); CockroachDB (CP, PC — serializable, distributed); MongoDB (CP w/ tunable reads); Postgres (CP — local)',
   ],
   flashcards: [
     {

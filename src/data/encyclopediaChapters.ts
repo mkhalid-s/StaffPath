@@ -4,6 +4,9 @@ import { expandedFoundationChapters } from './encyclopediaExpandedFoundations';
 import { foundationChapters } from './encyclopediaFoundations';
 import { phase9AChapters } from './encyclopediaPhase9A';
 import { phase9BChapters } from './encyclopediaPhase9B';
+import { phase10AChapters } from './encyclopediaPhase10A';
+import { phase10BChapters } from './encyclopediaPhase10B';
+import { phase10CChapters } from './encyclopediaPhase10C';
 
 export const encyclopediaChapters: EncyclopediaChapter[] = [
   {
@@ -22,7 +25,13 @@ export const encyclopediaChapters: EncyclopediaChapter[] = [
     relatedTopics: ['Load balancing', 'Autoscaling', 'Backpressure', 'Rate limiting', 'Cost optimization'],
     realWorldSystems: ['Ticket sales', 'Live-stream launches', 'Retail flash sales'],
     followUpQuestions: ['What changes at ten times the traffic?', 'Which estimate has the greatest uncertainty?', 'How would you validate before launch?'],
-    cheatSheet: ['Average QPS = daily requests / 86,400', 'Peak QPS = average × explicit peak factor', 'Storage = writes × record size × retention × replication'],
+    cheatSheet: [
+      'Average QPS = daily requests / 86,400  |  Peak QPS = average × peak factor (typically 2–5×)',
+      'Storage = writes/day × record size × retention days × replication factor',
+      'Little\'s Law: L = λW — avg items in system = arrival rate × avg time in system (use to size queues and connection pools)',
+      'Reference latencies: L1 cache ~1ns, RAM ~100ns, SSD ~100µs, network RTT ~500µs–50ms, disk seek ~10ms',
+      'Bandwidth: 1 Gbps NIC = 125 MB/s; 10 Gbps = 1.25 GB/s — factor this when estimating replication and fan-out cost',
+    ],
     flashcards: [{ question: 'Why estimate before choosing components?', answer: 'It reveals which constraints actually drive architecture and prevents premature complexity.' }, { question: 'What is headroom?', answer: 'Capacity intentionally left unused to absorb growth, failover, and bursts.' }],
     oneMinuteAnswer: 'I begin with users and workload: daily and peak requests, read/write ratio, payloads, retention, and growth. I calculate rough QPS, bandwidth, and storage, state uncertainty, and identify the first likely bottleneck. I then choose an architecture that meets the envelope with explicit headroom and define load tests, production thresholds, degradation behavior, and a date for revisiting the assumptions.'
   },
@@ -201,4 +210,7 @@ export const encyclopediaChapters: EncyclopediaChapter[] = [
   ...foundationChapters,
   ...phase9AChapters,
   ...phase9BChapters,
+  ...phase10AChapters,
+  ...phase10BChapters,
+  ...phase10CChapters,
 ];
