@@ -10,6 +10,7 @@ import { phase10CChapters } from './encyclopediaPhase10C';
 import { phase11AChapters } from './encyclopediaPhase11A';
 import { phase11BChapters } from './encyclopediaPhase11B';
 import { phase11CChapters } from './encyclopediaPhase11C';
+import { phase12AChapters } from './encyclopediaPhase12A';
 
 export const encyclopediaChapters: EncyclopediaChapter[] = [
   {
@@ -219,4 +220,5 @@ export const encyclopediaChapters: EncyclopediaChapter[] = [
   ...phase11AChapters,
   ...phase11BChapters,
   ...phase11CChapters,
+  ...phase12AChapters,
 ];
