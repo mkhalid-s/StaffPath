@@ -9,6 +9,18 @@ const isoAfter = (days: number) => { const date = new Date(); date.setDate(date.
 
 type InterviewType = MockInterviewRecord['type'] | 'pack-behavioral';
 
+interface InterviewPhase { label: string; seconds: number; purpose: string; }
+
+const SYSTEM_DESIGN_PHASES: InterviewPhase[] = [
+  { label: 'Clarify', seconds: 5 * 60, purpose: 'Users, use cases, scope, exclusions' },
+  { label: 'Estimate', seconds: 5 * 60, purpose: 'Scale, traffic, storage, bandwidth' },
+  { label: 'Design', seconds: 20 * 60, purpose: 'High-level architecture, APIs, data model' },
+  { label: 'Deep dive', seconds: 10 * 60, purpose: '2-3 critical paths, failure handling' },
+  { label: 'Trade-offs', seconds: 5 * 60, purpose: 'Alternatives, evolution, risks, summary' },
+];
+const TOTAL_PHASED_SECONDS = SYSTEM_DESIGN_PHASES.reduce((sum, phase) => sum + phase.seconds, 0);
+const formatClock = (totalSeconds: number) => `${String(Math.floor(Math.max(0, totalSeconds) / 60)).padStart(2, '0')}:${String(Math.max(0, totalSeconds) % 60).padStart(2, '0')}`;
+
 export function InterviewPage() {
   const state = useStaffPathState();
   const pack = getActivePack(state.profile.selectedCompanyPack);
@@ -19,6 +31,9 @@ export function InterviewPage() {
   const [promptIndex, setPromptIndex] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(45 * 60);
   const [running, setRunning] = useState(false);
+  const [phaseIndex, setPhaseIndex] = useState(0);
+  const [timeInPhase, setTimeInPhase] = useState(SYSTEM_DESIGN_PHASES[0].seconds);
+  const [phaseFlash, setPhaseFlash] = useState(false);
   const average = Math.round((Object.values(scores).reduce((sum, score) => sum + score, 0) / criteria.length) * 10) / 10;
 
   const packBehavioralPool = pack?.behavioralQuestions ?? [];
@@ -26,12 +41,50 @@ export function InterviewPage() {
     ? packBehavioralPool
     : interviewPrompts[type as MockInterviewRecord['type']];
   const prompt = activePool.length > 0 ? activePool[promptIndex % activePool.length] : 'No prompts available.';
+  const isPhased = type === 'system-design';
 
-  useEffect(() => { if (!running || secondsLeft <= 0) return; const timer = window.setInterval(() => setSecondsLeft((value) => value - 1), 1000); return () => window.clearInterval(timer); }, [running, secondsLeft]);
+  const resetTimer = () => {
+    setRunning(false);
+    setSecondsLeft(45 * 60);
+    setPhaseIndex(0);
+    setTimeInPhase(SYSTEM_DESIGN_PHASES[0].seconds);
+  };
+
+  const skipPhase = () => {
+    setPhaseIndex((value) => {
+      const next = Math.min(value + 1, SYSTEM_DESIGN_PHASES.length - 1);
+      setTimeInPhase(SYSTEM_DESIGN_PHASES[next].seconds);
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    if (!running) return;
+    if (isPhased) {
+      if (timeInPhase <= 0) {
+        if (phaseIndex >= SYSTEM_DESIGN_PHASES.length - 1) { setRunning(false); return; }
+        setPhaseFlash(true);
+        window.setTimeout(() => setPhaseFlash(false), 900);
+        setPhaseIndex((value) => value + 1);
+        setTimeInPhase(SYSTEM_DESIGN_PHASES[phaseIndex + 1].seconds);
+        return;
+      }
+      const timer = window.setInterval(() => setTimeInPhase((value) => value - 1), 1000);
+      return () => window.clearInterval(timer);
+    }
+    if (secondsLeft <= 0) return;
+    const timer = window.setInterval(() => setSecondsLeft((value) => value - 1), 1000);
+    return () => window.clearInterval(timer);
+  }, [running, secondsLeft, isPhased, timeInPhase, phaseIndex]);
+
+  const phaseElapsedSeconds = SYSTEM_DESIGN_PHASES.slice(0, phaseIndex).reduce((sum, phase) => sum + phase.seconds, 0) + (SYSTEM_DESIGN_PHASES[phaseIndex].seconds - timeInPhase);
+  const phaseTotalRemaining = TOTAL_PHASED_SECONDS - phaseElapsedSeconds;
 
   const saveMock = (event: FormEvent) => {
     event.preventDefault();
-    const durationMinutes = Math.max(0, Math.round((45 * 60 - secondsLeft) / 60));
+    const durationMinutes = isPhased
+      ? Math.max(0, Math.round(phaseElapsedSeconds / 60))
+      : Math.max(0, Math.round((45 * 60 - secondsLeft) / 60));
     const savedType: MockInterviewRecord['type'] = type === 'pack-behavioral' ? 'behavioral' : type;
     appStore.update((current) => ({
       ...current,
@@ -98,17 +151,43 @@ export function InterviewPage() {
 
       {tab === 'mock' ? (
         <>
-          <section className="mock-runner">
+          <section className={`mock-runner ${isPhased && phaseFlash ? 'phase-flash' : ''}`}>
             <div>
               <span>{type === 'pack-behavioral' ? `${pack?.company ?? 'Pack'} behavioral`.toUpperCase() : type.replace('-', ' ').toUpperCase()}</span>
               <h2>{prompt}</h2>
               <button onClick={() => setPromptIndex((value) => value + 1)}>New prompt ↻</button>
             </div>
-            <div>
-              <strong>{String(Math.floor(secondsLeft / 60)).padStart(2, '0')}:{String(secondsLeft % 60).padStart(2, '0')}</strong>
-              <button className="button primary" onClick={() => setRunning((value) => !value)}>{running ? 'Pause mock' : 'Start mock'}</button>
-              <button className="button" onClick={() => { setRunning(false); setSecondsLeft(45 * 60); }}>Reset</button>
-            </div>
+
+            {isPhased ? (
+              <div className="phase-timer">
+                <div className="phase-timer-head">
+                  <p className="eyebrow phase-timer-label">{SYSTEM_DESIGN_PHASES[phaseIndex].label}</p>
+                  <span className="phase-timer-count">{phaseIndex + 1} of {SYSTEM_DESIGN_PHASES.length}</span>
+                </div>
+                <p className="phase-timer-purpose">{SYSTEM_DESIGN_PHASES[phaseIndex].purpose}</p>
+                <div className="phase-progress-bar">
+                  <div className="phase-progress-fill" style={{ width: `${((SYSTEM_DESIGN_PHASES[phaseIndex].seconds - timeInPhase) / SYSTEM_DESIGN_PHASES[phaseIndex].seconds) * 100}%` }} />
+                </div>
+                <div className="phase-dots">
+                  {SYSTEM_DESIGN_PHASES.map((phase, index) => (
+                    <span key={phase.label} className={`phase-dot ${index < phaseIndex ? 'done' : ''} ${index === phaseIndex ? 'active' : ''}`} title={phase.label} />
+                  ))}
+                </div>
+                <div className="phase-timer-controls">
+                  <strong>{formatClock(timeInPhase)}</strong>
+                  <small>{formatClock(phaseTotalRemaining)} total remaining</small>
+                  <button className="button primary" onClick={() => setRunning((value) => !value)}>{running ? 'Pause mock' : 'Start mock'}</button>
+                  <button className="button" onClick={skipPhase} disabled={phaseIndex >= SYSTEM_DESIGN_PHASES.length - 1}>Skip phase →</button>
+                  <button className="button" onClick={resetTimer}>Reset</button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <strong>{formatClock(secondsLeft)}</strong>
+                <button className="button primary" onClick={() => setRunning((value) => !value)}>{running ? 'Pause mock' : 'Start mock'}</button>
+                <button className="button" onClick={() => { setRunning(false); setSecondsLeft(45 * 60); }}>Reset</button>
+              </div>
+            )}
           </section>
 
           <div className="interview-layout">
@@ -119,7 +198,7 @@ export function InterviewPage() {
               </div>
               <label>
                 Interview type
-                <select value={type} onChange={(event) => { setType(event.target.value as InterviewType); setPromptIndex(0); }}>
+                <select value={type} onChange={(event) => { setType(event.target.value as InterviewType); setPromptIndex(0); resetTimer(); }}>
                   <option value="system-design">System design</option>
                   <option value="ai-design">AI system design</option>
                   <option value="behavioral">Behavioral leadership</option>
