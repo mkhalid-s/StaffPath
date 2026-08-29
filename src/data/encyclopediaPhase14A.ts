@@ -1,0 +1,196 @@
+import type { EncyclopediaChapter } from '../domain/encyclopedia';
+
+export const mentoringLeverageChapter: EncyclopediaChapter = {
+  id: 'mentoring-leverage',
+  title: 'Mentoring and engineering leverage',
+  category: 'Leadership',
+  summary: 'Multiply team capability through deliberate mentorship, sponsorship, and delegation instead of becoming the hero who personally does the hardest work.',
+  problemStatement: 'Talented engineers default to solving problems themselves because it is faster in the moment, but this creates a dependency bottleneck that caps organizational scale and starves other engineers of the exact growth opportunities that would make them capable of solving it next time.',
+  interviewQuestion: 'How do you develop engineers on teams that you influence but do not directly manage, and what does success look like at 6 and 18 months?',
+  coreConcepts: [
+    'Force multiplier versus individual contributor output',
+    'Deliberate mentorship — goals, feedback loops, growth edges',
+    'Sponsorship versus mentoring',
+    'Delegation with accountability',
+    'Building team capability versus doing the work yourself',
+    'Code review as leverage — teaching over correcting',
+    'Technical taste and how to develop it in others',
+    'Learned helplessness — when help prevents growth',
+    'Knowledge transfer and bus-factor reduction',
+    '1:1 coaching versus pair programming versus design review as development tools',
+    'Measuring engineering growth — scope expansion, reduced escalation, peer recognition',
+    'The cost of holding on — doing it yourself versus investing in others',
+  ],
+  architectureDiagram:
+    'flowchart TD\n  P[Problem arrives] --> D{Do it yourself or delegate?}\n  D -->|yourself| F[Fast now, no growth, bottleneck persists]\n  D -->|delegate + coach| G[Slower now, engineer grows, bottleneck shrinks]\n  G --> R[Review — ask questions, do not just correct]\n  R --> S[Sponsor: visibility, credit, promotion advocacy]\n  S --> C[Capability compounds across future problems]\n  F -.repeats next time.-> P',
+  solutionApproach: [
+    'Default to delegation with support rather than doing the work yourself, even when you could do it faster — the slower path compounds team capability while the fast path compounds your own bottleneck status',
+    'Set explicit growth goals with each engineer you develop: what scope, skill, or judgment are they building toward, and what evidence will show they have it',
+    'Use code review to teach reasoning, not just to correct output — ask "how would this behave under X" rather than prescribing "use Y instead"',
+    'Distinguish mentoring (private skill development) from sponsorship (public advocacy) and do both deliberately — sponsorship is chronically underused because it requires spending your own credibility',
+    'Delegate with clear accountability: define the outcome and decision rights, then let the engineer own the approach, checking in at agreed points rather than hovering',
+    'Attribute ideas and contributions accurately and publicly — correcting misattribution in the moment is a low-cost, high-trust action that compounds over a career',
+    'Watch for learned helplessness: if an engineer routes every hard question to you instead of attempting it, your availability may be preventing their growth rather than accelerating it',
+    'Measure your leverage by what the team can do without you, not by what you personally produced — track scope expansion, reduced escalation rate, and unprompted ownership as growth signals',
+  ],
+  designPatterns: [
+    'Growth-edge 1:1s — recurring conversations anchored on one specific skill or scope stretch, not status updates',
+    'Pairing for transfer — pair on a hard problem specifically to transfer judgment, not just to unblock delivery',
+    'Design review as teaching surface — use review comments to expose the reasoning framework, not just the correct answer',
+    'Sponsorship ritual — proactively nominate engineers for visible work and advocate for them in rooms they are not in',
+    'Bus-factor audit — periodically identify single points of knowledge failure and assign deliberate transfer',
+  ],
+  tradeoffs: [
+    'Short-term velocity versus long-term capability: doing it yourself ships faster this week but leaves the team exactly as capable as it was before',
+    'Comfort versus growth: an engineer who is never allowed to struggle with a hard problem never builds the judgment that comes from struggling',
+    'Visibility cost of sponsorship: publicly advocating for someone spends your own credibility and attention, which is finite',
+    'Delegation risk versus control: delegating a consequential decision means accepting an outcome that may differ from what you would have chosen',
+    'Individual output versus organizational leverage: a Staff engineer measured only by personal output is optimizing the wrong metric',
+  ],
+  failureScenarios: [
+    'An engineer routes every ambiguous problem to you rather than attempting a first pass, because you have trained them that asking is faster than trying',
+    'You correct code in review without explaining the reasoning, so the same category of mistake recurs in every subsequent review from that engineer',
+    'You do the hardest 20% of every project yourself "to save time," and the team never develops the judgment to handle that 20% independently',
+    'An engineer\'s idea is presented by someone else in a meeting without attribution, and you do not correct it in the moment, quietly eroding their trust in the team\'s fairness',
+    'You delegate a task without defining the decision rights clearly, then override the engineer\'s approach after they have already invested significant effort, which discourages future initiative',
+    'A single engineer becomes the only person who understands a critical system, and no deliberate transfer happens until they leave and take the knowledge with them',
+  ],
+  productionConsiderations: [
+    'Track team-level metrics that reflect distributed capability — escalation rate, review turnaround without you as a bottleneck, and independent incident resolution — not just your personal throughput',
+    'Build a rotation or shadowing practice for critical-knowledge systems so bus factor is addressed continuously, not discovered during an offboarding',
+    'Calibrate code review comments explicitly: reserve prescriptive corrections for genuine bugs or safety issues, and use open questions for stylistic or judgment-based feedback',
+    'Set a cadence for sponsorship actions — nominate someone for a stretch project, credit a contribution publicly, or advocate in a promotion conversation — so it does not only happen reactively',
+    'Periodically ask each engineer you develop what they are stuck on that they have not raised, since silence is not the same as no blockers',
+  ],
+  staffDiscussion: [
+    'The most common Staff-level failure mode is not a lack of technical skill but the inability to stop being the bottleneck — impact at Staff level is measured by what the organization can do, not by what you personally produce',
+    'Sponsorship is the highest-leverage and most underused development tool because it costs the sponsor real credibility, while mentoring costs only time — most engineers do plenty of the latter and almost none of the former',
+    'Code review is a teaching surface that most engineers use only as a correctness gate; the Staff-level shift is treating every review as an opportunity to transfer judgment, not just catch bugs',
+    'Recognizing learned helplessness in someone you are developing requires noticing your own behavior first — if you always have the answer ready, you have likely trained them not to try',
+    'The engineers who scale their impact furthest are the ones who can point to people who grew because of them, not just systems they personally built',
+  ],
+  relatedTopics: ['Staff engineering archetypes', 'Influence, conflict, and feedback', 'Technical strategy, RFCs, and ADRs', 'Platform engineering and developer experience'],
+  realWorldSystems: ['Google engineering ladder scope framing', 'Dropbox engineering growth framework', 'Netflix freedom and responsibility culture', 'Spotify guild and chapter mentoring structures'],
+  followUpQuestions: [
+    'Describe a time you deliberately let an engineer fail at something recoverable in order to help them grow. What made it the right call?',
+    'How do you sponsor an engineer whose strengths are different from your own, where you cannot directly evaluate their technical work?',
+    'What is a concrete signal that tells you an engineer you have been developing no longer needs your involvement in a given area?',
+  ],
+  cheatSheet: [
+    'Delegate with support by default — the fast path (doing it yourself) compounds your bottleneck, the slow path compounds team capability',
+    'Mentoring is private skill-building; sponsorship is public advocacy — do both, deliberately, not just the comfortable one',
+    'Review comments that ask questions build judgment; comments that just correct build compliance',
+    'Watch for learned helplessness: if every hard question routes to you, your availability may be the problem',
+    'Measure leverage by what the team can do without you, not by your personal output',
+  ],
+  flashcards: [
+    {
+      question: 'What is the difference between mentoring and sponsorship, and why is sponsorship underused?',
+      answer: 'Mentoring is private skill development — coaching, feedback, teaching. Sponsorship is public advocacy — nominating someone for visible work, correcting misattribution, advocating in promotion discussions they are not present for. Sponsorship is underused because it spends the sponsor\'s own credibility and requires acting on someone else\'s behalf in rooms where it is easier to stay neutral.',
+    },
+    {
+      question: 'Why can helping an engineer too readily become a growth-limiting behavior?',
+      answer: 'If an engineer learns that routing a hard problem to you resolves it faster than attempting it themselves, they will rationally choose to ask rather than struggle. Over time this creates learned helplessness: the engineer\'s growth stalls because they never build the judgment that comes from working through ambiguity, and your constant availability becomes the actual constraint on their development.',
+    },
+  ],
+  oneMinuteAnswer:
+    'I treat engineering leverage as a deliberate trade-off between short-term velocity and long-term team capability. When a hard problem arrives, my default is to delegate with support rather than solve it myself, even though doing it myself is usually faster in the moment — the faster path compounds my own bottleneck status while the slower path compounds the team\'s capability. I set explicit growth goals with the engineers I develop, and I use code review as a teaching surface: asking questions that expose reasoning rather than just prescribing corrections. I distinguish mentoring, which is private skill development, from sponsorship, which is public advocacy that costs my own credibility — nominating someone for visible work, correcting misattribution in the moment, advocating for them in rooms they are not in. I watch for learned helplessness: if an engineer routes every ambiguous problem to me instead of attempting a first pass, that is a signal my availability is limiting their growth rather than accelerating it. I measure my own leverage not by what I personally produced but by what the team can do without me — scope expansion, reduced escalation, and engineers taking ownership unprompted.',
+};
+
+export const staffArchetypesChapter: EncyclopediaChapter = {
+  id: 'staff-archetypes',
+  title: 'Staff engineering archetypes',
+  category: 'Leadership',
+  summary: 'Recognize the four Staff engineer operating models — Tech Lead, Architect, Solver, and Right Hand — and develop the range to shift between them as organizational need changes.',
+  problemStatement: 'Engineers are frequently promoted into a Staff role based on the archetype that got them promoted, then find that the organization actually needs a different operating model — and keep operating in their comfortable mode instead of adapting, which produces friction and diminishing impact.',
+  interviewQuestion: 'Describe your primary operating model as a Staff engineer and give an example of a time you had to shift to a different mode because the situation required it.',
+  coreConcepts: [
+    'Tech Lead — team-scoped, delivery-focused, people plus technology',
+    'Architect — system-scoped, design authority, cross-team technical direction',
+    'Solver — problem-scoped, parachuted into hard unsolved problems, short-horizon depth',
+    'Right Hand — executive partner, organizational, strategy plus execution',
+    'Archetype fit to company stage — early startup versus scaling versus enterprise',
+    'The danger of being exclusively one archetype',
+    'The Tech Lead trap — staying too close to implementation',
+    'Reading organizational need versus personal preference',
+    'Promotional versus operational archetypes — promoted as one, needed as another',
+    'Developing range and versatility across archetypes',
+    'When to decline an archetype assignment that does not fit your strengths',
+    'Organizational signals that indicate which archetype is needed',
+  ],
+  architectureDiagram:
+    'flowchart LR\n  N[Organizational need] --> R{Read the signal}\n  R -->|team lacks delivery cohesion| TL[Tech Lead]\n  R -->|system lacks coherent design| AR[Architect]\n  R -->|specific hard problem unsolved| SO[Solver]\n  R -->|exec lacks technical translation| RH[Right Hand]\n  TL & AR & SO & RH --> IM[Impact]\n  IM --> N2[Need shifts as org evolves]\n  N2 -.re-read.-> R',
+  solutionApproach: [
+    'Identify your dominant natural archetype by examining what kind of work energizes you and where you have historically had impact — Tech Lead (team delivery), Architect (system design), Solver (hard unsolved problems), or Right Hand (executive partnership)',
+    'Separately assess what your organization actually needs right now, since the archetype that earned your promotion is not guaranteed to be the one currently required',
+    'Recognize the Tech Lead trap: it is the most common entry point to Staff and the most comfortable, but staying too close to implementation limits impact as the organization scales and needs Architects or Right Hands instead',
+    'When operating as Architect, invest in cross-team credibility and design authority rather than personal code output — your leverage is in the coherence of the system, not the volume of your commits',
+    'When operating as Solver, accept that the role is inherently short-horizon and depth-focused — you are parachuted in, you solve the specific hard problem, and you hand off rather than staying attached indefinitely',
+    'When operating as Right Hand, guard against losing technical credibility entirely — the most effective Right Hands stay technically grounded enough to translate between executive strategy and engineering reality convincingly',
+    'Develop range deliberately: seek assignments in archetypes outside your comfort zone so you can shift when the organization\'s need changes, rather than becoming rigid in one mode',
+    'When an assignment genuinely does not fit your strengths or the organization\'s actual need, say so explicitly rather than accepting a mismatched role and underperforming quietly',
+  ],
+  designPatterns: [
+    'Archetype self-assessment — periodically and honestly evaluate which mode you are operating in versus which the organization needs',
+    'Archetype rotation — deliberately take on an unfamiliar archetype assignment to build range before you are forced to by circumstance',
+    'Organizational signal reading — company stage, team maturity, and the specific gap (delivery cohesion, design coherence, an unsolved problem, executive translation) point to the needed archetype',
+    'Explicit archetype negotiation — when accepting a Staff role or new assignment, clarify which archetype the organization expects, since mismatched expectations are a common source of dissatisfaction',
+  ],
+  tradeoffs: [
+    'Comfort versus organizational need: staying in your natural archetype is comfortable but may leave a real organizational gap unaddressed',
+    'Depth versus breadth: the Solver archetype rewards deep short-horizon focus; the Right Hand archetype rewards broad organizational awareness — few people are equally strong at both',
+    'Technical credibility versus organizational altitude: the further you operate from implementation (Right Hand), the more you risk losing the technical grounding that made your judgment valuable in the first place',
+    'Individual fit versus career flexibility: specializing deeply in one archetype can maximize near-term impact but narrows the roles you can credibly take on later',
+  ],
+  failureScenarios: [
+    'An engineer promoted to Staff as a Tech Lead keeps operating at the team level even after being asked to solve a cross-organizational architecture problem, producing a design that only works for their original team',
+    'A Staff engineer operating as Right Hand stops writing code or reviewing designs entirely, and over 18 months loses enough technical grounding that their strategic recommendations are no longer trusted by engineering teams',
+    'An organization needs an Architect to resolve fragmented, incompatible system designs across teams, but promotes a strong Solver into the role, who solves individual hard problems well but never establishes the cross-team design coherence the organization actually needed',
+    'A Staff engineer accepts a Right Hand assignment purely because it was offered, despite having no interest in or aptitude for organizational strategy work, and underperforms while a better-suited colleague remains in a mismatched Tech Lead role',
+    'An engineer who was effective as a Solver in a fast-moving startup is asked to be an Architect as the company scales, but continues parachuting into individual problems instead of building the system-wide design coherence a larger organization requires',
+  ],
+  productionConsiderations: [
+    'Revisit your archetype fit at least annually, since organizational stage and need change faster than most engineers reassess their operating mode',
+    'When taking on a new Staff-level assignment, explicitly clarify with your manager or the assigning executive which archetype the role actually requires, rather than assuming',
+    'Build deliberate range before you need it: take on a Solver-style engagement even if you are naturally an Architect, so you have the muscle when circumstances require it',
+    'Watch your own technical currency if operating primarily as Right Hand — schedule regular hands-on engagement (code review, design review, or a small technical project) to avoid losing grounding',
+  ],
+  staffDiscussion: [
+    'The Tech Lead trap is the most common derailment at the Senior-to-Staff transition: the skills that made someone an excellent Tech Lead (deep team involvement, hands-on delivery ownership) actively work against the Architect or Right Hand modes that scaling organizations increasingly need',
+    'Most engineers are promoted based on evidence from one archetype and then expected to operate in whichever archetype the organization currently needs — recognizing this mismatch explicitly, rather than assuming your promotion criteria equals your job description, is a Staff-level insight',
+    'The Solver archetype is often undervalued in performance review cycles because its impact is diffuse across many short engagements rather than one visible sustained project — advocating for how Solver impact should be evaluated is itself a Staff-level responsibility',
+    'Declining a mismatched archetype assignment is a legitimate and sometimes necessary Staff-level decision, but it requires enough self-awareness to distinguish "this does not fit my strengths" from "this is uncomfortable and I would rather not"',
+    'The engineers who sustain long Staff-level careers are rarely those who mastered one archetype perfectly — they are the ones who developed enough range to shift modes as the organization\'s needs moved underneath them',
+  ],
+  relatedTopics: ['Mentoring and engineering leverage', 'Technical strategy, RFCs, and ADRs', 'Platform engineering and developer experience', 'Influence, conflict, and feedback'],
+  realWorldSystems: ['Will Larson "Staff Engineer" archetype framework', 'Tanya Reilly glue and invisible work research', 'Camille Fournier "The Manager\'s Path" tech lead framing', 'Charity Majors on Staff archetypes across company stages'],
+  followUpQuestions: [
+    'How would you recognize, within your first month in a new Staff role, that the organization needs a different archetype than the one you were hired to perform?',
+    'Describe a time you had to operate as a Solver on a problem outside your usual mode. What made it uncomfortable, and how did you adapt?',
+    'What early warning signs indicate a Right Hand is losing technical credibility with engineering teams?',
+  ],
+  cheatSheet: [
+    'Four archetypes: Tech Lead (team delivery), Architect (system design authority), Solver (hard unsolved problems), Right Hand (executive partnership)',
+    'The Tech Lead trap: staying too close to implementation when the org has scaled past needing that mode',
+    'Your promotion archetype and your current-need archetype are often different — read the organizational signal, not just your comfort zone',
+    'Right Hands must guard technical currency; Solvers must accept short-horizon, hand-off-oriented engagements',
+    'Range across archetypes, developed before you need it, sustains long Staff careers more than mastery of one mode',
+  ],
+  flashcards: [
+    {
+      question: 'What is the "Tech Lead trap" and why is it the most common Staff-level derailment?',
+      answer: 'The Tech Lead trap is continuing to operate in a team-scoped, delivery-focused, hands-on mode after being promoted or assigned into a role that actually requires system-scoped (Architect) or organizational (Right Hand) impact. It is the most common derailment because Tech Lead is the most frequent entry point into Staff, so the comfortable, promotion-earning behaviors are exactly the ones that limit impact once broader scope is required.',
+    },
+    {
+      question: 'Why might a Staff engineer decline an archetype assignment, and how is that different from avoiding discomfort?',
+      answer: 'A genuine decline is based on a mismatch between the role\'s actual requirements (e.g., sustained organizational strategy work for Right Hand) and the engineer\'s strengths or interests, articulated explicitly. It differs from avoiding discomfort because developing range often requires accepting uncomfortable assignments — the distinction is whether the discomfort comes from stretching into an unfamiliar but learnable mode, or from a genuine, sustained mismatch that would produce poor outcomes for the organization.',
+    },
+  ],
+  oneMinuteAnswer:
+    'I think about Staff engineering impact through four archetypes: Tech Lead, who is team-scoped and delivery-focused; Architect, who holds system-scoped design authority across teams; Solver, who is parachuted into specific hard unsolved problems for a bounded engagement; and Right Hand, who partners directly with executives on strategy and execution. My own dominant mode has historically been Architect, but I have deliberately taken on Solver-style engagements to build range, because the archetype that earns a Staff promotion is not guaranteed to be the one the organization needs next. The most common derailment I watch for in myself and others is the Tech Lead trap — staying close to implementation and team-level delivery even after being asked to operate at a broader system or organizational scope. When I take on a new assignment, I explicitly clarify which archetype it actually requires rather than assuming, and if there is a genuine mismatch between what is needed and my strengths, I say so directly rather than underperforming quietly in a role I should not have accepted. The engineers I have seen sustain long Staff careers are the ones who developed enough range to shift between these modes as organizational need moved, rather than mastering only one.',
+};
+
+export const phase14AChapters: EncyclopediaChapter[] = [
+  mentoringLeverageChapter,
+  staffArchetypesChapter,
+];
