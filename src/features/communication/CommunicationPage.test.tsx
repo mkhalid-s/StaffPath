@@ -6,8 +6,8 @@ import { CommunicationPage } from './CommunicationPage';
 
 describe('CommunicationPage', () => {
   beforeEach(() => appStore.reset());
-  it('covers the complete responsible nontechnical curriculum', () => {
-    expect(communicationLessons).toHaveLength(14);
+  it('covers covers the complete responsible nontechnical curriculum', () => {
+    expect(communicationLessons).toHaveLength(19);
     render(<CommunicationPage />);
     expect(screen.getByText('Listen like a leader')).toBeInTheDocument();
     expect(screen.getByText('Intentional presence')).toBeInTheDocument();
