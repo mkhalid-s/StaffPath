@@ -27,12 +27,26 @@ export function DashboardPage() {
   const lockedFeatures = FEATURES.filter((feature) => !isFeatureUnlocked(state, feature.id) && feature.id !== 'settings');
   const unlockedCount = FEATURES.filter((feature) => isFeatureUnlocked(state, feature.id)).length;
   const topAction = buildWhatsNextActions(state)[0];
+  const daysLeft = (() => {
+    if (!state.profile.startDate) return null;
+    const start = new Date(state.profile.startDate);
+    const target = new Date(start);
+    target.setDate(target.getDate() + modeConfig.totalDays);
+    const diffDays = Math.ceil((target.getTime() - Date.now()) / (24 * 60 * 60 * 1000));
+    return diffDays > 0 ? diffDays : 0;
+  })();
 
   return (
     <div className="page dashboard-page">
       <div className="page-heading">
         <div><p className="eyebrow">STAFF ENGINEER WORKSPACE</p><h1>{greeting}</h1><p>Ready when you are. Every tool, every day.</p></div>
-        <div className="progress-orb"><strong>{progress}%</strong><span>{modeConfig.totalDays}-day {modeConfig.label.toLowerCase()} plan</span></div>
+        <div className="progress-orb">
+          <strong>{progress}%</strong><span>{modeConfig.totalDays}-day {modeConfig.label.toLowerCase()} plan</span>
+          {daysLeft !== null && (daysLeft > 0
+            ? <><strong style={{marginTop:'4px'}}>{daysLeft}</strong><span>days remaining</span></>
+            : <><strong style={{marginTop:'4px'}}>Interview day</strong><span>make it count</span></>
+          )}
+        </div>
       </div>
 
       <section className="hero-panel">

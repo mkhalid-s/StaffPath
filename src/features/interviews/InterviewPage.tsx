@@ -120,6 +120,18 @@ export function InterviewPage() {
     return Math.round((last3.reduce((s, m) => s + m.score, 0) / last3.length) * 10) / 10;
   })();
 
+  const sparklineScores = state.mockInterviews.slice(-10).map((m) => m.score);
+  const sparklinePath = (() => {
+    if (sparklineScores.length < 2) return null;
+    const width = 140, height = 40, padding = 4;
+    const stepX = (width - padding * 2) / (sparklineScores.length - 1);
+    const toY = (score: number) => height - padding - ((score - 1) / 4) * (height - padding * 2);
+    const points = sparklineScores.map((score, index) => [padding + index * stepX, toY(score)]);
+    const d = points.map(([x, y], index) => `${index === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+    const last = points[points.length - 1];
+    return { d, lastX: last[0], lastY: last[1] };
+  })();
+
   return (
     <div className="page interview-page">
       <div className="page-heading">
@@ -235,6 +247,12 @@ export function InterviewPage() {
 
             <section className="mock-history">
               <p className="eyebrow">HISTORY</p>
+              {sparklinePath && (
+                <svg className="score-sparkline" width="140" height="40" viewBox="0 0 140 40" role="img" aria-label="Mock interview score trend">
+                  <path d={sparklinePath.d} fill="none" stroke="var(--green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx={sparklinePath.lastX} cy={sparklinePath.lastY} r="3" fill="var(--lime)" />
+                </svg>
+              )}
               <h2>Recent mocks</h2>
               {[...state.mockInterviews].reverse().map((mock) => (
                 <article key={mock.id}>
