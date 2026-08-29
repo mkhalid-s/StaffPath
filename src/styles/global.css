@@ -13,6 +13,7 @@
   --lime: #dfeba9;
   --cream: #f0eee5;
   --shadow: 0 18px 55px rgba(31, 39, 32, .08);
+  --display: 'Fraunces', Georgia, 'Times New Roman', serif;
 }
 
 * { box-sizing: border-box; }
@@ -35,7 +36,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .app-shell > main { grid-column: 2; min-width: 0; }.mobile-header { display: none; }
 .page { width: min(1180px, 100%); margin: 0 auto; padding: 51px clamp(28px, 5vw, 72px) 80px; }
 .page-heading { display: flex; justify-content: space-between; gap: 30px; align-items: flex-start; margin-bottom: 34px; }
-.page-heading h1 { margin: 0 0 9px; max-width: 800px; font-size: clamp(31px, 4vw, 47px); line-height: 1.08; letter-spacing: -.05em; }
+.page-heading h1 { margin: 0 0 9px; max-width: 800px; font-size: clamp(31px, 4vw, 47px); line-height: 1.08; letter-spacing: -.05em; font-family: var(--display); font-weight: 700; }
 .page-heading p:not(.eyebrow) { margin: 0; color: var(--muted); font-size: 14px; }
 .eyebrow { margin: 0 0 9px; color: #777c73; font-size: 9px; font-weight: 750; letter-spacing: .16em; }
 .section-heading { margin: 40px 0 17px; }.section-heading h2 { margin: 0; font-size: 20px; letter-spacing: -.025em; }
@@ -442,3 +443,62 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .tag-suggestions button:hover { border-color: var(--green); color: var(--green); }
 .journal-entries-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .journal-search { margin-bottom: 12px; }
+
+/* ── Surgical UI improvements ── */
+
+/* Sidebar nav groups */
+.nav-group { margin-top: 18px; }
+.nav-group:first-child { margin-top: 0; }
+.nav-group-label { display: block; padding: 4px 13px 6px; color: #9ba49a; font-size: 8px; font-weight: 750; letter-spacing: .14em; }
+
+/* Fraunces display type on hero headings */
+.hero-panel h2 { font-family: var(--display); font-weight: 700; }
+.chapter-detail header h2 { font-family: var(--display); font-weight: 700; }
+.executor-main h2 { font-family: var(--display); font-weight: 700; }
+.challenge-panel h2 { font-family: var(--display); font-weight: 700; }
+
+/* Chapter card — completed state */
+.chapter-card.completed { border-color: rgba(40,91,67,.35); background: #f4f8f2; }
+.chapter-card.completed::after { content: '✓'; position: absolute; top: 12px; right: 14px; width: 20px; height: 20px; border-radius: 50%; background: var(--green); color: white; font-size: 9px; font-weight: 750; display: grid; place-items: center; }
+.chapter-card { position: relative; }
+
+/* Form field contrast */
+.scorecard-panel select,
+.scorecard-panel textarea,
+.mistake-form textarea,
+.journal-form textarea,
+.journal-form input,
+.story-form textarea,
+.communication-workout textarea,
+.diagram-studio input,
+.diagram-studio textarea,
+.competency-list textarea { background: #f4f6f1; border-color: #c8cec5; }
+
+/* Primary button refinement — slightly more saturated lime */
+.button.primary { background: #d8e897; border-color: #d8e897; color: #1a2e1e; font-weight: 700; }
+.button.primary:hover { background: #cfe087; border-color: #cfe087; }
+
+/* Sidebar footer shortcut hint */
+.shortcut-hint-link { width: 100%; margin-top: 11px; padding: 8px 10px; border: 1px dashed #c5cac2; border-radius: 7px; background: none; color: var(--muted); font-size: 9px; font-weight: 650; cursor: pointer; text-align: left; }
+.shortcut-hint-link:hover { color: var(--ink); border-color: var(--green); }
+
+/* Dark mode additions for new elements */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --display: 'Fraunces', Georgia, serif;
+  }
+  .nav-group-label { color: #4a5c50; }
+  .chapter-card.completed { border-color: rgba(109,184,138,.3); background: #1a2820; }
+  .button.primary { background: #c8dc7a; border-color: #c8dc7a; color: #141917; }
+  .button.primary:hover { background: #b8cc6a; border-color: #b8cc6a; }
+  .scorecard-panel select,
+  .scorecard-panel textarea,
+  .mistake-form textarea,
+  .journal-form textarea,
+  .journal-form input,
+  .story-form textarea,
+  .communication-workout textarea,
+  .diagram-studio input,
+  .diagram-studio textarea,
+  .competency-list textarea { background: #1a1f1c; border-color: #2e3830; }
+}

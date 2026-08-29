@@ -1,4 +1,11 @@
 import { type ReactNode, useState } from 'react';
+
+const NAV_GROUPS = [
+  { label: 'PREPARE', paths: ['/', '/roadmap', '/coach', '/curriculum'] },
+  { label: 'PRACTICE', paths: ['/practice', '/interviews', '/communication', '/flashcards'] },
+  { label: 'KNOWLEDGE', paths: ['/encyclopedia', '/resources', '/lifecycle'] },
+  { label: 'EVIDENCE', paths: ['/skills', '/handbook', '/journal', '/settings'] },
+];
 import { ConnectionStatus } from '../components/ConnectionStatus';
 import { QuickActionsFab } from '../components/QuickActionsFab';
 import { SHOW_SHORTCUTS_EVENT } from '../lib/keyboardShortcuts';
@@ -16,33 +23,41 @@ export function AppShell({ children }: { children: ReactNode }) {
       <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
         <Link className="brand" to="/" onClick={() => setMenuOpen(false)}><span>S</span>StaffPath</Link>
         <nav aria-label="Main navigation">
-          {NAVIGATION.map(([to, label, icon]) => {
-            const unlocked = isPathUnlocked(state, to);
-            const feature = FEATURE_BY_PATH[to];
-            const progress = feature ? getUnlockProgress(state, feature.id) : null;
-            if (!unlocked) {
-              return (
-                <span
-                  key={to}
-                  className="nav-locked"
-                  title={`Locked: ${feature?.requirement ?? 'Complete more sessions to unlock'}`}
-                  aria-label={`${label} locked. ${feature?.requirement ?? ''}`}
-                >
-                  <span aria-hidden="true">{icon}</span>
-                  <span className="nav-label">{label}</span>
-                  <span className="nav-lock" aria-hidden="true">🔒</span>
-                  {progress && progress.percent < 100 && (
-                    <span className="nav-progress" aria-hidden="true">{progress.current}/{progress.target}</span>
-                  )}
-                </span>
-              );
-            }
-            return (
-              <Link key={to} to={to} className={path === to ? 'active' : ''} onClick={() => setMenuOpen(false)}>
-                <span aria-hidden="true">{icon}</span>{label}
-              </Link>
-            );
-          })}
+          {NAV_GROUPS.map((group) => (
+            <div key={group.label} className="nav-group">
+              <span className="nav-group-label">{group.label}</span>
+              {group.paths.map((to) => {
+                const entry = NAVIGATION.find(([p]) => p === to);
+                if (!entry) return null;
+                const [, label, icon] = entry;
+                const unlocked = isPathUnlocked(state, to);
+                const feature = FEATURE_BY_PATH[to];
+                const progress = feature ? getUnlockProgress(state, feature.id) : null;
+                if (!unlocked) {
+                  return (
+                    <span
+                      key={to}
+                      className="nav-locked"
+                      title={`Locked: ${feature?.requirement ?? 'Complete more sessions to unlock'}`}
+                      aria-label={`${label} locked. ${feature?.requirement ?? ''}`}
+                    >
+                      <span aria-hidden="true">{icon}</span>
+                      <span className="nav-label">{label}</span>
+                      <span className="nav-lock" aria-hidden="true">🔒</span>
+                      {progress && progress.percent < 100 && (
+                        <span className="nav-progress" aria-hidden="true">{progress.current}/{progress.target}</span>
+                      )}
+                    </span>
+                  );
+                }
+                return (
+                  <Link key={to} to={to} className={path === to ? 'active' : ''} onClick={() => setMenuOpen(false)}>
+                    <span aria-hidden="true">{icon}</span>{label}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
         <div className="sidebar-footer">
           <small>PREPARATION SYSTEM</small>
