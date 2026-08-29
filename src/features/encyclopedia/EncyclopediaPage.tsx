@@ -16,14 +16,13 @@ export function EncyclopediaPage() {
   const [selected, setSelected] = useState<EncyclopediaChapter | null>(null);
   const deferredQuery = useDeferredValue(query);
   const searchInput = useRef<HTMLInputElement>(null);
-  const results = useMemo(() => searchChapters(encyclopediaChapters, deferredQuery, category), [deferredQuery, category]);
+  const pack = getActivePack(state.profile.selectedCompanyPack);
+  const results = useMemo(() => searchChapters(encyclopediaChapters, deferredQuery, category, pack), [deferredQuery, category, pack]);
   useEffect(() => {
     const focusSearch = () => searchInput.current?.focus();
     window.addEventListener(FOCUS_SEARCH_EVENT, focusSearch);
     return () => window.removeEventListener(FOCUS_SEARCH_EVENT, focusSearch);
   }, []);
-
-  const pack = getActivePack(state.profile.selectedCompanyPack);
 
   return <div className="page encyclopedia-page">
     <div className="page-heading"><div><p className="eyebrow">ENGINEERING ENCYCLOPEDIA</p><h1>Search concepts. Connect judgment.</h1><p>Every chapter follows one interview-to-production structure.{pack && ` ${pack.label} overlay active.`}</p></div><div className="chapter-count"><strong>{encyclopediaChapters.length}</strong><span>curated chapters</span></div></div>

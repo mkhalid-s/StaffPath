@@ -1,8 +1,8 @@
 # StaffPath
 
-StaffPath is a local-first Staff Software Engineer preparation system covering technical depth, leadership, communication, deliberate practice, interview readiness, and long-lived career evidence.
+StaffPath is a local-first Staff Software Engineer preparation system — 22 encyclopedia chapters, 55 practice scenarios, 6 company packs, a 90-day roadmap, mock interview scorecards, and a live readiness tracker. No account or backend required. All preparation data stays in your browser.
 
-The application is a production React + TypeScript implementation. The original dependency-free prototype is archived under `/legacy/index.html` for reference and backward-data verification.
+The application is a production React + TypeScript implementation. The original dependency-free prototype is archived under `/legacy/index.html` for reference and backward-data compatibility.
 
 ## Run locally
 
@@ -16,57 +16,76 @@ Open the URL printed by Vite.
 ## Validate
 
 ```sh
-npm run check
-npm test
-npm run build
-npm audit
+npm run check      # TypeScript
+npm test           # 65+ Vitest tests
+npm run build      # Production bundle
+npm audit          # Dependency security
 ```
 
-## Current architecture
+## Feature overview
 
-- React and strict TypeScript
-- Vite production build
-- Local-first browser persistence compatible with the original `staffpath-state` data
-- Feature-oriented source layout
-- Searchable typed encyclopedia chapters
-- Lazy-loaded Mermaid diagrams with SVG export
-- Route-level code splitting, installable PWA metadata, and offline runtime cache
-- Vitest and Testing Library
-- No account or backend required
+### Content
+- **22 encyclopedia chapters** — full Staff-level depth across Systems, Data, Reliability, AI, Architecture, and Leadership; every chapter has a problem statement, solution approach, failure scenarios, Staff discussion, flashcards, one-minute answer, and cheat sheet
+- **55 practice scenarios** across four tracks: system design, problem solving, people leadership, and SDLC — including distributed messaging, social feed, video streaming, booking systems, AI coding assistants, and natural-language analytics
+- **29 curated resources** — books (Designing Data-Intensive Applications, Staff Engineer, Accelerate, An Elegant Puzzle), engineering blogs (Netflix, Stripe, Uber, High Scalability), and operational references (Google SRE launch checklist)
+- **14 Communication Gym lessons** with responsible practice guidance
 
-## Product scope
+### Company packs (6)
+Google, Meta, Netflix, Startup, Amazon, and Atlassian — each with:
+- 59 chapter-level interview angles across all 22 chapters
+- 8 behavioral questions with LP framing where applicable
+- Interview format and process overview
+- 4–5 key signals interviewers look for
+- 3–4 common mistakes that trip candidates up
+- 3–4 company-specific practice scenarios
 
-The complete product direction is documented in:
+### Preparation system
+- **90-day roadmap** — one-hour daily executor with timer, reflection, artifact evidence, and 13 weeks of themed mastery questions (3 per week)
+- **Progressive feature disclosure** — sections unlock as you demonstrate engagement; bypass available in Settings
+- **Intelligence dashboard** — what's-next engine, learning velocity, streak, heatmap, competency radar, and milestone markers
+- **LifecyclePage readiness tracker** — 8 preparation stages with live evidence counts (sessions, attempts, mistakes, mocks) and 8 binary interview-readiness gates
+- **CurriculumPage with progress** — 12-module coverage map linked to roadmap session completion
+- **Intelligence-driven coach** — recommended actions and focus areas derived from your weakest competencies and recent mistakes, with local knowledge retrieval
+
+### Interview preparation
+- **Interview Studio** — 45-minute timed mocks across system design, AI design, behavioral, and coding; 8-dimension scorecard; spaced mistake review; last-3-mock average
+- **Company pack behavioral mode** — when a pack is active, Interview Studio surfaces that company's 8 behavioral questions with key signals panel
+- **Quick Actions FAB** — context-aware top-5 actions from anywhere in the app
+- **Keyboard shortcuts** — ⌘1–8 for main nav; ⌘I/M/H/, for Interviews/Communication/Handbook/Settings; ⌘K search; ⌘N journal; ⌘R roadmap; ⌘? help
+
+### Evidence and export
+- **Handbook** — STAR story bank, architecture diagram studio, evidence aggregation, templates (ADR, RFC, system design, incident update, STAR, weekly reflection), and Markdown export
+- **Journal** with learning, application, artifact, and quality tracking
+- **Assessment** with 8-competency radar and 12-week activity heatmap
+- **Versioned JSON backup/restore**
+
+### Technical
+- React 19, strict TypeScript, Vite 7, Vitest 3
+- Local-first: all data in `localStorage`; no account or backend
+- Legacy `staffpath-state` data auto-migrates on first load
+- Offline write queue for journal, practice, and roadmap writes
+- Installable PWA with service worker and connection status banner
+- Lazy-loaded Mermaid diagrams with SVG download
+- Route-level code splitting and lazy loading
+- GitHub Actions CI (typecheck → test → build → audit) and GitHub Pages deploy workflow
+- No account or external service required
+
+## Demo mode
+
+Settings → "Load demo data" fills the app with a realistic week-6 snapshot (Amazon pack active, 42/90 sessions complete, practice attempts, mocks, journal entries) so you can explore all features without weeks of real use.
+
+## Production deployment
+
+### GitHub Pages
+Enable in repo Settings → Pages → Source → GitHub Actions. The deploy workflow (`/.github/workflows/deploy.yml`) builds and publishes on every push to `main`.
+
+### Any static host
+Deploy `dist/` with SPA fallback to `index.html`. The included `_headers` file applies a restrictive baseline policy on hosts that support Netlify-style headers. HTTPS required for service-worker installation outside localhost.
+
+> Preparation data is browser-local. Export backups from Settings before clearing site data or switching devices.
+
+## Docs
 
 - [Product vision](docs/PRODUCT_VISION.md)
 - [Content architecture](docs/CONTENT_ARCHITECTURE.md)
 - [Research sources](docs/RESEARCH_SOURCES.md)
-
-## Implemented product lifecycle
-
-- Responsive application shell and custom minimal client router
-- Automatic migration of legacy roadmap progress
-- Preparation lifecycle view with flexible modes (Intensive, Moderate, Casual, Custom)
-- Onboarding with skill assessment and personalized recommendations
-- Native 90-day, one-hour daily executor with timer, reflection, communication, and artifact evidence
-- Progressive feature disclosure with unlock celebrations
-- Intelligence dashboard with what's-next actions, learning velocity, and analytics
-- Quick Actions FAB for context-aware shortcuts
-- Searchable curriculum map and engineering encyclopedia
-- Complete chapter schema with worked solutions, diagrams, production concerns, Staff discussion, flashcards, and interview answers
-- Detailed foundation chapters for requirements, CAP/PACELC, consensus, distributed transactions, and advanced caching
-- Optional company interview packs: Google, Meta, Netflix, Startup, Amazon, and Atlassian
-- SVG architecture-diagram rendering and download
-- 21 production-quality encyclopedia chapters spanning foundations, distributed systems, production, architecture, AI, and leadership
-- 47-scenario Practice Lab across system design, problem solving, people leadership, and SDLC
-- Four-format mock interview scorecards and spaced mistake review
-- Eight-area evidence-based assessment and readiness gates
-- Fourteen-lesson Communication Gym with responsible practice guidance
-- Native journal, reusable STAR story bank, evidence aggregation, handbook Markdown export
-- Evidence-aware local coach with curated knowledge and scenario retrieval
-- Enhanced PWA with offline write queue, connection status, and keyboard shortcuts
-- Versioned JSON backup/restore and zero known npm audit vulnerabilities
-
-## Production deployment
-
-Deploy `dist/` to a static host with SPA fallback to `index.html`. The included `_headers` file applies a restrictive baseline policy on hosts that support Netlify-style headers. HTTPS is required for service-worker installation outside localhost. Because preparation data is browser-local, learners should export backups regularly and before clearing site data.

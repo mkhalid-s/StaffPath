@@ -1,4 +1,5 @@
 import type { EncyclopediaChapter } from '../../domain/encyclopedia';
+import type { CompanyPack } from '../../data/companyPacks';
 
 export function chapterSearchText(chapter: EncyclopediaChapter): string {
   return [
@@ -9,8 +10,15 @@ export function chapterSearchText(chapter: EncyclopediaChapter): string {
   ].join(' ').toLocaleLowerCase();
 }
 
-export function searchChapters(chapters: EncyclopediaChapter[], query: string, category: string): EncyclopediaChapter[] {
+export function searchChapters(
+  chapters: EncyclopediaChapter[],
+  query: string,
+  category: string,
+  activePack?: CompanyPack | null,
+): EncyclopediaChapter[] {
   const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+  const packAngles = activePack?.chapterAngles ?? {};
+
   return chapters
     .filter((chapter) => category === 'All' || chapter.category === category)
     .filter((chapter) => {
@@ -18,9 +26,14 @@ export function searchChapters(chapters: EncyclopediaChapter[], query: string, c
       return terms.every((term) => text.includes(term));
     })
     .sort((a, b) => {
-      if (!terms.length) return a.title.localeCompare(b.title);
+      // Pack-angle chapters surface first when a pack is active and no search query
+      const aHasPack = activePack && a.id in packAngles ? 1 : 0;
+      const bHasPack = activePack && b.id in packAngles ? 1 : 0;
+      if (!terms.length) return bHasPack - aHasPack || a.title.localeCompare(b.title);
+
       const aTitleHits = terms.filter((term) => a.title.toLocaleLowerCase().includes(term)).length;
       const bTitleHits = terms.filter((term) => b.title.toLocaleLowerCase().includes(term)).length;
-      return bTitleHits - aTitleHits || a.title.localeCompare(b.title);
+      // With a query: title hits win, then pack angle boost, then alpha
+      return bTitleHits - aTitleHits || bHasPack - aHasPack || a.title.localeCompare(b.title);
     });
 }

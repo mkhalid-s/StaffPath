@@ -24,6 +24,17 @@ interface PackWithScenarios {
   behavioralQuestions?: string[];
 }
 
+const universalDesignProbes = [
+  'What is the hardest trade-off in this design, and what would you sacrifice first?',
+  'What assumptions would you validate before committing to this architecture?',
+  'How does this design fail, and what is the blast radius of the worst failure?',
+  'What would you measure in production to know the design is actually working?',
+  'How would you migrate from a simpler version of this system without downtime?',
+  'What changes at 10× traffic — what breaks first, and how do you address it?',
+  'Which decision in this design would you document in an ADR, and why?',
+  'Where would cost or organizational complexity change your choice?',
+];
+
 export function PracticePage() {
   const state = useStaffPathState();
   const [track, setTrack] = useState<PracticeTrack>('design');
@@ -31,6 +42,7 @@ export function PracticePage() {
   const [reflection, setReflection] = useState('');
   const [checked, setChecked] = useState<number[]>([]);
   const [coachOpen, setCoachOpen] = useState(false);
+  const [probesOpen, setProbesOpen] = useState(false);
   const cursor = state.practiceCursor[track];
   const challenges = practiceCatalog[track];
   const challenge = challenges[cursor % challenges.length];
@@ -41,10 +53,10 @@ export function PracticePage() {
   const packScenarios = (pack as (typeof pack & PackWithScenarios) | null)?.practiceScenarios ?? [];
   const packQuestions = (pack as (typeof pack & PackWithScenarios) | null)?.behavioralQuestions ?? [];
 
-  function switchTrack(next: PracticeTrack) { setTrack(next); setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false); }
+  function switchTrack(next: PracticeTrack) { setTrack(next); setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false); setProbesOpen(false); }
   function move(delta: number) {
     appStore.update((current) => ({ ...current, practiceCursor: { ...current.practiceCursor, [track]: Math.max(0, current.practiceCursor[track] + delta) } }));
-    setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false);
+    setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false); setProbesOpen(false);
   }
   function saveAttempt(event: React.FormEvent) {
     event.preventDefault();
@@ -55,7 +67,7 @@ export function PracticePage() {
       practiceCursor: { ...current.practiceCursor, [track]: current.practiceCursor[track] + 1 },
     }));
     if (!isOnline()) enqueueAction('practice', `Practice: ${challenge.title}`);
-    setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false);
+    setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false); setProbesOpen(false);
   }
 
   return <div className="page practice-page">
@@ -65,6 +77,18 @@ export function PracticePage() {
       <section className="challenge-panel">
         <div className="session-meta"><span>{labels[track][0].toUpperCase()}</span><span>CHALLENGE {cursor % challenges.length + 1} / {challenges.length}</span></div>
         <h2>{challenge.title}</h2><p>{challenge.prompt}</p>
+        {track === 'design' && (
+          <div className="design-probes-card">
+            <button className="coach-toggle" type="button" onClick={() => setProbesOpen((value) => !value)}>
+              {probesOpen ? 'Hide universal design probes' : 'Universal design probes'}
+            </button>
+            {probesOpen && (
+              <ol className="coach-prompts">
+                {universalDesignProbes.map((probe) => <li key={probe}>{probe}</li>)}
+              </ol>
+            )}
+          </div>
+        )}
         {pack && (
           <div className="pack-context-card">
             <span>{pack.label.toUpperCase()}</span>
