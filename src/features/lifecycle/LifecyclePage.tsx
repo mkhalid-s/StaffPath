@@ -112,7 +112,7 @@ export function LifecyclePage() {
     <div className="page lifecycle-page">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">COMPLETE LIFECYCLE</p>
+          <p className="eyebrow">YOUR PREPARATION SYSTEM</p>
           <h1>Preparation is a feedback system.</h1>
           <p>Every activity should improve judgment, produce evidence, or reveal the next gap.</p>
         </div>

@@ -29,7 +29,7 @@ export function ResourcesPage() {
     <div className="page resources-page">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">CURATED PRIMARY REFERENCES</p>
+          <p className="eyebrow">BOOKS · PAPERS · REFERENCES</p>
           <h1>Resource library</h1>
           <p>Use references for depth and verification; use StaffPath to apply, explain, and retain what matters.</p>
         </div>

@@ -49,7 +49,7 @@ export function CurriculumPage() {
     <div className="page curriculum-page">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">AUTHORITATIVE COVERAGE MAP</p>
+          <p className="eyebrow">WHAT YOU NEED TO KNOW</p>
           <h1>Basic → advanced → mastery</h1>
           <p>The curriculum combines engineering depth, production judgment, business context, leadership, and interview execution.</p>
         </div>

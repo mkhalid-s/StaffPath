@@ -502,3 +502,61 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .diagram-studio textarea,
   .competency-list textarea { background: #1a1f1c; border-color: #2e3830; }
 }
+
+/* ── Category-colored chapter cards ── */
+.chapter-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 3px;
+  border-radius: 11px 0 0 11px;
+}
+.chapter-card[data-category="Systems"]::before      { background: #3b7a8a; }
+.chapter-card[data-category="Data"]::before         { background: #4a6fa8; }
+.chapter-card[data-category="Reliability"]::before  { background: #8b6614; }
+.chapter-card[data-category="AI"]::before           { background: #6b4fa8; }
+.chapter-card[data-category="Architecture"]::before { background: #285b43; }
+.chapter-card[data-category="Leadership"]::before   { background: #8b3a3a; }
+
+.category-chip[data-cat="Systems"]      { background: #e8f3f6; color: #2a5a68; }
+.category-chip[data-cat="Data"]         { background: #e8eef6; color: #2a4a78; }
+.category-chip[data-cat="Reliability"]  { background: #f6f0e0; color: #6b4a10; }
+.category-chip[data-cat="AI"]           { background: #f0ecf8; color: #4a2a88; }
+.category-chip[data-cat="Architecture"] { background: #eaf0e6; color: #1e4a30; }
+.category-chip[data-cat="Leadership"]   { background: #f6ece8; color: #6b2222; }
+
+/* ── Dashboard copy — context line replaced by eyebrow only ── */
+.dashboard-page .page-heading p:not(.eyebrow) { color: var(--muted); font-size: 13px; max-width: 540px; }
+
+/* ── Empty state improvements ── */
+.interview-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 48px 32px; }
+.interview-empty::before { content: ''; display: block; width: 32px; height: 2px; border-radius: 1px; background: var(--line); }
+
+/* ── Roadmap done-session visibility ── */
+.roadmap-week>div>button.done { opacity: .45; text-decoration: none; }
+.roadmap-week>div>button.done::after { content: ' ✓'; color: var(--green); font-size: 7px; }
+
+/* ── Type scale clarity ── */
+.scorecard-panel h2,
+.mock-history h2,
+.mistake-form h2,
+.mistake-list h2,
+.journal-form h2,
+.story-form h2,
+.story-bank h2,
+.handbook-stats + h2,
+.coach-search h2,
+.coach-focus h2 { font-size: 18px; letter-spacing: -.025em; }
+
+.section-heading h2 { font-family: var(--display); letter-spacing: -.03em; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .chapter-card[data-category="Systems"]::before      { background: #4a9aaa; }
+    .chapter-card[data-category="Data"]::before         { background: #6a8fc8; }
+    .chapter-card[data-category="Reliability"]::before  { background: #c8960a; }
+    .chapter-card[data-category="AI"]::before           { background: #9a7fd8; }
+    .chapter-card[data-category="Architecture"]::before { background: #6db88a; }
+    .chapter-card[data-category="Leadership"]::before   { background: #c86a6a; }
+  }
+}

@@ -8,7 +8,7 @@ describe('CurriculumPage', () => {
 
   it('renders the authoritative coverage map heading', () => {
     render(<CurriculumPage />);
-    expect(screen.getByText('AUTHORITATIVE COVERAGE MAP')).toBeInTheDocument();
+    expect(screen.getByText('WHAT YOU NEED TO KNOW')).toBeInTheDocument();
     expect(screen.getByText('Basic → advanced → mastery')).toBeInTheDocument();
   });
 

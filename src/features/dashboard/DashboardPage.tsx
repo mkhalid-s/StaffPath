@@ -31,7 +31,7 @@ export function DashboardPage() {
   return (
     <div className="page dashboard-page">
       <div className="page-heading">
-        <div><p className="eyebrow">STAFF ENGINEER WORKSPACE</p><h1>{greeting}</h1><p>Your complete preparation lifecycle in one focused system.</p></div>
+        <div><p className="eyebrow">STAFF ENGINEER WORKSPACE</p><h1>{greeting}</h1><p>Ready when you are. Every tool, every day.</p></div>
         <div className="progress-orb"><strong>{progress}%</strong><span>{modeConfig.totalDays}-day {modeConfig.label.toLowerCase()} plan</span></div>
       </div>
 
