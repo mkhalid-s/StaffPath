@@ -2,6 +2,8 @@ import type { EncyclopediaChapter } from '../domain/encyclopedia';
 import { detailedFoundationChapters } from './encyclopediaDetailedFoundations';
 import { expandedFoundationChapters } from './encyclopediaExpandedFoundations';
 import { foundationChapters } from './encyclopediaFoundations';
+import { phase9AChapters } from './encyclopediaPhase9A';
+import { phase9BChapters } from './encyclopediaPhase9B';
 
 export const encyclopediaChapters: EncyclopediaChapter[] = [
   {
@@ -197,4 +199,6 @@ export const encyclopediaChapters: EncyclopediaChapter[] = [
   ...detailedFoundationChapters,
   ...expandedFoundationChapters,
   ...foundationChapters,
+  ...phase9AChapters,
+  ...phase9BChapters,
 ];

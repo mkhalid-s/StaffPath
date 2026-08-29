@@ -11,10 +11,10 @@ describe('complete preparation content contract', () => {
   it('retains the planned curriculum and practice breadth', () => {
     expect(roadmapSessions).toHaveLength(90);
     expect(curriculumModules).toHaveLength(12);
-    expect(Object.values(practiceCatalog).flat()).toHaveLength(55);
+    expect(Object.values(practiceCatalog).flat()).toHaveLength(61);
     expect(communicationLessons).toHaveLength(14);
-    expect(encyclopediaChapters).toHaveLength(22);
-    expect(learningResources).toHaveLength(29);
+    expect(encyclopediaChapters).toHaveLength(28);
+    expect(learningResources).toHaveLength(40);
     for (const prompts of Object.values(interviewPrompts)) expect(prompts.length).toBeGreaterThanOrEqual(6);
   });
 });
