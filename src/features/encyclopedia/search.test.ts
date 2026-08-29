@@ -4,7 +4,7 @@ import { searchChapters } from './search';
 
 describe('searchChapters', () => {
   it('keeps every published chapter complete and uniquely addressable', () => {
-    expect(encyclopediaChapters).toHaveLength(49);
+    expect(encyclopediaChapters).toHaveLength(52);
     expect(new Set(encyclopediaChapters.map((chapter) => chapter.id)).size).toBe(encyclopediaChapters.length);
     for (const chapter of encyclopediaChapters) {
       expect(chapter.architectureDiagram).toContain('flowchart');
