@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from '../../lib/router';
 import { useStaffPathState } from '../../lib/appStore';
-import { buildWhatsNextActions, identifyFocusAreas } from '../../lib/intelligence';
+import { buildWhatsNextActions, buildStudyPlan, identifyFocusAreas } from '../../lib/intelligence';
 import { buildCoachActions, retrieveCoachMatches } from './recommendations';
 
 const categoryIcon: Record<string, string> = {
@@ -17,6 +17,8 @@ export function CoachPage() {
   const [submitted, setSubmitted] = useState('');
   const matches = submitted ? retrieveCoachMatches(submitted) : { chapters: [], scenarios: [] };
   const usingIntelligence = intelligentActions.length > 0;
+  const [showPlan, setShowPlan] = useState(false);
+  const studyPlan = showPlan ? buildStudyPlan(state) : null;
 
   return (
     <div className="page coach-page">
@@ -78,6 +80,41 @@ export function CoachPage() {
           </div>
         </section>
       )}
+
+      <section className="coach-study-plan">
+        <div>
+          <p className="eyebrow">30-DAY PLAN</p>
+          <h2>Turn your gaps into a schedule.</h2>
+        </div>
+        <button className="button primary" onClick={() => setShowPlan((value) => !value)}>
+          {showPlan ? 'Hide my 30-day plan ↑' : 'Generate my 30-day plan ↓'}
+        </button>
+        {studyPlan && (
+          <div className="study-plan-weeks">
+            {studyPlan.weeks.map((week) => (
+              <article key={week.week} className="study-plan-week">
+                <header>
+                  <span>WEEK {week.week}</span>
+                  <strong>{week.focusTitle}</strong>
+                </header>
+                {week.chapters.length > 0 && (
+                  <div className="study-plan-chapters">
+                    {week.chapters.map((chapter) => (
+                      <Link key={chapter.id} to="/encyclopedia" className="chapter-rec-chip">{chapter.title} →</Link>
+                    ))}
+                  </div>
+                )}
+                <ul>
+                  {week.tasks.map((task) => <li key={task}>{task}</li>)}
+                </ul>
+                {week.week === 1 && (
+                  <Link to={week.chapters[0] ? '/encyclopedia' : '/practice'} className="button study-plan-start">Start Week 1 →</Link>
+                )}
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
 
       <section className="coach-search">
         <p className="eyebrow">ASK YOUR KNOWLEDGE BASE</p>

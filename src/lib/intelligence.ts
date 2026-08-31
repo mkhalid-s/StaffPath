@@ -277,6 +277,96 @@ export function buildWhatsNextActions(state: StaffPathState, today = new Date())
     .slice(0, 5);
 }
 
+const COMPETENCY_TO_TRACK: Record<string, PracticeTrack> = {
+  'technical-foundations': 'problem',
+  'system-design': 'design',
+  'production': 'problem',
+  'business': 'people',
+  'execution': 'sdlc',
+  'influence': 'people',
+  'communication': 'people',
+  'mentoring': 'people',
+};
+
+export interface StudyWeek {
+  week: number;
+  title: string;
+  focusTitle: string;
+  chapters: { id: string; title: string }[];
+  scenario?: { id: string; title: string; track: PracticeTrack };
+  tasks: string[];
+}
+
+export interface StudyPlan {
+  weeks: StudyWeek[];
+  generatedFor: string[];
+}
+
+function weekForCompetency(weekNum: number, state: StaffPathState, competencyId: string): StudyWeek {
+  const comp = COMPETENCIES.find((c) => c.id === competencyId);
+  const chapterIds = COMPETENCY_CHAPTERS[competencyId] ?? [];
+  const chapters = encyclopediaChapters
+    .filter((c) => chapterIds.includes(c.id) && !state.completedChapters.includes(c.id))
+    .slice(0, 3)
+    .map((c) => ({ id: c.id, title: c.title }));
+  const track = COMPETENCY_TO_TRACK[competencyId] ?? 'design';
+  const scenario = practiceCatalog[track][state.practiceCursor[track] % practiceCatalog[track].length];
+  const focusTitle = comp?.title ?? competencyId;
+
+  return {
+    week: weekNum,
+    title: `Week ${weekNum}: ${focusTitle}`,
+    focusTitle,
+    chapters,
+    scenario: { id: scenario.id, title: scenario.title, track },
+    tasks: [
+      chapters.length
+        ? `Read ${chapters.length} recommended chapter${chapters.length === 1 ? '' : 's'} on ${focusTitle.toLowerCase()}.`
+        : `Review your existing notes on ${focusTitle.toLowerCase()}.`,
+      `Complete practice scenario: ${scenario.title}.`,
+      `Write one evidence entry for ${focusTitle.toLowerCase()} in Assessment.`,
+    ],
+  };
+}
+
+export function buildStudyPlan(state: StaffPathState): StudyPlan {
+  const weakest = findWeakestCompetencies(state, 2);
+  const first = weakest[0] ?? 'system-design';
+  const second = weakest[1] ?? (first === 'technical-foundations' ? 'system-design' : 'technical-foundations');
+
+  const week1 = weekForCompetency(1, state, first);
+  const week2 = weekForCompetency(2, state, second);
+
+  const openMistakes = state.mistakes.filter((m) => !m.resolved).slice(0, 3);
+  const week3: StudyWeek = {
+    week: 3,
+    title: 'Week 3: Mock interview volume',
+    focusTitle: 'Interview reps',
+    chapters: [],
+    tasks: [
+      'Run 2 system-design mock interviews.',
+      'Run 1 behavioral mock interview.',
+      'Log every miss immediately in Mistakes for spaced review.',
+    ],
+  };
+
+  const week4: StudyWeek = {
+    week: 4,
+    title: 'Week 4: Review and integrate',
+    focusTitle: 'Consolidation',
+    chapters: [],
+    tasks: [
+      openMistakes.length
+        ? `Review your ${openMistakes.length} biggest open mistake${openMistakes.length === 1 ? '' : 's'}: ${openMistakes.map((m) => m.missed).join(', ')}.`
+        : 'Review your three biggest recent mistakes.',
+      'Run one full 45-minute system design interview end-to-end, unaided.',
+      'Update evidence for every competency touched this month.',
+    ],
+  };
+
+  return { weeks: [week1, week2, week3, week4], generatedFor: [first, second] };
+}
+
 export function computeMilestones(state: StaffPathState): Milestone[] {
   const sessions = completedSessions(state).length;
   const streak = computeStreak(state);
