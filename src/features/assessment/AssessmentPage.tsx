@@ -1,6 +1,19 @@
 import { useState } from 'react';
 import { appStore, useStaffPathState } from '../../lib/appStore';
 import { AnalyticsPage } from '../analytics/AnalyticsPage';
+import { encyclopediaChapters } from '../../data/encyclopediaChapters';
+import { Link } from '../../lib/router';
+
+const competencyToChapters: Record<string, string[]> = {
+  'technical-foundations': ['cap-pacelc-consistency', 'consensus-coordination', 'distributed-transactions', 'messaging-delivery-semantics', 'stream-processing'],
+  'system-design': ['requirements-quality-attributes', 'load-balancing-rate-limits', 'capacity-estimation', 'api-protocol-selection', 'consistent-hashing'],
+  'production': ['slo-observability-incidents', 'resilience-patterns', 'cache-stampede', 'chaos-engineering', 'autoscaling-capacity'],
+  'business': ['capacity-estimation', 'technical-strategy-decisions', 'cost-optimization-finops', 'dora-metrics-engineering'],
+  'execution': ['safe-delivery-migrations', 'distributed-transactions', 'technical-debt-management', 'progressive-delivery'],
+  'influence': ['technical-strategy-decisions', 'influence-conflict-feedback', 'platform-engineering'],
+  'communication': ['influence-conflict-feedback', 'api-protocol-selection', 'technical-strategy-decisions'],
+  'mentoring': ['mentoring-leverage', 'staff-archetypes', 'influence-conflict-feedback'],
+};
 
 const competencies = [
   ['technical-foundations', 'Technical foundations', 'Networking, data, distributed systems and engineering fundamentals'],
@@ -55,6 +68,21 @@ function AssessmentTab() {
                 <span>{item.score}/5 · {levelName(item.score)}</span>
               </div>
               <input aria-label={`${title} score`} type="range" min="1" max="5" value={item.score} onChange={(event) => update(id, 'score', event.target.value)} />
+              {item.score <= 3 && (() => {
+                const chapterIds = competencyToChapters[id] ?? [];
+                const recs = encyclopediaChapters.filter((c) => chapterIds.includes(c.id)).slice(0, 3);
+                return recs.length > 0 ? (
+                  <div className="competency-chapter-recs">
+                    <span className="eyebrow">RECOMMENDED CHAPTERS</span>
+                    {recs.map((c) => (
+                      <Link key={c.id} to="/encyclopedia" className="chapter-rec-chip">
+                        <span className="category-chip" data-cat={c.category}>{c.category}</span>
+                        {c.title} →
+                      </Link>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
               <textarea aria-label={`${title} evidence`} value={item.evidence} onChange={(event) => update(id, 'evidence', event.target.value)} placeholder="Evidence: project, decision, result, feedback, or artifact…" />
             </article>
           );

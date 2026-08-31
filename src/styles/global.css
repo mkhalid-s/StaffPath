@@ -602,3 +602,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .comm-nav-group { margin-top: 6px; }
 .comm-nav-group:first-child { margin-top: 0; }
 .comm-nav-group .nav-group-label { padding: 8px 12px 4px; }
+
+/* ── Assessment competency chapter recommendations ── */
+.competency-chapter-recs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0 4px; }
+.competency-chapter-recs .eyebrow { width: 100%; margin: 0 0 4px; }
+.chapter-rec-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 6px; border: 1px solid var(--line); border-radius: 20px; background: var(--cream); color: var(--ink); text-decoration: none; font-size: 10px; font-weight: 600; }
+.chapter-rec-chip:hover { border-color: var(--green); background: #e9f0e5; }
