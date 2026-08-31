@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { initKeyboardShortcuts, FOCUS_SEARCH_EVENT } from './keyboardShortcuts';
 
 describe('keyboardShortcuts', () => {
-  let onShowHelp: ReturnType<typeof vi.fn>;
+  let onShowHelp: () => void;
 
   beforeEach(() => {
     onShowHelp = vi.fn();
