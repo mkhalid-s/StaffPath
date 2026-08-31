@@ -45,8 +45,19 @@ export function ChapterDetail({ chapter, onClose, completed, onToggleComplete, p
       <header data-category={chapter.category}><div><span className="category-chip" data-cat={chapter.category}>{(() => { const Icon = CATEGORY_ICONS[chapter.category]; return Icon ? <Icon size={10} /> : null; })()}{chapter.category}</span><h2 id="chapter-title">{chapter.title}</h2><p>{chapter.summary}</p></div><button ref={closeButton} onClick={onClose} aria-label="Close chapter">×</button></header>
       <div className="chapter-body">
         <section className="chapter-callout"><span>PROBLEM STATEMENT</span><p>{chapter.problemStatement}</p></section>
+        {chapter.coreTension && <section className="chapter-callout core-tension"><span>CORE TENSION</span><p>{chapter.coreTension}</p></section>}
         {packAngle && <section className="chapter-callout pack-angle"><span>COMPANY PACK ANGLE</span><p>{packAngle}</p></section>}
         <section className="chapter-interview"><span>INTERVIEW QUESTION</span><h3>{chapter.interviewQuestion}</h3></section>
+        {chapter.levelExpectations && (
+          <section className="chapter-section level-expectations">
+            <h3>Level expectations</h3>
+            <div className="level-grid">
+              <div className="level-card" data-level="mid"><span>MID</span><p>{chapter.levelExpectations.mid}</p></div>
+              <div className="level-card" data-level="senior"><span>SENIOR</span><p>{chapter.levelExpectations.senior}</p></div>
+              <div className="level-card" data-level="staff"><span>STAFF</span><p>{chapter.levelExpectations.staff}</p></div>
+            </div>
+          </section>
+        )}
         <ListSection title="Core concepts" items={chapter.coreConcepts} />
         <section className="chapter-section full"><h3>Architecture diagram</h3><ArchitectureDiagram source={chapter.architectureDiagram} title={chapter.title} /></section>
         <ListSection title="Worked solution" items={chapter.solutionApproach} />

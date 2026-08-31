@@ -5,6 +5,12 @@ export interface Flashcard {
   answer: string;
 }
 
+export interface LevelExpectations {
+  mid: string;
+  senior: string;
+  staff: string;
+}
+
 export interface EncyclopediaChapter {
   id: string;
   title: string;
@@ -12,6 +18,8 @@ export interface EncyclopediaChapter {
   summary: string;
   problemStatement: string;
   interviewQuestion: string;
+  coreTension?: string;
+  levelExpectations?: LevelExpectations;
   coreConcepts: string[];
   architectureDiagram: string;
   solutionApproach: string[];
