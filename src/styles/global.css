@@ -585,3 +585,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .nav-locked svg.nav-lock { margin-left: auto; opacity: 0.6; }
 .shortcut-hint-link { display: inline-flex; align-items: center; gap: 6px; }
 .mobile-header button svg { display: block; }
+
+/* ── Practice Lab scenario search ── */
+.practice-search-bar { position: relative; display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.practice-search-bar input { flex: 1; padding: 11px 14px; border: 1px solid var(--line); border-radius: 9px; background: var(--card); font: 13px/1 inherit; outline: 0; }
+.practice-search-bar input:focus { border-color: var(--green); }
+.practice-search-count { flex: none; color: var(--muted); font-size: 11px; font-weight: 600; }
+.practice-browse-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 20px; }
+.practice-browse-card { padding: 13px 15px; border: 1px solid var(--line); border-radius: 9px; background: var(--card); text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 6px; }
+.practice-browse-card:hover { border-color: var(--green); box-shadow: var(--shadow); }
+.practice-browse-card strong { font-size: 12px; line-height: 1.35; }
+.practice-browse-card p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+@media (max-width: 680px) { .practice-browse-grid { grid-template-columns: 1fr; } }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { practiceCatalog, practiceRubrics, practiceTracks, type PracticeTrack } from '../../data/practiceCatalog';
 import { getActivePack } from '../../data/companyPacks';
 import { appStore, useStaffPathState } from '../../lib/appStore';
@@ -51,6 +51,19 @@ export function PracticePage() {
   const rubric = practiceRubrics[track];
   const pack = getActivePack(state.profile.selectedCompanyPack);
   const [packQOpen, setPackQOpen] = useState(false);
+  const [browseQuery, setBrowseQuery] = useState('');
+
+  const allScenarios = useMemo(() => practiceTracks.flatMap((t) =>
+    practiceCatalog[t].map((s, i) => ({ ...s, trackIndex: i }))
+  ), []);
+
+  const browseResults = useMemo(() => {
+    if (!browseQuery.trim()) return [];
+    const q = browseQuery.toLowerCase();
+    return allScenarios.filter((s) =>
+      s.title.toLowerCase().includes(q) || s.prompt.toLowerCase().includes(q)
+    ).slice(0, 12);
+  }, [browseQuery, allScenarios]);
   const packScenarios = (pack as (typeof pack & PackWithScenarios) | null)?.practiceScenarios ?? [];
   const packQuestions = (pack as (typeof pack & PackWithScenarios) | null)?.behavioralQuestions ?? [];
 
@@ -72,7 +85,47 @@ export function PracticePage() {
   }
 
   return <div className="page practice-page">
-    <div className="page-heading"><div><p className="eyebrow">47 DELIBERATE-PRACTICE SCENARIOS</p><h1>Practice Lab</h1><p>Produce an answer first. Then reveal coaching, score the evidence, reflect, and repeat.</p></div><div className="chapter-count"><strong>{state.practiceAttempts.length}</strong><span>attempts saved</span></div></div>
+    <div className="page-heading"><div><p className="eyebrow">DELIBERATE PRACTICE · 112 SCENARIOS</p><h1>Practice Lab</h1><p>Produce an answer first. Then reveal coaching, score the evidence, reflect, and repeat.</p></div><div className="chapter-count"><strong>{state.practiceAttempts.length}</strong><span>attempts saved</span></div></div>
+
+    <div className="practice-search-bar">
+      <input
+        type="search"
+        aria-label="Search all scenarios"
+        placeholder="Search across all 112 scenarios…"
+        value={browseQuery}
+        onChange={(e) => setBrowseQuery(e.target.value)}
+      />
+      {browseQuery && <span className="practice-search-count">{browseResults.length} result{browseResults.length !== 1 ? 's' : ''}</span>}
+    </div>
+
+    {browseQuery && browseResults.length > 0 && (
+      <div className="practice-browse-grid">
+        {browseResults.map((s) => (
+          <button
+            key={s.id}
+            type="button"
+            className="practice-browse-card"
+            onClick={() => {
+              setBrowseQuery('');
+              switchTrack(s.track);
+              appStore.update((current) => ({
+                ...current,
+                practiceCursor: { ...current.practiceCursor, [s.track]: s.trackIndex },
+              }));
+            }}
+          >
+            <span className="category-chip">{labels[s.track][0]}</span>
+            <strong>{s.title}</strong>
+            <p>{s.prompt}</p>
+          </button>
+        ))}
+      </div>
+    )}
+
+    {browseQuery && browseResults.length === 0 && (
+      <div className="interview-empty">No scenarios match "{browseQuery}" — try fewer words.</div>
+    )}
+
     <div className="interview-tabs" role="tablist">{practiceTracks.map((item) => <button role="tab" aria-selected={track === item} className={track === item ? 'active' : ''} key={item} onClick={() => switchTrack(item)}>{labels[item][0]} <span>{practiceCatalog[item].length}</span></button>)}</div>
     <form className="practice-layout" onSubmit={saveAttempt}>
       <section className="challenge-panel">
