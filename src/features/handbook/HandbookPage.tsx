@@ -10,6 +10,12 @@ const download = (name: string, content: string) => { const url = URL.createObje
 export function HandbookPage() {
   const state = useStaffPathState();
   const [tab, setTab] = useState<Tab>('evidence');
+  const [expandedTemplates, setExpandedTemplates] = useState<Set<string>>(new Set());
+  const toggleExample = (title: string) => setExpandedTemplates((prev) => {
+    const next = new Set(prev);
+    next.has(title) ? next.delete(title) : next.add(title);
+    return next;
+  });
   const [story, setStory] = useState({ title: '', situation: '', task: '', action: '', result: '', reflection: '', principles: [] as string[] });
   const [diagramTitle, setDiagramTitle] = useState('System context');
   const [diagramSource, setDiagramSource] = useState('flowchart LR\n  U[User] --> G[API Gateway]\n  G --> S[Service]\n  S --> D[(Database)]');
@@ -46,7 +52,7 @@ export function HandbookPage() {
       <section><h2>Architecture diagram studio</h2><p>Edit Mermaid flowchart source. Saving the same title creates a new version instead of overwriting prior evidence.</p><label>Diagram title<input aria-label="Diagram title" value={diagramTitle} onChange={(event) => setDiagramTitle(event.target.value)} /></label><label>Mermaid source<textarea aria-label="Mermaid source" value={diagramSource} onChange={(event) => setDiagramSource(event.target.value)} /></label><button className="button primary" onClick={saveDiagram}>Save new version</button></section>
       <section><ArchitectureDiagram title={diagramTitle || 'Diagram'} source={diagramSource} /><div className="diagram-history">{state.diagrams.slice().reverse().map((item) => <button key={item.id} onClick={() => { setDiagramTitle(item.title); setDiagramSource(item.source); }}><span>{item.title} · v{item.version}</span><small>{new Date(item.updatedAt).toLocaleDateString()}</small></button>)}{!state.diagrams.length && <div className="interview-empty">Saved diagram versions will appear here.</div>}</div></section>
     </div>}
-    {tab === 'templates' && <div className="template-grid">{handbookTemplates.map((template) => <article className="template-card" key={template.title}><h3>{template.title}</h3><pre>{template.body}</pre><button className="button" onClick={() => navigator.clipboard.writeText(template.body)}>Copy template</button></article>)}</div>}
+    {tab === 'templates' && <div className="template-grid">{handbookTemplates.map((template) => { const expanded = expandedTemplates.has(template.title); return <article className="template-card" key={template.title}><h3>{template.title}</h3><pre>{template.body}</pre><div className="template-actions"><button className="button" onClick={() => navigator.clipboard.writeText(template.body)}>Copy template</button><button className="button" onClick={() => toggleExample(template.title)}>{expanded ? 'Hide example ↑' : 'Show example ↓'}</button></div>{expanded && <div className="template-example"><span className="eyebrow">FILLED EXAMPLE</span><pre>{template.example}</pre><button className="button" onClick={() => navigator.clipboard.writeText(template.example)}>Copy example</button></div>}</article>; })}</div>}
   </div>;
 }
 
