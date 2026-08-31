@@ -11,10 +11,17 @@ interface ReviewCard {
   answer: string;
 }
 
+interface ScheduleEntry {
+  interval: number;
+  nextReview: string;
+  repetitions: number;
+}
+
 const categories: Array<'All' | ChapterCategory> = ['All', 'Systems', 'Data', 'Reliability', 'AI', 'Architecture', 'Leadership'];
 const KNOWN_KEY = 'staffpath-flashcard-known';
+const SCHEDULE_KEY = 'staffpath-flashcard-schedule';
 
-function loadKnown(): Set<string> {
+function loadKnownLegacy(): Set<string> {
   try {
     const raw = localStorage.getItem(KNOWN_KEY);
     if (!raw) return new Set();
@@ -25,12 +32,55 @@ function loadKnown(): Set<string> {
   }
 }
 
-function saveKnown(known: Set<string>) {
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function addDays(days: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+function loadSchedule(): Record<string, ScheduleEntry> {
+  let schedule: Record<string, ScheduleEntry> = {};
   try {
-    localStorage.setItem(KNOWN_KEY, JSON.stringify([...known]));
+    const raw = localStorage.getItem(SCHEDULE_KEY);
+    if (raw) schedule = JSON.parse(raw) ?? {};
+  } catch {
+    schedule = {};
+  }
+  for (const cardId of loadKnownLegacy()) {
+    if (!schedule[cardId]) {
+      schedule[cardId] = { interval: 7, nextReview: addDays(7), repetitions: 3 };
+    }
+  }
+  return schedule;
+}
+
+function saveSchedule(schedule: Record<string, ScheduleEntry>) {
+  try {
+    localStorage.setItem(SCHEDULE_KEY, JSON.stringify(schedule));
   } catch {
     // ignore storage failures (private mode, quota, etc.)
   }
+}
+
+function nextEntry(prev: ScheduleEntry | undefined, quality: 'easy' | 'hard'): ScheduleEntry {
+  if (quality === 'hard') {
+    return { interval: 0, nextReview: todayIso(), repetitions: 0 };
+  }
+  const repetitions = (prev?.repetitions ?? 0) + 1;
+  let interval: number;
+  if (repetitions === 1) interval = 1;
+  else if (repetitions === 2) interval = 4;
+  else interval = Math.round((prev?.interval || 4) * 2.5);
+  return { interval, nextReview: addDays(interval), repetitions };
+}
+
+function cardState(entry: ScheduleEntry | undefined): 'new' | 'learning' | 'known' {
+  if (!entry) return 'new';
+  return entry.interval >= 7 ? 'known' : 'learning';
 }
 
 function shuffle<T>(items: T[]): T[] {
@@ -55,24 +105,34 @@ const allCards: ReviewCard[] = encyclopediaChapters.flatMap((chapter) =>
 
 export function FlashcardsPage() {
   const [category, setCategory] = useState<'All' | ChapterCategory>('All');
+  const [dueOnly, setDueOnly] = useState(false);
   const [deck, setDeck] = useState<ReviewCard[]>([]);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [known, setKnown] = useState<Set<string>>(() => loadKnown());
-  const [reviewAgain, setReviewAgain] = useState<Set<string>>(new Set());
+  const [schedule, setSchedule] = useState<Record<string, ScheduleEntry>>(() => loadSchedule());
+  const [lastRated, setLastRated] = useState<{ id: string; interval: number } | null>(null);
   const [finished, setFinished] = useState(false);
 
-  const filteredCards = useMemo(
-    () => (category === 'All' ? allCards : allCards.filter((c) => c.category === category)),
-    [category]
-  );
+  const today = todayIso();
+
+  const filteredCards = useMemo(() => {
+    let cards = category === 'All' ? allCards : allCards.filter((c) => c.category === category);
+    if (dueOnly) {
+      cards = cards.filter((c) => {
+        const entry = schedule[c.id];
+        return !entry || entry.nextReview <= today;
+      });
+    }
+    return cards;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category, dueOnly]);
 
   const buildDeck = useCallback((cards: ReviewCard[], doShuffle: boolean) => {
     setDeck(doShuffle ? shuffle(cards) : cards);
     setIndex(0);
     setFlipped(false);
     setFinished(false);
-    setReviewAgain(new Set());
+    setLastRated(null);
   }, []);
 
   useEffect(() => {
@@ -88,6 +148,7 @@ export function FlashcardsPage() {
     }
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, deck.length]);
 
   const current = deck[index];
@@ -99,46 +160,42 @@ export function FlashcardsPage() {
     }
     setIndex((i) => i + 1);
     setFlipped(false);
+    setLastRated(null);
   }
 
   function goPrev() {
     if (index === 0) return;
     setIndex((i) => i - 1);
     setFlipped(false);
+    setLastRated(null);
   }
 
   function handleShuffle() {
     buildDeck(filteredCards, true);
   }
 
-  function markKnown(cardId: string) {
-    setKnown((prev) => {
-      const next = new Set(prev);
-      next.add(cardId);
-      saveKnown(next);
+  function rate(cardId: string, quality: 'easy' | 'hard') {
+    const entry = nextEntry(schedule[cardId], quality);
+    setSchedule((prev) => {
+      const next = { ...prev, [cardId]: entry };
+      saveSchedule(next);
       return next;
     });
-    setReviewAgain((prev) => {
-      const next = new Set(prev);
-      next.delete(cardId);
-      return next;
-    });
-    goNext();
+    setLastRated({ id: cardId, interval: entry.interval });
   }
 
-  function markReviewAgain(cardId: string) {
-    setKnown((prev) => {
-      const next = new Set(prev);
-      next.delete(cardId);
-      saveKnown(next);
-      return next;
-    });
-    setReviewAgain((prev) => new Set(prev).add(cardId));
-    goNext();
-  }
-
-  const knownCount = deck.filter((c) => known.has(c.id)).length;
-  const reviewCount = reviewAgain.size;
+  const summaryStats = useMemo(() => {
+    let known = 0;
+    let learning = 0;
+    let isNew = 0;
+    for (const c of deck) {
+      const state = cardState(schedule[c.id]);
+      if (state === 'known') known++;
+      else if (state === 'learning') learning++;
+      else isNew++;
+    }
+    return { known, learning, isNew };
+  }, [deck, schedule]);
 
   return (
     <div className="page flashcard-page">
@@ -161,12 +218,18 @@ export function FlashcardsPage() {
               {item}
             </button>
           ))}
+          <button className={dueOnly ? 'active' : ''} onClick={() => setDueOnly((v) => !v)}>Due today</button>
         </div>
         <div className="flashcard-progress">
           {deck.length > 0 && !finished && (
             <>
               <span>Card {index + 1} of {deck.length}</span>
               {current && <span className="category-chip">{current.category}</span>}
+              {current && (
+                <span className="flashcard-state-chip" data-state={cardState(schedule[current.id])}>
+                  {cardState(schedule[current.id])}
+                </span>
+              )}
             </>
           )}
         </div>
@@ -174,12 +237,12 @@ export function FlashcardsPage() {
 
       {finished || deck.length === 0 ? (
         <div className="flashcard-summary">
-          <h2>{deck.length === 0 ? 'No cards in this category' : 'Deck complete'}</h2>
+          <h2>{deck.length === 0 ? 'No cards match these filters' : 'Deck complete'}</h2>
           {deck.length > 0 && (
             <div className="flashcard-summary-stats">
-              <div><strong>{knownCount}</strong><span>known</span></div>
-              <div><strong>{reviewCount}</strong><span>to review</span></div>
-              <div><strong>{deck.length}</strong><span>total</span></div>
+              <div><strong>{summaryStats.known}</strong><span>known</span></div>
+              <div><strong>{summaryStats.learning}</strong><span>learning</span></div>
+              <div><strong>{summaryStats.isNew}</strong><span>new</span></div>
             </div>
           )}
           <button className="button primary" onClick={() => buildDeck(filteredCards, false)}>Restart deck</button>
@@ -212,8 +275,21 @@ export function FlashcardsPage() {
           </div>
 
           <div className="flashcard-known-row">
-            <button className="button" onClick={() => current && markReviewAgain(current.id)}>↻ Review again</button>
-            <button className="button primary" onClick={() => current && markKnown(current.id)}>✓ Mark as known</button>
+            {lastRated && current && lastRated.id === current.id ? (
+              <div className="flashcard-rated">
+                <span>
+                  {lastRated.interval === 0
+                    ? 'Review again shortly'
+                    : `Next review in ${lastRated.interval} day${lastRated.interval === 1 ? '' : 's'}`}
+                </span>
+                <button className="button primary" onClick={goNext}>Continue →</button>
+              </div>
+            ) : (
+              <>
+                <button className="button" onClick={() => current && rate(current.id, 'hard')}>Hard ↻</button>
+                <button className="button primary" onClick={() => current && rate(current.id, 'easy')}>Easy ✓</button>
+              </>
+            )}
           </div>
 
           <div className="flashcard-nav">
