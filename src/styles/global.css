@@ -597,3 +597,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .practice-browse-card strong { font-size: 12px; line-height: 1.35; }
 .practice-browse-card p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 @media (max-width: 680px) { .practice-browse-grid { grid-template-columns: 1fr; } }
+
+/* ── Communication Gym grouped nav ── */
+.comm-nav-group { margin-top: 6px; }
+.comm-nav-group:first-child { margin-top: 0; }
+.comm-nav-group .nav-group-label { padding: 8px 12px 4px; }
