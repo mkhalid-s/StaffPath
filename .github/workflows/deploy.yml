@@ -54,6 +54,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    continue-on-error: true  # Pages not enabled until repo is public or GitHub Pro
 
     environment:
       name: github-pages
