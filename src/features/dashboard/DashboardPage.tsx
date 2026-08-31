@@ -64,8 +64,8 @@ export function DashboardPage() {
         <div className="hero-stats">
           <div><strong>{sessions}</strong><span>sessions</span></div>
           <div><strong>{state.practiceAttempts.length}</strong><span>practice attempts</span></div>
+          <div><strong>{state.completedChapters.length}/56</strong><span>chapters evidenced</span></div>
           <div><strong>{focusHours}h</strong><span>focus time</span></div>
-          <div><strong>{communication}</strong><span>communication reps</span></div>
         </div>
       </section>
 
