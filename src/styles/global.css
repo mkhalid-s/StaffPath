@@ -608,3 +608,16 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .competency-chapter-recs .eyebrow { width: 100%; margin: 0 0 4px; }
 .chapter-rec-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 6px; border: 1px solid var(--line); border-radius: 20px; background: var(--cream); color: var(--ink); text-decoration: none; font-size: 10px; font-weight: 600; }
 .chapter-rec-chip:hover { border-color: var(--green); background: #e9f0e5; }
+
+/* ── Roadmap topic tag → encyclopedia link ── */
+.topic-tag-link { padding: 4px 6px; border-radius: 4px; background: rgba(255,255,255,.12); color: var(--lime); text-decoration: none; font-size: 8px; font-weight: 700; }
+.topic-tag-link:hover { background: rgba(255,255,255,.2); }
+
+/* ── Resources read state ── */
+.resource-card-wrap { position: relative; }
+.resource-card-wrap.resource-read > a { opacity: .6; }
+.resource-card-wrap.resource-read > a::after { content: '✓'; position: absolute; top: 10px; right: 10px; color: var(--green); font-size: 14px; font-weight: 700; }
+.resource-read-btn { position: absolute; bottom: 14px; right: 14px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 12px; background: white; color: var(--muted); font-size: 8px; font-weight: 700; cursor: pointer; }
+.resource-read-btn.read { border-color: var(--green); color: var(--green); background: #eaf0e6; }
+.resource-read-btn:hover { border-color: var(--green); }
+.resource-grid { align-items: start; }

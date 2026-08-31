@@ -1,7 +1,19 @@
 import { roadmapSessions } from '../data/roadmap';
 import { practiceCatalog, type PracticeTrack } from '../data/practiceCatalog';
+import { encyclopediaChapters } from '../data/encyclopediaChapters';
 import type { StaffPathState } from '../domain/appState';
 import { COMPETENCIES, findWeakestCompetencies } from './recommendations';
+
+const COMPETENCY_CHAPTERS: Record<string, string[]> = {
+  'technical-foundations': ['cap-pacelc-consistency', 'consensus-coordination', 'distributed-transactions', 'messaging-delivery-semantics', 'replication-protocols'],
+  'system-design': ['requirements-quality-attributes', 'load-balancing-rate-limits', 'capacity-estimation', 'api-protocol-selection', 'consistent-hashing'],
+  'production': ['slo-observability-incidents', 'resilience-patterns', 'cache-stampede', 'chaos-engineering', 'autoscaling-capacity'],
+  'business': ['technical-strategy-decisions', 'cost-optimization-finops', 'dora-metrics-engineering', 'platform-engineering'],
+  'execution': ['safe-delivery-migrations', 'technical-debt-management', 'progressive-delivery', 'cqrs-event-sourcing'],
+  'influence': ['technical-strategy-decisions', 'influence-conflict-feedback', 'platform-engineering', 'staff-archetypes'],
+  'communication': ['influence-conflict-feedback', 'api-protocol-selection', 'technical-strategy-decisions'],
+  'mentoring': ['mentoring-leverage', 'staff-archetypes', 'influence-conflict-feedback'],
+};
 
 export interface IntelligentAction {
   title: string;
@@ -238,6 +250,25 @@ export function buildWhatsNextActions(state: StaffPathState, today = new Date())
       priority: 45,
       category: 'communication',
     });
+  }
+
+  // Chapter recommendation — weakest competency, excluding completed chapters
+  for (const area of focusAreas) {
+    const chapterIds = COMPETENCY_CHAPTERS[area.competencyId] ?? [];
+    const chapter = encyclopediaChapters.find(
+      (c) => chapterIds.includes(c.id) && !state.completedChapters.includes(c.id)
+    );
+    if (chapter) {
+      actions.push({
+        title: `Study: ${chapter.title}`,
+        reason: area.reason,
+        insight: `Closes your ${area.title.toLowerCase()} gap — ${chapter.coreConcepts.slice(0, 2).join(', ')}.`,
+        to: '/encyclopedia',
+        priority: 62,
+        category: 'chapter',
+      });
+      break;
+    }
   }
 
   return actions

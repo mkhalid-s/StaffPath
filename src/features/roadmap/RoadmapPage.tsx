@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { roadmapSessions, roadmapWeeks, ROADMAP_SESSION_COUNT, sessionsPerWeek, type SessionCategory } from '../../data/roadmap';
+import { encyclopediaChapters } from '../../data/encyclopediaChapters';
 import type { RoadmapSessionRecord } from '../../domain/appState';
 import { resolveModeConfig } from '../../domain/preparationModes';
 import { appStore, useStaffPathState } from '../../lib/appStore';
+import { Link } from '../../lib/router';
 import { enqueueAction, isOnline } from '../../lib/offlineQueue';
 import { buildSessionPlan } from './sessionPlan';
 
@@ -66,7 +68,15 @@ export function RoadmapPage() {
           <div className="session-meta"><span>DAY {selected.id}</span><span>WEEK {selected.week} · {selected.category.toUpperCase()}</span></div>
           <h2 id="daily-session-title">{selected.title}</h2>
           <p>{selected.description}</p>
-          <div className="topic-cloud">{selected.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
+          <div className="topic-cloud">{selected.tags.map((tag) => {
+            const linked = encyclopediaChapters.find((c) =>
+              c.title.toLowerCase().includes(tag.toLowerCase()) ||
+              tag.toLowerCase().includes(c.title.toLowerCase().split(' ')[0])
+            );
+            return linked
+              ? <Link key={tag} to="/encyclopedia" className="topic-tag-link" title={`Open: ${linked.title}`}>{tag} ↗</Link>
+              : <span key={tag}>{tag}</span>;
+          })}</div>
           <div className="focus-blocks">
             {plan.blocks.map((block) => <article key={block.label}><strong>{block.minutes}m</strong><div><span>{block.label}</span><p>{block.prompt}</p></div></article>)}
           </div>

@@ -1,12 +1,28 @@
 import { useMemo, useState } from 'react';
 import { learningResources } from '../../data/resources';
 
+function useReadResources() {
+  const [read, setRead] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem('staffpath-read-resources') || '[]')); }
+    catch { return new Set(); }
+  });
+  const toggle = (url: string) => setRead((prev) => {
+    const next = new Set(prev);
+    next.has(url) ? next.delete(url) : next.add(url);
+    try { localStorage.setItem('staffpath-read-resources', JSON.stringify([...next])); } catch {}
+    return next;
+  });
+  return { read, toggle };
+}
+
 const ALL_TYPES = ['All', 'Book', 'Paper', 'Guide', 'Reference', 'Blog'] as const;
 type TypeFilter = typeof ALL_TYPES[number];
 
 export function ResourcesPage() {
   const [query, setQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('All');
+  const { read, toggle } = useReadResources();
+  const readCount = read.size;
 
   const results = useMemo(() => {
     const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
@@ -34,8 +50,8 @@ export function ResourcesPage() {
           <p>Use references for depth and verification; use StaffPath to apply, explain, and retain what matters.</p>
         </div>
         <div className="chapter-count">
-          <strong>{learningResources.length}</strong>
-          <span>authoritative resources</span>
+          <strong>{readCount}/{learningResources.length}</strong>
+          <span>resources read</span>
         </div>
       </div>
 
@@ -64,13 +80,22 @@ export function ResourcesPage() {
 
       <div className="resource-grid">
         {results.map((item) => (
-          <a href={item.url} target="_blank" rel="noreferrer" key={item.url}>
-            <div><span>{item.domain}</span><em>{item.type}</em></div>
-            <h2>{item.title}</h2>
-            <strong>{item.provider}</strong>
-            <p>{item.purpose}</p>
-            <b>Open primary source ↗</b>
-          </a>
+          <div key={item.url} className={`resource-card-wrap ${read.has(item.url) ? 'resource-read' : ''}`}>
+            <a href={item.url} target="_blank" rel="noreferrer">
+              <div><span>{item.domain}</span><em>{item.type}</em></div>
+              <h2>{item.title}</h2>
+              <strong>{item.provider}</strong>
+              <p>{item.purpose}</p>
+              <b>Open primary source ↗</b>
+            </a>
+            <button
+              className={`resource-read-btn ${read.has(item.url) ? 'read' : ''}`}
+              onClick={() => toggle(item.url)}
+              aria-label={read.has(item.url) ? 'Mark as unread' : 'Mark as read'}
+            >
+              {read.has(item.url) ? '✓ Read' : 'Mark read'}
+            </button>
+          </div>
         ))}
         {!results.length && <div className="interview-empty">No resources match that search.</div>}
       </div>
