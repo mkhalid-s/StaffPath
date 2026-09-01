@@ -7,6 +7,12 @@ const testingStrategiesChapter: EncyclopediaChapter = {
   summary: 'The testing pyramid, contract testing, property-based testing, and integration test trade-offs are not mechanical checklist items but a set of decisions about where to spend limited testing budget across system boundaries, and the highest-ROI investment at Staff level is usually reducing diagnosis time, not adding more tests.',
   problemStatement: 'A team\'s CI pipeline has 800 tests, takes 45 minutes, and is red 30-40% of the time on flaky failures unrelated to the change being merged, so engineers routinely re-run failing builds without reading why they failed, and the suite that was meant to give confidence now actively slows delivery while providing false signal.',
   interviewQuestion: 'Your team\'s CI pipeline has 800 tests, takes 45 minutes, and fails 40% of the time on flaky tests. How do you improve the testing strategy without just deleting tests?',
+  coreTension: 'Deleting flaky tests fixes CI speed immediately but silently removes real coverage, while diagnosing each one properly is the only durable fix and is far slower than the deadline pressure that created the flaky suite in the first place will tolerate.',
+  levelExpectations: {
+    mid: 'Writes unit tests following the pyramid shape by convention. When a test is flaky, either re-runs it or deletes it to unblock the merge.',
+    senior: 'Diagnoses flaky tests by root cause (shared state, async ordering, timing) before deciding to quarantine or fix. Introduces contract testing to reduce reliance on brittle E2E tests.',
+    staff: 'Treats a red, flaky suite as a systems problem to diagnose, not tolerate or delete — tracks mean-time-to-diagnose as the metric that predicts whether the suite is actually helping, and shapes the pyramid ratio to the system\'s actual boundary stability rather than a fixed rule.',
+  },
   coreConcepts: [
     'Testing pyramid — unit, integration, and end-to-end layers and their intended cost/confidence trade-off',
     'Test double taxonomy — mock, stub, fake, and spy, and when each is the correct choice',
@@ -102,6 +108,12 @@ const graphqlArchitectureChapter: EncyclopediaChapter = {
   summary: 'GraphQL solves over-fetching and under-fetching for flexible clients, but running it reliably in production requires solving the N+1 query problem with DataLoader, bounding query complexity against denial-of-service, and choosing federation deliberately when multiple teams own different parts of one schema.',
   problemStatement: 'A social commerce platform needs a single API surface for a feed, a product catalog, and a checkout flow, each owned by a different backend team with its own database, and a naive GraphQL gateway either becomes a monolithic schema no team can safely change or a set of stitched schemas that silently breaks when one team renames a field.',
   interviewQuestion: 'Design a GraphQL API gateway for a social commerce platform where the feed, product catalog, and checkout are owned by three different backend teams, each with their own database.',
+  coreTension: 'GraphQL\'s flexibility to let clients request exactly the shape of data they need is precisely what makes query cost unpredictable at the server, turning every unbounded query into a potential denial-of-service vector that a fixed REST endpoint never had to defend against.',
+  levelExpectations: {
+    mid: 'Can design a single-service GraphQL schema and resolvers. Unaware of the N+1 query problem or query complexity limits.',
+    senior: 'Implements DataLoader batching by default for list resolvers, enforces query depth/complexity limits at the gateway, and chooses federation over schema stitching for genuinely multi-team schemas.',
+    staff: 'Treats DataLoader as a correctness requirement, not an optimization, and has an explicit answer for introspection and unbounded-query attack surfaces before launch, not after an incident. Frames entity ownership conflicts as a governance problem to resolve at design time.',
+  },
   coreConcepts: [
     'Schema-first versus code-first design and their implications for cross-team schema ownership',
     'Resolver chain and execution model — how a single query fans out into a tree of resolver calls',
@@ -197,6 +209,12 @@ const infrastructureAsCodeChapter: EncyclopediaChapter = {
   summary: 'Terraform state is the most dangerous artifact in an infrastructure practice, modules are how IaC scales across teams without turning every change into a bottleneck review, and GitOps applies cleanly to Kubernetes workloads but needs more care when applied to higher-blast-radius cloud resources like networking and IAM.',
   problemStatement: 'A 200-module, 40-repository Terraform estate for a multi-region cloud deployment has turned the infrastructure team into a review bottleneck, since every change to any module requires their sign-off, and the organization needs a way to enable team self-service without losing governance over high-blast-radius resources.',
   interviewQuestion: 'Your team manages 200 Terraform modules across 40 repositories for a multi-region cloud deployment. The infra team is a bottleneck — every change requires their review. How do you restructure the IaC to enable self-service without losing governance?',
+  coreTension: 'Removing the infra team as a review bottleneck requires decentralizing apply authority, but every decentralized change still risks touching the same shared, high-blast-radius resources that made central review necessary in the first place.',
+  levelExpectations: {
+    mid: 'Writes Terraform modules and applies changes through a standard review process. Treats state file management as an implementation detail handled by tooling.',
+    senior: 'Classifies modules by blast radius, publishes versioned reusable modules with narrow contracts, and introduces policy-as-code gates to reduce reliance on manual review for low-risk changes.',
+    staff: 'Reframes governance as tiered by blast radius rather than removed — reserves human review only for genuinely high-risk resources (IAM, VPC, DNS), and treats Terraform state with the same operational rigor as a production database, since losing it has comparable consequences.',
+  },
   coreConcepts: [
     'Declarative versus imperative infrastructure as code and what each implies for drift detection',
     'Terraform HCL and the state file as the source of truth for what infrastructure actually exists',
@@ -292,6 +310,12 @@ const domainDrivenDesignChapter: EncyclopediaChapter = {
   summary: 'The aggregate boundary is the single most consequential modeling decision in domain-driven design, since it defines the transactional consistency boundary and crossing it means accepting eventual consistency, and ubiquitous language is a living shared vocabulary between engineers and domain experts that must be actively maintained, not a one-time naming exercise.',
   problemStatement: 'An e-commerce platform\'s order management domain has grown organically into a tangle of services that all reach directly into each other\'s data, with no clear boundary for where an order\'s consistency guarantees begin and end, making it unclear which service owns the authoritative rules for order state transitions and where eventual consistency is acceptable.',
   interviewQuestion: 'Design the order management domain for an e-commerce platform using DDD. Identify the bounded contexts, the key aggregates in each context, and how they communicate across boundaries.',
+  coreTension: 'The aggregate boundary defines what "atomic" means in the system, so drawing it too large creates contention across unrelated concerns while drawing it too small forces unnecessary cross-aggregate coordination — there is no boundary choice that avoids one cost or the other.',
+  levelExpectations: {
+    mid: 'Can identify entities and value objects in a domain model. Treats aggregate boundaries as an implementation detail rather than a deliberate consistency decision.',
+    senior: 'Draws aggregate boundaries around genuine transactional invariants, communicates across bounded contexts via integration events rather than direct calls, and uses sagas for cross-aggregate workflows.',
+    staff: 'Treats the aggregate boundary decision as the single most consequential modeling choice with lasting architectural consequences, and pushes back on applying tactical DDD patterns to simple CRUD subdomains as much as on under-modeling a genuinely complex one. Maintains ubiquitous language as an ongoing obligation, not a one-time exercise.',
+  },
   coreConcepts: [
     'Bounded context — the fundamental DDD unit within which a model and its language are self-consistent',
     'Ubiquitous language — a shared vocabulary maintained actively between engineers and domain experts within a context',

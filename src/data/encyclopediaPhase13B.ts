@@ -7,6 +7,12 @@ export const zeroTrustNetworkingChapter: EncyclopediaChapter = {
   summary: 'Authenticate and authorize every request at the application layer regardless of network location, replacing the perimeter model with continuous, identity-and-device-aware verification.',
   problemStatement: 'A VPN-based perimeter grants broad internal network trust to anyone who authenticates once, so a single compromised credential or device gives an attacker lateral access to everything inside — and the model collapses entirely once remote workers, contractors, and SaaS services no longer sit inside any perimeter at all.',
   interviewQuestion: 'Your company is moving to a fully remote workforce and SaaS-first model. The current VPN-based network perimeter is failing — engineers bypass it, contractors cannot use it, and a single VPN credential compromise exposes your entire internal network. Design a zero-trust access architecture.',
+  coreTension: 'Removing location-based trust means authenticating and authorizing every single request, but the policy engine performing that check becomes a new critical-path dependency whose own availability now gates all access.',
+  levelExpectations: {
+    mid: 'Knows zero-trust means not trusting the network perimeter. Can describe an identity-aware proxy conceptually. Unclear on device trust or mTLS mechanics.',
+    senior: 'Designs an identity-aware proxy backed by a policy engine, implements mTLS via service mesh for service-to-service calls, and understands micro-segmentation. Plans an incremental migration from VPN.',
+    staff: 'Recognizes device trust lifecycle (enrollment, rotation, revocation for BYOD/contractors) as the hardest operational surface, not the proxy itself. Sequences migration by risk (highest-risk VPN paths first) and treats the policy engine\'s own availability as a production-critical dependency requiring the same rigor as any other critical service.',
+  },
   coreConcepts: [
     'Perimeter security model versus zero-trust model',
     'BeyondCorp — Google\'s original zero-trust implementation',
@@ -103,6 +109,12 @@ export const costOptimizationFinOpsChapter: EncyclopediaChapter = {
   summary: 'Treat cloud cost as a first-class engineering signal — connect unit economics to architecture and investment decisions, and use rightsizing, commitment strategy, and egress design as the highest-leverage levers.',
   problemStatement: 'Cloud spend grows disproportionately to traffic because workloads are rightsized once and never revisited, egress and data-transfer architecture is decided implicitly rather than deliberately, and no one owns cost as an engineering metric until a leadership escalation forces a reactive, disruptive cut.',
   interviewQuestion: 'Your team\'s monthly AWS bill has grown from $50k to $800k over 18 months with only 3x traffic growth. The CTO asks you to reduce cloud spend by 40% without impacting reliability. How do you approach the investigation and what levers do you pull?',
+  coreTension: 'Cost reduction levers that are easiest to pull first — rightsizing, killing idle resources — directly reduce the headroom that protects reliability, so a cost mandate and a reliability guarantee are in tension from the first lever.',
+  levelExpectations: {
+    mid: 'Can identify obvious idle resources and suggest smaller instance sizes. Treats cost as an ops cleanup task rather than an ongoing engineering signal.',
+    senior: 'Establishes cost attribution via tagging, computes unit economics, and matches commitment strategy (reserved/spot) to workload predictability. Knows egress cost is often the hidden driver.',
+    staff: 'Reframes the mandate from "reduce the bill" to "improve cost per transaction relative to business growth" — connects cost to architecture decisions made at design time (egress, replication topology), and instruments cost with the same alerting rigor as an SLO rather than treating it as a periodic audit.',
+  },
   coreConcepts: [
     'Unit economics — cost per transaction, cost per user, cost per request',
     'Cost attribution and tagging strategy',

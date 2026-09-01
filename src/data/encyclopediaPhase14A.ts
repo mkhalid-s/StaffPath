@@ -7,6 +7,12 @@ export const mentoringLeverageChapter: EncyclopediaChapter = {
   summary: 'Multiply team capability through deliberate mentorship, sponsorship, and delegation instead of becoming the hero who personally does the hardest work.',
   problemStatement: 'Talented engineers default to solving problems themselves because it is faster in the moment, but this creates a dependency bottleneck that caps organizational scale and starves other engineers of the exact growth opportunities that would make them capable of solving it next time.',
   interviewQuestion: 'How do you develop engineers on teams that you influence but do not directly manage, and what does success look like at 6 and 18 months?',
+  coreTension: 'Doing the hard work yourself is always faster in the moment, but every time you do, you spend team capability building for a permanent bottleneck instead of investing in the compounding capacity that removes it.',
+  levelExpectations: {
+    mid: 'Helps teammates when asked and gives correctness-focused code review feedback. Does not yet distinguish mentoring from sponsorship or track growth deliberately.',
+    senior: 'Actively mentors specific engineers with growth goals, uses code review to teach reasoning rather than just correct, and delegates real ownership rather than just tasks.',
+    staff: 'Treats sponsorship (spending own credibility publicly) as distinct from and more scarce than mentoring. Measures personal leverage by what the team can do without them, and deliberately watches for learned helplessness they may have caused through over-availability.',
+  },
   coreConcepts: [
     'Force multiplier versus individual contributor output',
     'Deliberate mentorship — goals, feedback loops, growth edges',
@@ -104,6 +110,12 @@ export const staffArchetypesChapter: EncyclopediaChapter = {
   summary: 'Recognize the four Staff engineer operating models — Tech Lead, Architect, Solver, and Right Hand — and develop the range to shift between them as organizational need changes.',
   problemStatement: 'Engineers are frequently promoted into a Staff role based on the archetype that got them promoted, then find that the organization actually needs a different operating model — and keep operating in their comfortable mode instead of adapting, which produces friction and diminishing impact.',
   interviewQuestion: 'Describe your primary operating model as a Staff engineer and give an example of a time you had to shift to a different mode because the situation required it.',
+  coreTension: 'The archetype that earns a Staff promotion is rarely the archetype the organization needs next, and staying in the comfortable, proven mode is the single most common cause of diminishing impact after promotion.',
+  levelExpectations: {
+    mid: 'Operates effectively in one mode (typically Tech Lead) without yet recognizing it as one of several distinct operating models.',
+    senior: 'Recognizes the four archetypes conceptually and can identify their own dominant mode. Beginning to notice when a situation calls for a different mode than their default.',
+    staff: 'Actively reads organizational signals to determine which archetype is needed versus which is comfortable, deliberately builds range by taking unfamiliar-archetype assignments, and can articulate explicitly when an assignment is a genuine mismatch rather than just discomfort.',
+  },
   coreConcepts: [
     'Tech Lead — team-scoped, delivery-focused, people plus technology',
     'Architect — system-scoped, design authority, cross-team technical direction',

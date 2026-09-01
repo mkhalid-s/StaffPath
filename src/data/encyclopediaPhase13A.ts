@@ -7,6 +7,12 @@ export const consistentHashingChapter: EncyclopediaChapter = {
   summary: 'Distribute keys across nodes on a hash ring so that adding or removing a node remaps only a small fraction of keys, using virtual nodes to smooth out uneven load that a naive ring placement would otherwise produce.',
   problemStatement: 'Teams use simple modular hashing (key mod N) to distribute load across a cluster, then discover that adding or removing a single node remaps almost every key, causing a cache stampede or a full data rebalance that a smarter partitioning scheme would have avoided.',
   interviewQuestion: 'You are adding a 10th cache node to a 9-node Memcached cluster. With simple modular hashing, roughly 90% of cache keys become invalid. Design an approach that minimizes cache invalidation when nodes are added or removed.',
+  coreTension: 'Minimizing data movement on topology change requires giving up the simplicity of a globally recomputed partition function, forcing every client or coordinator to track ring state that can drift out of sync.',
+  levelExpectations: {
+    mid: 'Knows modular hashing remaps almost every key on cluster resize. Can describe the hash ring concept but struggles to explain why virtual nodes are needed.',
+    senior: 'Designs a ring with virtual nodes, sized proportionally to node capacity, and can reason about the 1/n data movement bound. Handles replica placement via ring successors.',
+    staff: 'Treats virtual node count and replication factor as governed capacity-planning parameters, not defaults. Diagnoses hotspots as skewed key distribution rather than a hashing flaw, and designs rebalance staging (rate limiting, pre-warming) as a first-class production concern, not an afterthought.',
+  },
   coreConcepts: [
     'Hash ring — keyspace mapped onto a fixed-size circle',
     'Node placement on the ring via hashing the node identifier',
@@ -105,6 +111,12 @@ export const metricsMonitoringAlertingChapter: EncyclopediaChapter = {
   summary: 'Build the full pipeline from metric emission to actionable alert — collection, time-series storage, aggregation, and rule evaluation — while governing label cardinality so the system does not collapse under its own metadata.',
   problemStatement: 'Teams stand up a metrics stack, add labels freely as new dashboards are requested, and eventually a single high-cardinality label choice creates millions of unplanned time series, degrading query performance and inflating storage cost until the monitoring system itself becomes the outage.',
   interviewQuestion: 'Design a metrics monitoring system that collects 1 million metrics per second from 10,000 services, stores 90 days of data, and evaluates 10,000 alert rules every 30 seconds with sub-second evaluation latency.',
+  coreTension: 'The label flexibility that makes metrics useful for ad-hoc debugging is the exact mechanism that causes cardinality explosions — every unbounded label is a latent outage waiting for the wrong debugging instinct.',
+  levelExpectations: {
+    mid: 'Knows metrics have a name, labels, and a value over time. Can set up basic scraping and a static threshold alert. Unaware of cardinality risk.',
+    senior: 'Designs cardinality governance at ingestion, chooses pull vs push deliberately, and implements tiered hot/cold storage. Knows multi-window burn-rate alerting reduces false positives.',
+    staff: 'Frames cardinality governance as an organizational process problem, not just a technical guardrail — treats the monitoring system\'s own reliability (scrape success, rule evaluation lag) as a first-class production signal, and designs alert inhibition against the actual service dependency graph rather than per-service in isolation.',
+  },
   coreConcepts: [
     'Pull versus push metric collection models',
     'Metric types — counter, gauge, histogram, summary',

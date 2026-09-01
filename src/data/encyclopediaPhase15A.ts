@@ -7,6 +7,12 @@ const autoscalingCapacityChapter: EncyclopediaChapter = {
   summary: 'Match compute capacity to demand automatically using resource requests, horizontal and vertical scalers, and cluster-level node scaling without starving or over-provisioning workloads.',
   problemStatement: 'Teams set arbitrary CPU and memory requests, wire up a horizontal pod autoscaler on a single metric, and assume the cluster autoscaler will always have room to grow. Under real traffic, scaling lag causes cascading throttling, pods get OOMKilled instead of gracefully rejecting load, and cost balloons from padding every deployment far above its actual usage.',
   interviewQuestion: 'A service is intermittently slow during traffic spikes even though horizontal pod autoscaling is enabled. Walk me through how you would diagnose and fix it.',
+  coreTension: 'Autoscaling reacts to load only after it is detected, but the gap between detection and a new pod actually serving traffic is exactly where spikes cause visible failures — no amount of correct configuration eliminates that gap, it can only be shortened or absorbed.',
+  levelExpectations: {
+    mid: 'Configures HPA on CPU utilization with a target threshold. Sets resource requests based on rough guesses. Unaware of the difference between throttling and OOMKill.',
+    senior: 'Selects HPA metrics based on what actually predicts saturation (latency, queue depth) rather than defaulting to CPU. Sets requests from measured p95 usage and avoids running VPA and HPA on the same deployment.',
+    staff: 'Frames autoscaling as a capacity-planning decision requiring explicit review, not a Kubernetes config detail. Designs for the scale-up lag gap explicitly — pre-provisioned headroom, load shedding, priority classes — and treats cost and reliability as the same lever rather than separate concerns.',
+  },
   coreConcepts: [
     'Horizontal Pod Autoscaler (HPA) — adds/removes replicas based on metrics',
     'Vertical Pod Autoscaler (VPA) — resizes container requests/limits',
@@ -104,6 +110,12 @@ const searchEngineInternalsChapter: EncyclopediaChapter = {
   summary: 'Understand how inverted indexes, relevance scoring, and distributed shard routing combine to deliver fast, ranked, near-real-time full-text search at scale.',
   problemStatement: 'Teams bolt a search index onto a relational database with LIKE queries and wonder why relevance is poor and latency degrades as data grows. Or they adopt Elasticsearch/OpenSearch without understanding shard sizing, refresh intervals, or scoring, and are surprised by inconsistent results, slow reindexing, or a cluster that falls over under write load.',
   interviewQuestion: 'Design a search feature for an e-commerce product catalog with millions of items that needs sub-100ms ranked results and near-real-time updates.',
+  coreTension: 'Every shard added to increase query parallelism also increases per-query coordination overhead, so the shard count that best serves peak query load is never the shard count that best serves cluster stability or recovery time.',
+  levelExpectations: {
+    mid: 'Can stand up a basic Elasticsearch index and query it. Understands inverted index conceptually. Unaware of shard sizing or refresh interval tradeoffs.',
+    senior: 'Chooses BM25 with function scoring for business signals, sizes shards deliberately from data volume and concurrency, and tunes refresh interval against indexing throughput. Understands scatter-gather query execution.',
+    staff: 'Recognizes search as a distributed-systems problem wearing a relevance costume — treats analyzer/mapping changes with the same versioning discipline as a database schema migration, and drives the hybrid-search decision from a measured recall gap rather than novelty.',
+  },
   coreConcepts: [
     'Inverted index — term to document postings list',
     'Tokenization and analysis pipeline (stemming, stop words, n-grams)',
@@ -201,6 +213,12 @@ const technicalDebtManagementChapter: EncyclopediaChapter = {
   summary: 'Treat technical debt as a quantifiable, prioritizable engineering-leadership discipline rather than an ambient complaint, using a shared vocabulary and business-case framing to sequence paydown against feature work.',
   problemStatement: 'Engineers label anything they dislike as "tech debt," which makes the term useless for prioritization. Debt paydown competes poorly against features because it is described in engineering terms (code smell, coupling) instead of business terms (incident risk, delivery slowdown, hiring cost), so it never gets sequenced and compounds until it causes an outage or blocks a roadmap commitment.',
   interviewQuestion: 'Your team has accumulated significant technical debt and leadership wants to prioritize new features. How do you make the case for paying down debt, and how do you decide what to pay down first?',
+  coreTension: 'Debt paydown only wins prioritization against features when it is expressed in the business terms leadership already uses, but the people who understand the debt best usually only know how to describe it in the engineering terms that make it lose that comparison.',
+  levelExpectations: {
+    mid: 'Identifies technical debt accurately and can describe why specific code is hard to work with. Frames the problem in engineering terms when raising it.',
+    senior: 'Classifies debt using deliberate/inadvertent and reckless/prudent axes, quantifies interest rate versus payoff cost, and maintains a visible debt register. Prefers incremental paydown over rewrites.',
+    staff: 'Translates engineering risk into a business case (incident risk, delivery slowdown, hiring cost) that competes fairly against features in prioritization. Protects dedicated paydown capacity explicitly and reports measured outcomes to build credibility for future investment asks.',
+  },
   coreConcepts: [
     "Cunningham's debt quadrant — deliberate/inadvertent × reckless/prudent",
     'Debt as a financial metaphor — principal, interest, compounding',

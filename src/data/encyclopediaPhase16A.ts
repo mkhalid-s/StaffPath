@@ -7,6 +7,12 @@ const aiEvaluationTesting: EncyclopediaChapter = {
   summary: 'Measure whether an AI system is actually working — evaluation datasets, metrics, regression gates, human evaluation, online vs offline evaluation, and the operational discipline that separates production AI from demos.',
   problemStatement: 'A team ships an LLM-powered feature that passes every manual spot-check during development, then degrades silently in production on the long tail of real user input because no regression gate or evaluation contract existed to catch it.',
   interviewQuestion: 'You deployed a new RAG system and users are reporting it gives wrong answers. How do you diagnose the problem, establish a quality baseline, and prevent regression?',
+  coreTension: 'Evaluation at LLM scale requires automated judges to be affordable, but the automated judges are themselves unreliable narrators whose biases must be measured against the same human judgment they exist to replace.',
+  levelExpectations: {
+    mid: 'Manually spot-checks outputs during development. Can identify when a specific answer is wrong but has no systematic way to measure overall quality.',
+    senior: 'Builds an offline evaluation dataset from real failures, uses task-specific metrics plus LLM-as-judge, and wires a regression gate into CI/CD. Calibrates the judge against human labels.',
+    staff: 'Treats evaluation as an owned contract, not a one-time artifact — defines what is measured, what threshold blocks release, and who is accountable when it is violated. Diagnoses failures by clustering real transcripts before changing anything, resisting the urge to guess at root cause.',
+  },
   coreConcepts: [
     'Offline evaluation datasets',
     'Online metrics vs offline metrics',
@@ -103,6 +109,12 @@ const promptEngineering: EncyclopediaChapter = {
   summary: 'The engineering discipline of designing, versioning, and evaluating prompts for production — chain-of-thought, few-shot examples, structured output schemas, system prompt design, prompt injection defense, and treating prompts as code with the same versioning and testing discipline.',
   problemStatement: 'A team ships a feature built on a hand-tuned prompt with no version control or regression tests; a model provider update silently changes output behavior two weeks later, and no one can explain what changed or roll back with confidence.',
   interviewQuestion: 'Your team ships a new feature using an LLM. Two weeks later, a model update silently breaks it. Design the prompt engineering and testing infrastructure that would have caught and prevented this.',
+  coreTension: 'Prompts function as production code determining critical behavior, but they are typically maintained as untracked inline strings with none of the versioning or regression-testing discipline that code of equivalent importance would receive.',
+  levelExpectations: {
+    mid: 'Writes and iterates on prompts directly in application code. Can tune a prompt to fix an observed issue but has no version history or regression protection.',
+    senior: 'Versions prompts as separate artifacts, prefers structured output over free-text parsing, and builds a regression test suite that runs in CI before any prompt or model change ships.',
+    staff: 'Treats a model provider update as a dependency upgrade requiring the same regression discipline as any other — pins model versions explicitly, and designs prompt injection defense as an active adversarial threat model, not an edge case.',
+  },
   coreConcepts: [
     'System prompt vs user prompt vs assistant turn',
     'Chain-of-thought (CoT) reasoning',
@@ -198,6 +210,12 @@ const eventDrivenArchitecture: EncyclopediaChapter = {
   summary: 'Designing systems around events rather than direct calls — event sourcing vs event-driven messaging, choreography vs orchestration, schema evolution in event systems, eventual consistency trade-offs, and when event-driven architecture creates more complexity than it solves.',
   problemStatement: 'A checkout service makes synchronous calls to inventory, payment, and notification services; a single slow downstream call blocks the entire request path, and the team wants to decouple these steps without losing the ability to reason about what happens when something fails partway through.',
   interviewQuestion: 'A checkout service currently makes synchronous calls to inventory, payment, and notification services. Redesign it as an event-driven system and explain the trade-offs you would make and the failure modes you are accepting.',
+  coreTension: 'Decoupling services via events removes synchronous blocking, but it also removes the one mechanism — an immediate failed call — that made partial failure visible, forcing every consumer to handle a failure mode it previously never had to consider.',
+  levelExpectations: {
+    mid: 'Understands events decouple services and can design a basic pub-sub flow. Does not yet distinguish choreography from orchestration or consider idempotency.',
+    senior: 'Chooses orchestration vs choreography deliberately based on failure-handling needs, implements the outbox pattern for reliable publishing, and designs idempotent consumers for at-least-once delivery.',
+    staff: 'Names explicitly which failure modes the redesign accepts — stuck sagas, eventual-consistency windows, the event bus as a new dependency — rather than presenting event-driven architecture as a strict improvement with no new risk. Treats event sourcing as a specific tool for specific needs, not a default.',
+  },
   coreConcepts: [
     'Event vs command vs query (CQS)',
     'Choreography (each service reacts to events independently) vs orchestration (central coordinator)',
@@ -293,6 +311,12 @@ const apiGatewayPatterns: EncyclopediaChapter = {
   summary: 'The API gateway as a cross-cutting concern layer — rate limiting, authentication, protocol translation, request routing, circuit breaking, observability, and the failure modes of centralized gateways at scale.',
   problemStatement: 'A mobile API gateway must process millions of requests per second while enforcing per-tenant rate limits, validating JWTs, routing to hundreds of microservices, and supporting real-time canary traffic splitting — and a naive design turns the gateway itself into the system\'s biggest single point of failure.',
   interviewQuestion: 'Your mobile API gateway is processing 5M requests per second and needs to support per-tenant rate limiting, JWT validation, request routing to 200 microservices, and real-time traffic splitting for canary deployments. Design the gateway architecture.',
+  coreTension: 'Centralizing cross-cutting concerns at the gateway is exactly what makes it valuable, but that same centralization makes it a single point of failure for every client request regardless of how healthy the 200 backend services behind it are.',
+  levelExpectations: {
+    mid: 'Can configure basic routing, auth, and rate limiting at a gateway. Treats the gateway as thin, stateless plumbing without its own capacity or failure characteristics.',
+    senior: 'Layers the gateway (edge + regional) to bound blast radius, validates JWTs locally with cached keys to avoid a serialized bottleneck, and integrates circuit breakers with real health signals to avoid false trips.',
+    staff: 'Designs the gateway tier itself as a scaled, highly available system deserving the same operational rigor as the services it fronts — load-tests it independently of backend capacity, and explicitly decides gateway vs service mesh boundaries for north-south versus east-west traffic.',
+  },
   coreConcepts: [
     'API gateway vs load balancer vs service mesh',
     'North-south traffic (client to service) vs east-west traffic (service to service)',
