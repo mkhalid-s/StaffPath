@@ -8,7 +8,7 @@ describe('PracticePage', () => {
   beforeEach(() => { appStore.reset(); vi.stubGlobal('crypto', { randomUUID: () => 'attempt-1' }); });
 
   it('contains all 112 curated scenarios', () => {
-    expect(Object.values(practiceCatalog).flat()).toHaveLength(112);
+    expect(Object.values(practiceCatalog).flat()).toHaveLength(116);
     render(<PracticePage />);
     expect(screen.getByText('Design a URL shortener')).toBeInTheDocument();
   });

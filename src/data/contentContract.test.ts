@@ -11,7 +11,7 @@ describe('complete preparation content contract', () => {
   it('retains the planned curriculum and practice breadth', () => {
     expect(roadmapSessions).toHaveLength(90);
     expect(curriculumModules).toHaveLength(12);
-    expect(Object.values(practiceCatalog).flat()).toHaveLength(112);
+    expect(Object.values(practiceCatalog).flat()).toHaveLength(116);
     expect(communicationLessons).toHaveLength(19);
     expect(encyclopediaChapters).toHaveLength(65);
     expect(learningResources).toHaveLength(52);
