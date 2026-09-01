@@ -7,6 +7,12 @@ export const timeAndClocksChapter: EncyclopediaChapter = {
   summary: 'Reason correctly about event ordering across machines using logical clocks, hybrid logical clocks, and bounded-uncertainty physical clocks, instead of trusting synchronized wall-clock timestamps.',
   problemStatement: 'Engineers assume NTP-synchronized clocks are close enough to order events reliably, then ship a system where two causally related writes on different machines are timestamped out of order, silently corrupting a last-writer-wins merge or an audit trail.',
   interviewQuestion: 'Two payment events are processed concurrently on different data centers. How do you determine which happened first, and what guarantees can you actually provide?',
+  coreTension: 'NTP-synchronized wall-clock timestamps look precise enough to trust, but skew of tens of milliseconds is enough to invert a real causal relationship — the mechanism that looks like ordering is not actually one.',
+  levelExpectations: {
+    mid: 'Uses wall-clock timestamps to order events across machines. Unaware that NTP skew can invert a real happens-before relationship.',
+    senior: 'Chooses Lamport timestamps or vector clocks based on whether total order or concurrency detection is needed. Understands HLC as the practical production default over both raw timestamps and TrueTime.',
+    staff: 'Matches the ordering guarantee (none, causal, total) to the actual business requirement rather than defaulting to timestamps, and audits existing systems for silent timestamp-comparison assumptions. Explains why most companies cannot and should not attempt a TrueTime-equivalent.',
+  },
   coreConcepts: [
     'Wall-clock time versus monotonic time',
     'NTP accuracy, clock skew, and leap seconds',
@@ -106,6 +112,12 @@ export const chaosEngineeringChapter: EncyclopediaChapter = {
   summary: 'Validate system resilience through hypothesis-driven production experiments with a defined steady state, controlled blast radius, and measured outcomes — not random fault injection.',
   problemStatement: 'Teams run ad hoc "let\'s break something and see what happens" exercises with no hypothesis, no steady-state baseline, and no blast radius control, producing either meaningless noise or an actual customer-facing outage with nothing learned from either outcome.',
   interviewQuestion: 'You want to validate that your payment service handles a database primary failure correctly. Design the chaos experiment: hypothesis, steady state, variables, blast radius controls, and how you would measure success.',
+  coreTension: 'Without a stated hypothesis and a measured steady-state baseline, chaos engineering is indistinguishable from randomly breaking things — the discipline lives entirely in the measurement, not the fault injection.',
+  levelExpectations: {
+    mid: 'Can kill a pod or inject latency in staging. Has not defined a hypothesis or steady-state baseline before running the experiment.',
+    senior: 'States a falsifiable hypothesis, measures steady state first, and scopes blast radius with an automated abort condition. Verifies the rollback mechanism works before depending on it.',
+    staff: 'Treats a divergent result as the primary deliverable, tracked like an incident finding with an owner and remediation deadline. Frames chaos engineering ROI against the cost of the same fragility being discovered during a real incident instead.',
+  },
   coreConcepts: [
     'Steady-state hypothesis',
     'Minimal blast radius principle',

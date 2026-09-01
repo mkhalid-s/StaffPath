@@ -7,6 +7,12 @@ export const keyValueStoreInternalsChapter: EncyclopediaChapter = {
   summary: 'Understand how LSM-tree-based key-value stores achieve high write throughput through sequential writes, memtables, and background compaction, trading it against read amplification that bloom filters and compaction strategy must manage.',
   problemStatement: 'Teams pick a key-value store by benchmark headline numbers without understanding whether its write path or read path is optimized for their access pattern, then discover in production that write-heavy workloads stall on compaction or read-heavy workloads suffer from unbounded read amplification.',
   interviewQuestion: 'Design a single-node key-value store that supports get, put, delete, and range scans with write throughput of 1 million ops/second and read latency under 1ms for the 95th percentile.',
+  coreTension: 'No storage engine is simultaneously optimal for reads and writes — LSM trees buy write throughput through sequential I/O at the cost of read amplification across multiple SSTables, and every compaction strategy is really just choosing which side of that trade to pay for.',
+  levelExpectations: {
+    mid: 'Knows a key-value store persists data to disk. Has not distinguished LSM from B-tree behavior or considered compaction as an operational concern.',
+    senior: 'Designs the LSM write path (WAL, memtable, SSTable flush), uses bloom filters to avoid unnecessary disk reads, and chooses leveled vs size-tiered compaction based on the read/write balance of the workload.',
+    staff: 'Monitors compaction debt as the leading indicator of a coming read-latency incident rather than waiting for the lagging latency metric itself. Questions a benchmark-driven datastore choice by asking what amplification profile the benchmark actually measured and whether it matches production access patterns.',
+  },
   coreConcepts: [
     'Memtable — in-memory sorted write buffer',
     'Write-ahead log (WAL) for crash durability',
@@ -104,6 +110,12 @@ export const objectStorageChapter: EncyclopediaChapter = {
   summary: 'Design a durable, cost-effective object storage system using erasure coding for space-efficient redundancy, a separated metadata service for namespace and location lookups, and multipart upload for large, resumable writes.',
   problemStatement: 'Teams assume object storage behaves like a file system with strong consistency and cheap listing operations, then discover in production that bucket listing is expensive, consistency is eventual on some operations, and large uploads fail without resumability, causing data loss and cost overruns at scale.',
   interviewQuestion: 'Design an object storage system that durably stores exabytes of data across commodity servers, achieves 99.999999999% (eleven nines) annual durability, and costs less per gigabyte than triple-replicated block storage.',
+  coreTension: 'Object storage looks like a file system but its consistency model varies per operation — treating PUT/GET, LIST, and cross-region replication as uniformly consistent is the single most common cause of a subtle, hard-to-reproduce production bug.',
+  levelExpectations: {
+    mid: 'Treats object storage as a simple durable file store. Assumes list operations and cross-region reads are as consistent as a direct GET.',
+    senior: 'Designs erasure coding for durability at lower overhead than replication, separates metadata from data paths, and implements multipart upload for resumable large writes. States consistency guarantees explicitly per operation.',
+    staff: 'Validates that physical shard placement actually matches the theoretical failure-domain redundancy model, rather than trusting the abstract shard math alone. Actively audits for cold data still sitting in hot storage tiers as one of the highest-leverage, lowest-risk cost interventions available.',
+  },
   coreConcepts: [
     'Object storage versus block storage versus file storage',
     'Metadata service — namespace, object location, and ACL lookup',
@@ -201,6 +213,12 @@ export const distributedIdGenerationChapter: EncyclopediaChapter = {
   summary: 'Generate unique, often time-sortable identifiers across many nodes without a central coordination bottleneck, choosing between Snowflake-style composite IDs, UUID v7, and ULIDs based on sortability, monotonicity, and coordination requirements.',
   problemStatement: 'Teams default to database auto-increment or random UUIDv4 without considering that auto-increment does not scale past a single writable node and random UUIDs fragment database indexes and destroy insert locality at scale.',
   interviewQuestion: 'Design an ID generation service for a distributed e-commerce platform that generates 100,000 order IDs per second globally, where IDs must be sortable by creation time, unique across all nodes, and fit in a 64-bit integer.',
+  coreTension: 'An ID scheme becomes embedded in primary keys, API contracts, and client caching logic the moment it ships, so a choice that looks reversible in a design doc becomes as irreversible as a schema decision within weeks.',
+  levelExpectations: {
+    mid: 'Uses database auto-increment or random UUIDv4 without considering horizontal scale or index locality implications.',
+    senior: 'Chooses between UUID v7, ULID, and Snowflake based on sortability and coordination requirements, and handles machine ID allocation via a coordination service. Implements explicit backwards-clock handling.',
+    staff: 'Treats the ID scheme choice with the same care as an irreversible schema decision, since it embeds across the entire system\'s primary keys and contracts. Asks about boundary conditions (clock skew, sequence exhaustion, timestamp budget) rather than which algorithm, since that is where naive implementations actually fail in production.',
+  },
   coreConcepts: [
     'UUID v4 — random, 122 bits of entropy, not sortable',
     'UUID v7 — time-ordered, sortable, standardized in RFC 9562',

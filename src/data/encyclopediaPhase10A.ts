@@ -7,6 +7,12 @@ export const kubernetesForEngineersChapter: EncyclopediaChapter = {
   summary: 'Reason about how production workloads actually run on Kubernetes — scheduling, resource limits, stateful workloads, and the operator pattern — not how to operate a cluster.',
   problemStatement: 'Engineers treat resource requests and limits as performance tuning knobs rather than safety mechanisms, deploy stateful workloads as ordinary Deployments, and are blindsided when a "healthy" cluster is silently throttling or killing their pods under normal load.',
   interviewQuestion: 'Your service is experiencing intermittent latency spikes in production. The Kubernetes cluster appears healthy, CPU utilization is normal, and no errors are logged. How do you diagnose and resolve this?',
+  coreTension: 'Cluster-level health dashboards measure the wrong unit of analysis — a "healthy" cluster can be silently throttling or evicting individual pods, because per-pod resource enforcement is invisible in aggregate metrics.',
+  levelExpectations: {
+    mid: 'Knows requests and limits exist. Treats resource configuration as a performance-tuning knob and may not distinguish readiness from liveness probes.',
+    senior: 'Diagnoses CPU throttling via cfs_throttled metrics, sets Guaranteed QoS for latency-sensitive services, and correctly separates readiness/liveness/startup probe semantics. Uses StatefulSets appropriately.',
+    staff: 'Treats resource limits as a safety mechanism against a misbehaving neighbor, not a density-optimization lever. Recognizes the gap between cluster health and workload health as where most Kubernetes incidents actually live, and owns operator reliability as a platform-wide blast-radius concern.',
+  },
   coreConcepts: [
     'Pod lifecycle and restart policies',
     'Resource requests versus limits (CPU throttling versus OOMKill)',
@@ -105,6 +111,12 @@ export const distributedLocksLeaderElectionChapter: EncyclopediaChapter = {
   summary: 'Implement distributed locks and leader election correctly using lease-based coordination and fencing tokens, and recognize when a distributed lock is the wrong tool entirely.',
   problemStatement: 'Engineers reach for a distributed lock to protect shared state without bounding how long it can be held, without a fencing mechanism to invalidate a slow or paused holder, and often without checking whether the protected operation could simply be made idempotent instead — eliminating the need for a lock altogether.',
   interviewQuestion: 'Design a distributed job scheduler where each job must run on exactly one worker node, even during node failures and network partitions.',
+  coreTension: 'A lease can expire while its holder is still alive but paused — so a lock alone only reduces the probability of a conflicting write, it never eliminates it without a fencing mechanism.',
+  levelExpectations: {
+    mid: 'Can use a distributed lock library to guard a critical section. Assumes lock acquisition implies safety without considering pause/expiry races.',
+    senior: 'Designs lease-based locks with fencing tokens, understands the Redlock controversy, and decides fail-open vs fail-closed on lock-service outage explicitly.',
+    staff: 'Asks whether the operation can be made idempotent before reaching for a lock at all. Requires every write path to validate fencing tokens as a rollout-completeness concern, not a nice-to-have, and treats fail-open/fail-closed as a business risk decision to be documented, not defaulted.',
+  },
   coreConcepts: [
     'Lease-based locks versus session-based locks',
     'Fencing tokens for STONITH (Shoot The Other Node In The Head)',

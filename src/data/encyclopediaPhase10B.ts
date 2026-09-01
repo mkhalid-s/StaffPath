@@ -7,6 +7,12 @@ export const mlServingInfrastructureChapter: EncyclopediaChapter = {
   summary: 'Serve trained models reliably at scale — request batching, GPU utilization, model versioning, canary rollout, and cold-start mitigation — the operational discipline that separates a production ML system from a notebook prototype.',
   problemStatement: 'Teams ship a model that works in a notebook, wrap it in a single-request API, and discover in production that GPU utilization sits at 5%, latency spikes under load, and there is no safe way to roll out a new model version without risking a silent quality regression.',
   interviewQuestion: 'Design the inference serving infrastructure for a model that processes 50,000 image classification requests per second with a p99 latency target of 100ms, using GPU clusters that must maintain over 80% utilization.',
+  coreTension: 'Dynamic batching converts latency budget into GPU throughput, so every efficiency gain from a longer batching window is paid for by worse tail latency on the requests that arrived early.',
+  levelExpectations: {
+    mid: 'Can wrap a model in a single-request API. Has not considered batching, warm-up, or safe rollout of a new model version.',
+    senior: 'Designs dynamic batching tuned to a latency SLA, warms models before serving traffic, and treats model deploys like code deploys with canary and rollback.',
+    staff: 'Uses shadow deployment to catch quality regressions a small canary sample would miss, and monitors GPU utilization as a cost signal, not just a performance one. Treats the batching timeout as a value derived from the actual downstream SLA, never a copied default.',
+  },
   coreConcepts: [
     'Online vs batch inference',
     'Dynamic batching and micro-batching',
@@ -105,6 +111,12 @@ export const vectorDatabasesEmbeddingsChapter: EncyclopediaChapter = {
   summary: 'Design the vector search infrastructure beneath semantic search and RAG — approximate nearest neighbor indexing, embedding pipeline operations, re-embedding at scale, and hybrid dense-sparse retrieval — as a distinct discipline from the retrieval logic built on top of it.',
   problemStatement: 'Teams treat a vector database as an interchangeable component behind an API call, then discover that index rebuild cost, embedding model upgrades, and recall-versus-latency tuning are each their own operational problem with no obvious owner once the corpus reaches tens of millions of vectors.',
   interviewQuestion: 'Design a vector search infrastructure for a legal document platform with 50 million documents that must support semantic search, exact keyword matching, metadata filtering, and sub-100ms p99 latency.',
+  coreTension: 'An embedding model upgrade silently invalidates the comparability of every existing vector, turning what looks like a routine model swap into a full-corpus migration with schema-migration-level blast radius.',
+  levelExpectations: {
+    mid: 'Treats a vector database as an interchangeable API behind a single client call. Has not considered index rebuild cost or embedding version mismatch.',
+    senior: 'Chooses HNSW vs IVF-PQ based on recall/latency/memory tradeoffs, combines dense and sparse retrieval, and rebuilds indexes via a validated shadow rebuild rather than live incremental updates.',
+    staff: 'Treats an embedding model upgrade as a first-class migration event reviewed with the same rigor as a critical-table schema migration. Measures recall against a labeled evaluation set on every index or model change, not just latency, recognizing that a fast index returning wrong results is worse than a slower correct one.',
+  },
   coreConcepts: [
     'Approximate nearest neighbor (ANN) search vs exact search',
     'HNSW — Hierarchical Navigable Small World graph structure',

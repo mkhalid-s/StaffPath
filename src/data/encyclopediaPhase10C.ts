@@ -9,6 +9,12 @@ const replicationProtocolsChapter: EncyclopediaChapter = {
     'Engineers treat "we use Raft" or "we use Paxos" as an interchangeable checkbox, but the protocols differ in election behavior, read-path guarantees, and operational failure modes. A team that cannot reason about quorum math or stale-leader risk will misdiagnose real incidents as "the database is just flaky."',
   interviewQuestion:
     'Your distributed database cluster has a 5-node Raft group. Two nodes fail simultaneously. Walk me through exactly what happens to reads and writes, and what a client experiences.',
+  coreTension: 'Consensus protocols trade write latency for safety through quorum math — every additional node that improves fault tolerance also raises the quorum size needed for every write.',
+  levelExpectations: {
+    mid: 'Knows "we use Raft" means leader election and log replication happen. Cannot explain quorum math or diagnose an election storm from first principles.',
+    senior: 'Explains quorum intersection as the safety argument, sizes clusters as 2f+1, and understands read-index vs lease-read tradeoffs. Uses an existing Raft library rather than building consensus from scratch.',
+    staff: 'Asks "do we need consensus at all" before "which consensus algorithm" — sharding to avoid cross-shard coordination is usually cheaper and safer. Treats a subtle correctness bug in home-grown consensus code as an existential risk that rarely justifies the engineering hours saved.',
+  },
   coreConcepts: [
     'Multi-Paxos: prepare/promise/accept/commit phases with a stable leader',
     'Raft leader election: randomized timeouts and monotonic term numbers',
@@ -108,6 +114,12 @@ const progressiveDeliveryChapter: EncyclopediaChapter = {
     'Teams flip a feature flag to 1% of traffic, glance at a dashboard for ten minutes, and call it validated — but an underpowered sample and an untested rollback procedure mean the "canary" caught nothing, and the real incident begins at 100% rollout.',
   interviewQuestion:
     'Design a progressive delivery system that can safely roll out a pricing change to a payment service at 0.1%, 1%, 10%, and 100% of traffic with automated rollback if revenue metrics degrade.',
+  coreTension: 'A canary is a statistics problem wearing an engineering costume — an underpowered sample produces a confident-looking pass that is actually a non-result, and the real incident begins at full rollout.',
+  levelExpectations: {
+    mid: 'Can configure a percentage-based traffic split and glance at a dashboard before promoting. Has not considered sample size or statistical significance.',
+    senior: 'Sizes canary duration and traffic percentage from actual traffic volume, automates the pass/fail decision against a live baseline, and defines rollback triggers before the rollout starts.',
+    staff: 'Uses shadow traffic first for high-risk changes to validate correctness with zero user exposure. Insists rollback paths get the same rehearsal rigor as forward deployment, and requires business-metric gates (not just operational health) for anything where the system could be "up" while failing its actual purpose.',
+  },
   coreConcepts: [
     'Blue-green deployment: two full environments with an instant traffic switchover',
     'Rolling deployment with per-instance readiness gates',

@@ -7,6 +7,12 @@ const cryptographyPrimitivesChapter: EncyclopediaChapter = {
   summary: 'Choose the right cryptographic primitive for the job, understand envelope encryption and key hierarchies, and own the secrets lifecycle and supply chain security posture expected of Staff engineers.',
   problemStatement: 'Engineers reach for cryptography without a mental model of which primitive solves which threat, producing systems that are cryptographically correct in isolation but insecure in composition: unauthenticated encryption, custom key derivation, or a signing key with no rotation plan.',
   interviewQuestion: 'A security audit finds that your service stores user passwords using MD5. Design the migration to a secure scheme without forcing all users to reset their passwords simultaneously.',
+  coreTension: 'Cryptographic primitives are individually easy to get right, but systems fail in composition — an authenticated cipher, a secure hash, and a signed artifact can each be textbook-correct while the system around them still leaks a key or skips rotation.',
+  levelExpectations: {
+    mid: 'Knows to use HTTPS and a hashing function for passwords. May not distinguish a fast hash from a memory-hard KDF, or notice unauthenticated encryption modes.',
+    senior: 'Uses AES-GCM over ECB/CBC, Argon2/bcrypt for passwords, and envelope encryption (DEK/KEK) for data at rest. Designs a phased migration off an insecure scheme without forcing a mass password reset.',
+    staff: 'Treats key rotation ownership and incident response for a suspected key compromise as the consequential decision, not the algorithm choice. Defends envelope encryption in design review even when it looks like overkill, because retrofitting it after data already exists unencrypted is materially more expensive.',
+  },
   coreConcepts: [
     'Symmetric encryption (AES-GCM, AES-256) versus asymmetric (RSA, elliptic curve)',
     'Hash functions (SHA-256, SHA-3) and collision resistance',
@@ -106,6 +112,12 @@ const changeDataCaptureChapter: EncyclopediaChapter = {
   summary: 'Stream a reliable, ordered feed of database changes from the transaction log for real-time replication, cache invalidation, and event-driven integration, without polling or modifying application code.',
   problemStatement: 'Teams bolt on cache invalidation and event publishing inside application code, and every write path that forgets to call the invalidation or publish step silently corrupts downstream consistency, while polling-based change detection adds latency and load that log-based capture avoids entirely.',
   interviewQuestion: 'Design a real-time cache invalidation system for a product catalog with 10 million SKUs, where the cache must reflect database changes within 500ms without any application-level cache invalidation code.',
+  coreTension: 'CDC replaces a class of application-level bugs (forgotten cache invalidation) with an infrastructure-level guarantee, but the initial-snapshot consistency problem is the one piece of that infrastructure most teams underestimate on their first rollout.',
+  levelExpectations: {
+    mid: 'Understands CDC streams database changes. Has not considered the snapshot-consistency problem at connector startup or schema drift risk.',
+    senior: 'Deploys a log-based connector (Debezium) with a consistent initial snapshot, models deletes as explicit tombstones, and gates schema changes through a compatibility-enforced registry.',
+    staff: 'Recognizes schema evolution discipline on the source table becomes a cross-team contract the moment CDC consumers depend on it — a migration that used to be one team\'s concern now needs downstream coordination. Treats retrofitting CDC onto an existing system with years of implicit coupling as a multi-quarter migration, not a quick win.',
+  },
   coreConcepts: [
     'Log-based CDC versus query-based polling versus trigger-based capture',
     'The database transaction log: WAL in Postgres, binlog in MySQL, redo log in Oracle',

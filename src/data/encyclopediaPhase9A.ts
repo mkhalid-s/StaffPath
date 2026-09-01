@@ -7,6 +7,12 @@ export const streamProcessingChapter: EncyclopediaChapter = {
   summary: 'Compute continuous aggregations and joins over unbounded event streams with explicit handling of event time, out-of-order arrival, and exactly-once state updates.',
   problemStatement: 'Teams treat streaming like fast batch: they window by wall-clock arrival time, ignore late events, and checkpoint state inconsistently — producing pipelines that look correct in a demo and silently undercount or double-count in production under real network jitter and late-arriving data.',
   interviewQuestion: 'Design a real-time fraud detection pipeline that processes 500,000 payment events per second with per-user windowed aggregations and sub-second detection latency.',
+  coreTension: 'Events arrive out of order in the real world, but correctness requires grouping them by when they happened — so every windowing decision trades completeness (waiting for late data) against latency (firing on time).',
+  levelExpectations: {
+    mid: 'Can implement a windowed aggregation using processing time. Aware that events might arrive late but treats it as an edge case rather than a design input.',
+    senior: 'Windows by event time with watermarks and an explicit allowed-lateness bound. Chooses tumbling/sliding/session windows appropriately and checkpoints state for recovery.',
+    staff: 'Treats the allowed-lateness window as a business decision, not an engineering constant, and gets product sign-off on the completeness-versus-latency trade. Designs idempotent sinks assuming at-least-once delivery regardless of engine guarantees, and reasons about failure modes (hot keys, watermark stalls, schema evolution) as a system, not per-bug.',
+  },
   coreConcepts: [
     'Event time versus processing time',
     'Watermarks — the engine\'s estimate of "no more events before time T"',
@@ -107,6 +113,12 @@ export const cqrsEventSourcingChapter: EncyclopediaChapter = {
   summary: 'Separate the write model from read models and, where temporal correctness or audit requirements justify it, make the append-only event log the durable source of truth instead of current-state tables.',
   problemStatement: 'A single normalized table serving both high-throughput writes and diverse read patterns forces every new query shape into schema changes or expensive joins, and a system with only current-state storage cannot answer "what did the balance look like on this date" without a separate, usually inconsistent, audit mechanism.',
   interviewQuestion: 'A financial audit system requires the ability to query an account balance at any point in the past with full traceability of every change. Design the storage and query architecture.',
+  coreTension: 'Making the event log the source of truth gives perfect audit and temporal query capability for free, but every projection, snapshot, and schema migration becomes permanent infrastructure that must be operated forever.',
+  levelExpectations: {
+    mid: 'Understands CQRS as splitting reads and writes. Can sketch a basic event-sourced write path but has not thought through replay cost or projection rebuild.',
+    senior: 'Designs aggregates as consistency boundaries, builds multiple projections for different query shapes, and adds snapshotting to bound replay time. Handles idempotent event handlers.',
+    staff: 'Justifies event sourcing against a genuine requirement (audit, temporal query, divergent read models) rather than defaulting to it, and is explicit that CQRS alone often solves the actual problem more cheaply. Treats snapshot strategy and schema versioning/upcasting as day-one requirements, not later optimizations.',
+  },
   coreConcepts: [
     'Command versus query separation',
     'Write model versus read model (projection)',
@@ -206,6 +218,12 @@ export const microservicesServiceMeshChapter: EncyclopediaChapter = {
   summary: 'Decompose a system along team and domain boundaries rather than technical convenience, then manage inter-service communication, security, and observability through a service mesh once the number of services makes per-service infrastructure code unsustainable.',
   problemStatement: 'Teams split a monolith into services along arbitrary technical lines, producing a distributed system with all the coordination overhead of microservices and none of the team-autonomy benefit, then bolt on service-to-service security and observability inconsistently per service until a mesh becomes the only way to enforce policy uniformly.',
   interviewQuestion: 'Your monolith has grown to encompass roughly 200 services worth of functionality across a 400-engineer organization. Design the decomposition strategy and the service communication infrastructure for the target state.',
+  coreTension: 'Service boundaries that maximize team autonomy also multiply the number of network calls, failure modes, and on-call surfaces the organization must operate — decomposition trades coordination cost for distributed-systems cost, it does not eliminate cost.',
+  levelExpectations: {
+    mid: 'Can split a monolith into services along visible technical seams (a "database service," an "auth service"). Understands service discovery and basic REST communication.',
+    senior: 'Decomposes along bounded contexts and team ownership. Chooses sync vs async deliberately, uses strangler fig for incremental migration, and can justify when a service mesh becomes worthwhile.',
+    staff: 'Treats decomposition as an organizational design decision (Conway\'s Law) expressed in code, designing target team structure first. Maintains the inter-service call graph as an ongoing artifact and recognizes when a decomposition has gone wrong (a distributed monolith) as readily as designing the original split.',
+  },
   coreConcepts: [
     'Bounded context (DDD) as the basis for service boundaries',
     'Synchronous request-response versus asynchronous event-driven inter-service communication',

@@ -7,6 +7,12 @@ export const dataLakehouseChapter: EncyclopediaChapter = {
   summary: 'Combine the scale and flexibility of object-storage data lakes with the ACID guarantees, schema enforcement, and performance of a warehouse using open table formats, and organize ownership around data as a product rather than a central pipeline team.',
   problemStatement: 'Teams dump raw events into cheap object storage expecting warehouse-like reliability, then discover query engines silently return incorrect or stale results because there is no transaction guarantee, no enforced schema, and no visibility into which of ten thousand small files actually belong to a consistent snapshot.',
   interviewQuestion: 'Your company has 500TB of raw event data in S3 that analysts query via Athena, but queries are slow and stale. Design an architecture that gives analysts fresh, ACID-compliant data with sub-minute query times on a week\'s worth of events.',
+  coreTension: 'Cheap object storage has no native transaction guarantee, so every "just dump it in S3" decision defers a correctness problem that only surfaces later as silent stale or incorrect query results.',
+  levelExpectations: {
+    mid: 'Knows data lands in S3 and gets queried via a SQL engine. Has not encountered the small-file problem or schema drift as production issues.',
+    senior: 'Adopts an open table format (Delta/Iceberg/Hudi) for ACID and schema evolution, designs a medallion architecture, and runs continuous compaction to avoid the small-file wall.',
+    staff: 'Treats compaction and metadata management with the same design rigor as query patterns, since deferring it forces an expensive full-table rewrite later. Recognizes data mesh as an organizational redesign requiring documented contracts, not a storage migration with new vocabulary.',
+  },
   coreConcepts: [
     'Data lake versus data warehouse versus lakehouse',
     'Open table formats — Delta Lake, Apache Iceberg, Apache Hudi',
@@ -106,6 +112,12 @@ export const doraMetricsEngineeringChapter: EncyclopediaChapter = {
   summary: 'Use deployment frequency, lead time, change failure rate, and mean time to restore not as dashboard vanity metrics but as evidence for specific investment arguments, while recognizing that any metric which becomes a target invites gaming rather than genuine improvement.',
   problemStatement: 'Engineering leaders report DORA metrics in quarterly reviews without connecting them to any decision, teams game deployment frequency by splitting meaningless commits, and the same metrics dashboard that was supposed to drive investment in developer experience instead becomes a scoreboard nobody trusts and nobody acts on.',
   interviewQuestion: 'Your org has a deployment frequency of once per month and a lead time of 3 weeks. The CTO asks you to improve engineering velocity. How do you diagnose the bottlenecks, what investments do you recommend, and how do you measure whether they worked?',
+  coreTension: 'Any metric published as a target invites Goodhart\'s Law gaming, so a DORA dashboard that improves the numbers may be measuring nothing more than teams learning to satisfy the specific number being watched.',
+  levelExpectations: {
+    mid: 'Can report the four DORA numbers. Treats deployment frequency in isolation without pairing it against change failure rate.',
+    senior: 'Diagnoses the actual bottleneck (CI latency, review wait, approval gates) before proposing a fix, frames investments as testable causal hypotheses, and pairs DORA with SPACE to catch burnout-driven speed.',
+    staff: 'Quantifies toil in engineer-hours to build a concrete investment case, and distinguishes a genuine causal delivery improvement from a metric that moved because teams learned to game it. Designs the measurement approach so that distinction is visible before scaling the wrong intervention org-wide.',
+  },
   coreConcepts: [
     'The four DORA metrics — deployment frequency, lead time for changes, change failure rate, mean time to restore',
     'Elite, high, medium, and low performer benchmarks',

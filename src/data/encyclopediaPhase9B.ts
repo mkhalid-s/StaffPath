@@ -7,6 +7,12 @@ export const dnsCdnNetworkingChapter: EncyclopediaChapter = {
   summary: 'Trace how a request travels from client to origin — DNS resolution, anycast routing, CDN cache hierarchy, and TLS handshake cost — and use that path as a first-class latency and cost lever.',
   problemStatement: 'Teams treat network topology as an invisible substrate and blame the application layer for latency that is actually caused by DNS misconfiguration, a missed CDN cache tier, or an avoidable TLS round trip. Without a mental model of the request path, "make it faster" has no starting point.',
   interviewQuestion: 'Design global CDN routing for a video streaming platform that must serve 4K video to 200 countries with sub-50ms first-byte latency.',
+  coreTension: 'Every latency-reducing lever — shorter TTL, more aggressive edge caching, anycast routing — trades against a corresponding cost: resolver load, staleness risk, or loss of fine-grained routing control.',
+  levelExpectations: {
+    mid: 'Knows DNS resolves a hostname to an IP and that CDNs cache content at the edge. Treats network latency as a black box outside the application.',
+    senior: 'Can trace the full request path (DNS, TLS handshake, edge cache, origin) and reason about TTL, origin shield, and Cache-Control as levers. Sets appropriate cache policy for personalized vs static content.',
+    staff: 'Treats cache-hit ratio as simultaneously a latency, cost, and origin-protection metric, and instruments all three explicitly. Builds TTL and cache-purge levers into the incident-response runbook rather than treating them as one-time configuration.',
+  },
   coreConcepts: [
     'DNS resolution chain — recursive resolver, root, TLD, authoritative',
     'TTL and propagation delay as a deployment lever',
@@ -101,6 +107,12 @@ export const multiRegionActiveActiveChapter: EncyclopediaChapter = {
   summary: 'Accept writes in multiple regions simultaneously by choosing an explicit conflict-resolution policy, understanding replication lag, and reserving true active-active for the narrow set of systems that actually need it.',
   problemStatement: 'Teams claim "active-active" as a resilience goal without defining what happens when the same record is written in two regions within the replication lag window — the business question of "what wins?" gets answered accidentally by whichever database driver happens to run first, rather than deliberately by the business.',
   interviewQuestion: 'Design a globally consistent shopping cart that must accept writes in any region with sub-100ms latency, even during a regional network partition.',
+  coreTension: '"What wins when the same record is written in two regions within the replication lag window" is a business decision, but without an explicit design it gets answered accidentally by whichever write happens to land last.',
+  levelExpectations: {
+    mid: 'Knows multi-region means data exists in more than one place. Assumes replication keeps things automatically consistent without engaging with conflict scenarios.',
+    senior: 'Distinguishes active-active from active-passive, applies CRDTs for structurally simple conflicts (counters, sets), and designs explicit split-brain behavior.',
+    staff: 'Forces the business question of conflict resolution before any implementation, and pushes back on unnecessary active-active adoption when active-passive-with-fast-failover meets the actual requirement. Uses cell architecture to isolate blast radius rather than only trying to perfect conflict resolution.',
+  },
   coreConcepts: [
     'Active-active versus active-passive versus hot standby',
     'Write conflict and last-write-wins semantics',
@@ -195,6 +207,12 @@ export const platformEngineeringChapter: EncyclopediaChapter = {
   summary: 'Build internal developer platforms as a product with a golden path compelling enough that teams choose it voluntarily, and measure success by downstream team outcomes rather than platform team output.',
   problemStatement: 'Platform teams mandate tools and processes without making them genuinely easier than the alternative, teams route around the platform with shadow infrastructure, and the platform team measures its own activity (features shipped) instead of the outcome that matters (whether product teams got faster and more reliable).',
   interviewQuestion: 'You are the Staff engineer leading platform for a 200-engineer organization where teams spend 40% of their time on infrastructure toil. How do you build and validate an internal developer platform?',
+  coreTension: 'A platform team can mandate adoption or earn it, but only earned adoption avoids shadow infrastructure — and earning it requires the golden path to be measurably faster than the alternative, not just cleaner.',
+  levelExpectations: {
+    mid: 'Can build internal tooling. Assumes teams will adopt it because it is better designed, without validating against the actual alternative teams currently use.',
+    senior: 'Treats the platform as a product with product teams as customers. Designs a golden path plus a documented escape hatch, and quantifies toil before prioritizing automation.',
+    staff: 'Measures platform success by downstream DORA metrics for adopting teams, not platform team output. Structures the team on the enabling-team topology and resists becoming a ticket queue that does not scale with organizational growth.',
+  },
   coreConcepts: [
     'Internal developer platform (IDP)',
     'Golden path versus escape hatch',
