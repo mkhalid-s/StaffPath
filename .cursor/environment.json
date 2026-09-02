@@ -1,9 +1,5 @@
 {
   "name": "StaffPath",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
-  "user": "node",
   "install": "npm ci",
   "ports": [
     {
