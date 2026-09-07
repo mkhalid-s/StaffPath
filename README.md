@@ -86,6 +86,7 @@ Deploy `dist/` with SPA fallback to `index.html`. The included `_headers` file a
 
 ## Docs
 
+- [Surgical improvement plan](docs/SURGICAL_IMPROVEMENT_PLAN.md) — phased enhancement plan (Phases 1–7, shareable)
 - [Product vision](docs/PRODUCT_VISION.md)
 - [Content architecture](docs/CONTENT_ARCHITECTURE.md)
 - [Research sources](docs/RESEARCH_SOURCES.md)
