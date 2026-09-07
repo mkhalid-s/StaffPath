@@ -7,6 +7,12 @@ export const apiProtocolSelectionChapter: EncyclopediaChapter = {
   summary: 'Choose HTTP, REST, gRPC, GraphQL, WebSockets, or events from interaction semantics, client diversity, organizational boundaries, and long-term compatibility requirements.',
   problemStatement: 'Teams default to REST for every boundary regardless of whether the interaction is a query, a stream, a subscription, or a fire-and-forget event. The result is awkward polling, chatty round trips, or brittle versioning that couples consumers to internal models.',
   interviewQuestion: 'Walk me through how you would select communication protocols for a platform serving mobile apps, internal microservices, and third-party partners.',
+  coreTension: 'Every boundary wants the protocol that fits its semantics, but every additional protocol is a paved road that must be maintained, secured, and taught — the discipline is matching interaction semantics while resisting the fragmentation that unmatched protocols accumulate.',
+  levelExpectations: {
+    mid: 'Defaults to REST for every boundary and reasons about protocols by familiarity. Can describe gRPC and GraphQL features but cannot say when their versioning or streaming semantics eliminate them.',
+    senior: 'Classifies interactions by semantics (request-response, query, push, event) and client type, matches protocols accordingly, sets deadlines on every call, and enforces schema compatibility in CI before external consumers exist.',
+    staff: 'Treats protocol selection as governance — establishing paved roads with justified exception paths, auditing existing API surfaces for hidden coupling, and owning deprecation as product work with consumer inventories and migration guides rather than one-off breakages.',
+  },
   coreConcepts: [
     'HTTP/1.1, HTTP/2, and HTTP/3 transport semantics',
     'REST — resource-oriented, stateless, cacheable',
@@ -103,6 +109,12 @@ export const loadBalancingRateLimitsChapter: EncyclopediaChapter = {
   summary: 'Distribute healthy traffic across instances and enforce per-identity quotas so that overload in one tenant, region, or service cannot cascade into a full outage.',
   problemStatement: 'A single hot tenant, a retry storm, or a regional failure exhausts shared capacity and makes the service unavailable for all users — even those whose traffic is well-behaved.',
   interviewQuestion: 'Design a global load balancing and per-tenant rate limiting system for a multi-region SaaS API handling 500k requests per second at peak.',
+  coreTension: 'Exact global quota state and perfectly even routing are both unachievable at scale without becoming the bottleneck themselves — overload control works precisely because it accepts approximation in the counter while staying decisive about who gets shed.',
+  levelExpectations: {
+    mid: 'Implements token bucket at the application layer and round-robin behind a load balancer. Treats the quota store as an implementation detail and discovers the fail-open-versus-fail-closed dilemma during the first Redis outage.',
+    senior: 'Layers routing (anycast/DNS, L7 health-aware balancing) before per-host decisions, enforces quotas at the edge with atomic increment-and-check, carves out protected lanes for control-plane traffic, and returns Retry-After so clients cooperate instead of amplifying.',
+    staff: 'Frames quotas and shedding as product SLA decisions with business sign-off, chooses cell-based isolation when per-tenant limits cannot contain noisy neighbours, and owns the overload behavior contract — what users and partners experience, and who is accountable when the system sheds them.',
+  },
   coreConcepts: [
     'Layer 4 vs Layer 7 load balancing',
     'Health checks — active and passive',
@@ -201,6 +213,12 @@ export const databaseSelectionShardingChapter: EncyclopediaChapter = {
   summary: 'Match data store capabilities to access patterns, consistency requirements, and operational constraints, then partition data for scale while preserving correctness and operability.',
   problemStatement: 'Teams choose a database by familiarity or brand rather than by the invariants the data must maintain and the access patterns that will dominate, producing systems that are either over-engineered for simple queries or fundamentally unable to meet consistency or scale requirements.',
   interviewQuestion: 'Walk me through how you would select and evolve storage for a globally distributed payment ledger that must never lose a transaction and must scale to 50k writes per second.',
+  coreTension: 'The partition key and the consistency model are the two decisions you cannot cheaply reverse, yet the pressure to ship makes them early and irrevocable — storage architecture is the art of getting the irreversible choices right under uncertainty.',
+  levelExpectations: {
+    mid: 'Selects a database by familiarity and shards when a table gets large. Chooses partition keys that look reasonable on day one and discovers hot partitions and replica lag in production.',
+    senior: 'Derives candidates from invariants and access patterns first, picks partition keys with high cardinality and even distribution, monitors replica lag and shard skew, and uses online migration tooling before tables grow too large to change.',
+    staff: 'Anticipates the next order of magnitude and designs the migration path now; includes the team\'s ability to operate, debug, and restore the store as a first-class selection criterion; and treats benchmarks with skepticism, demanding p99 under the real write mix rather than vendor headline numbers.',
+  },
   coreConcepts: [
     'ACID properties — atomicity, consistency, isolation, durability',
     'BASE — basically available, soft state, eventual consistency',
@@ -299,6 +317,12 @@ export const resiliencePatternsChapter: EncyclopediaChapter = {
   summary: 'Contain partial failure through bounded retries with jitter, circuit isolation, resource pool separation, and graceful degradation so a slow or failed dependency cannot exhaust the entire system.',
   problemStatement: 'A single slow downstream service holds threads, exhausts connection pools, and causes latency to pile up across the call graph — turning a dependency problem into a total outage through cascade.',
   interviewQuestion: 'A payment provider is intermittently slow. Walk me through the resilience strategy you would apply to prevent it from taking down the rest of the checkout service.',
+  coreTension: 'Every mechanism that contains failure — retries, breakers, bulkheads, fallbacks — adds behavior that can itself fail or amplify, so resilience is the accounting of failure budgets across the whole call graph, not a library added at the edge of one service.',
+  levelExpectations: {
+    mid: 'Adds retries with sensible backoff and a timeout per call. Misses idempotency preconditions, retry amplification across call depth, and the thread-pool exhaustion that turns one slow dependency into a full outage.',
+    senior: 'Allocates timeouts within an end-to-end deadline, pairs retries with idempotency keys and full jitter, sizes bulkheads against realistic concurrency, and agrees the degraded user experience for each critical fallback with product before the incident.',
+    staff: 'Models failure propagation across the entire system graph — computing retry amplification ratios at design time, setting criticality-tiered timeout budgets across team boundaries, and treating chaos experiments as hypothesis-driven verification of the resilience strategy rather than failure-injection theater.',
+  },
   coreConcepts: [
     'Timeouts and deadlines — per-call and end-to-end',
     'Bounded retries with exponential backoff',
@@ -396,6 +420,12 @@ export const sloObservabilityIncidentsChapter: EncyclopediaChapter = {
   summary: 'Measure user outcomes through service level indicators, budget unreliability explicitly, diagnose across correlated signals, and turn incidents into systemic learning rather than one-time firefighting.',
   problemStatement: 'Teams alert on infrastructure metrics like CPU and memory that rarely correlate with user experience, miss real user-facing failures until customers report them, and run incident reviews that produce a list of patches without addressing the underlying systemic conditions.',
   interviewQuestion: 'Define the reliability posture for a payment processing service: SLIs, SLOs, alerting strategy, and how you would run a major incident.',
+  coreTension: 'Telemetry precise enough to debug is expensive and noisy enough to hide real signals, while reliability promised tightly enough to matter leaves no room for delivery — observability work is negotiating what is worth measuring and what the organization can afford to promise.',
+  levelExpectations: {
+    mid: 'Alerts on CPU and error counts and instruments logs ad hoc. Cannot connect a latency spike to a specific dependency without reading source code, and treats postmortems as documentation rather than systemic change.',
+    senior: 'Defines SLIs from user journeys, sets SLO targets with product, alerts on multi-window burn rates instead of static thresholds, bounds telemetry cardinality, and runs incidents with defined command roles and 48-hour blameless postmortems.',
+    staff: 'Wields the error budget as an organizational instrument — gating risky releases, steering the feature-versus-reliability conversation with data, tracking postmortem action completion as a reliability metric, and building cross-team learning loops that compound beyond any single service.',
+  },
   coreConcepts: [
     'Service level indicator — what you measure',
     'Service level objective — the target',
@@ -495,6 +525,12 @@ export const securityMultitenancyChapter: EncyclopediaChapter = {
   summary: 'Preserve tenant identity, enforce fine-grained authorization, isolate data and compute boundaries, protect secrets, and maintain a full audit trail across shared infrastructure without compromising any single tenant\'s confidentiality or availability.',
   problemStatement: 'Shared multi-tenant infrastructure conflates authentication (who you are) with authorization (what you may do), omits tenant context from data queries, and allows one tenant\'s noise or credential leak to affect every other tenant in the system.',
   interviewQuestion: 'Design the security and isolation architecture for a B2B SaaS platform serving enterprise customers with strict data residency and compliance requirements.',
+  coreTension: 'Isolation strong enough to contain a breach is expensive enough to erode the economics of multi-tenancy, and policy flexible enough for enterprise demands is complex enough to hide a missing tenant filter — security architecture is spending inconsistency risk against cost, deliberately.',
+  levelExpectations: {
+    mid: 'Implements authentication and role checks but conflates them with authorization. Relies on ambient context instead of explicit tenant propagation, so a single missing filter is a cross-tenant leak.',
+    senior: 'Threat models at trust boundaries before writing code, centralizes authorization at a policy decision point, propagates tenant context through every call and query, and matches the isolation tier (shared, partitioned, siloed) to compliance and blast-radius requirements.',
+    staff: 'Treats isolation tier selection as a business decision with dollar-valued liability, identifies which new features introduce trust boundaries before implementation begins, and designs for the multi-customer incident — blast radius calculations that inform both the architecture and the customer communication plan.',
+  },
   coreConcepts: [
     'Threat modeling — STRIDE and attack surface',
     'OAuth 2.0 and OIDC — authentication delegation',
@@ -594,6 +630,12 @@ export const safeDeliveryMigrationsChapter: EncyclopediaChapter = {
   summary: 'Move code, schemas, APIs, and traffic through reversible incremental stages with automated stop gates, fast feedback, and explicit rollback authority so that any migration can be paused or reversed without data loss.',
   problemStatement: 'Teams attempt big-bang migrations that cannot be rolled back once data has been written in the new format, discover unknown consumers of the old interface only after it is deleted, and have no stop gates to prevent a partial migration from leaving the system in an inconsistent state.',
   interviewQuestion: 'Walk me through how you would migrate a high-traffic monolith\'s core database schema to a new structure without downtime, without dual-write inconsistencies, and with a clear rollback plan.',
+  coreTension: 'A migration is only safe while every step can still be undone, yet the destination is only reached by taking the one step that cannot be — the craft is delaying the irreversible contract step until the new path has accumulated enough proof to deserve the risk.',
+  levelExpectations: {
+    mid: 'Writes the migration script and schedules the deploy window. Discovers unknown consumers only after they break, runs backfills without throttling, and has no rehearsed rollback when a gate fails.',
+    senior: 'Runs expand-contract with dual writes, throttled backfills, and programmatic reconciliation before any traffic shifts; canaries with automated stop gates against baseline; and rollback authority plus criteria defined before the migration starts.',
+    staff: 'Sequences migrations by business value to keep stakeholder trust while the work proceeds, insists on consumer inventory as a hard dependency even when it is inconvenient, plans around organizational blockers like partner release cycles, and treats flag cleanup and the contract step as first-class migration deliverables.',
+  },
   coreConcepts: [
     'Expand-contract migration pattern',
     'Strangler fig — incremental service extraction',
@@ -691,6 +733,12 @@ export const technicalStrategyDecisionsChapter: EncyclopediaChapter = {
   summary: 'Connect business direction to coherent technical choices through structured diagnosis, guiding policies, sequenced actions with clear ownership, and decision records that survive team turnover.',
   problemStatement: 'Engineering teams produce technology roadmaps that are lists of initiatives rather than diagnoses of constraints, adopt tools without comparing options or understanding reversibility, and make architectural decisions that are never recorded — so the same debates recur with every headcount change.',
   interviewQuestion: 'Your platform is facing three concurrent scaling challenges: database bottlenecks, a monolith that is slowing feature delivery, and an unreliable messaging system. How do you create and drive a technical strategy to address all three?',
+  coreTension: 'A strategy strong enough to coordinate autonomous teams must be stable enough to survive quarterly pressure, yet honest enough to be revised when its diagnosis is wrong — the tension is protecting the guiding policy without letting it harden into stale doctrine.',
+  levelExpectations: {
+    mid: 'Produces a roadmap of initiatives without a diagnosis, so everything is priority one. Records decisions, if at all, in chat threads that do not survive the people who made them.',
+    senior: 'Diagnoses the binding constraint with evidence, writes guiding policies with explicit non-goals, sequences actions so each makes the next cheaper, and closes significant decisions with RFC dissent and ADRs classified by reversibility.',
+    staff: 'Uses the strategy as the coordination mechanism for distributed decision-making — holding architectural coherence across quarters when teams optimize locally, making opportunity cost explicit enough to get genuine alignment rather than passive agreement, and tracking adoption metrics rather than delivery milestones.',
+  },
   coreConcepts: [
     'Strategy kernel — diagnosis, guiding policy, coherent actions',
     'Architecture decision record (ADR)',
@@ -787,6 +835,12 @@ export const productionRagChapter: EncyclopediaChapter = {
   summary: 'Design a retrieval-augmented generation system that returns grounded, permission-respecting, citation-backed answers with measurable quality, safe deletion, and human escalation paths — not just a working demo.',
   problemStatement: 'RAG prototypes retrieve text and generate plausible-sounding answers that hallucinate facts, leak documents across permission boundaries, go stale as the source corpus changes, and have no way to measure whether retrieval quality is improving or degrading.',
   interviewQuestion: 'Design a production RAG platform for a regulated enterprise with 10 million private documents, strict per-user access control, and a requirement that every answer cites its source.',
+  coreTension: 'A RAG system that refuses to answer is safe but useless, and one that always answers is useful but unsafe — the entire architecture (retrieval thresholds, grounding checks, escalation paths) exists to place that dial deliberately instead of letting hallucination set it by default.',
+  levelExpectations: {
+    mid: 'Assembles a demo: embed documents, retrieve top-K, generate an answer. Misses permission boundaries at query time, has no answerability gate, and cannot measure whether retrieval quality moved when anything changed.',
+    senior: 'Carries ACLs and content hashes through ingestion, fuses dense and sparse retrieval with cross-encoder reranking, gates on answerability before generation, verifies citations post-generation, and tracks retrieval and generation quality as separate eval metrics.',
+    staff: 'Publishes the system\'s quality contract — recall, faithfulness, citation accuracy, decline rate — with an owned evaluation pipeline that detects degradation; treats permission-aware retrieval and deletion SLAs as architectural constraints, not features; and frames prompt injection as data-plane security handled by sanitization and output verification.',
+  },
   coreConcepts: [
     'Document ingestion and chunking strategy',
     'Dense embeddings and vector indexes',
@@ -886,6 +940,12 @@ export const agentsToolCallingChapter: EncyclopediaChapter = {
   summary: 'Build safe, auditable AI agents that use narrow typed tools to take consequential actions — with durable workflow state, bounded resource consumption, human approval gates, and idempotent execution.',
   problemStatement: 'AI agents that can modify external systems — send emails, execute code, update databases — fail silently in partial completion states, duplicate side effects on retry, escalate privileges beyond their intended scope, and produce no audit trail sufficient for compliance or debugging.',
   interviewQuestion: 'Design an AI agent that can autonomously manage a software release process: run tests, open PRs, request reviews, and merge — safely, with human checkpoints and full auditability.',
+  coreTension: 'An agent is only worth building where model judgment beats a deterministic workflow, yet the more judgment it exercises, the more it needs the deterministic scaffolding — typed tools, durable state, approval gates — that keeps autonomy from becoming liability.',
+  levelExpectations: {
+    mid: 'Builds an open-ended loop with broad tools and no bounds. Duplicates side effects on retry, cannot resume after a mid-task crash, and has no answer for what the agent does when an approval gate times out.',
+    senior: 'Designs narrow typed tools with least privilege, checkpoints durable state before every tool call, assigns idempotency keys per call, bounds steps and spend up front, and places approval gates for consequential actions with safe defaults on timeout.',
+    staff: 'Decides deliberately when a workflow should be an agent at all, enumerates and defends each failure mode (injection, escalation, loops, partial completion) as design work rather than patches, and produces the audit trail and success/harm/escalation metrics that make the system accountable to compliance and its own operators.',
+  },
   coreConcepts: [
     'Tool schema — typed inputs and outputs with validation',
     'Plan-execute loop — LLM generates plan, executor runs tools',
@@ -984,6 +1044,12 @@ export const influenceConflictFeedbackChapter: EncyclopediaChapter = {
   summary: 'Move decisions and relationships forward without formal authority by listening to represent opposing views fairly, surfacing evidence-based options, closing with explicit ownership, and giving feedback that changes behaviour rather than ventilating frustration.',
   problemStatement: 'Engineers default to winning arguments rather than improving decisions, give feedback in ways that trigger defensiveness rather than behaviour change, and let unresolved disagreements fester into organizational dysfunction or unchallenged bad decisions.',
   interviewQuestion: 'A very senior engineer on a partner team is advocating strongly for a technical approach you believe will cause significant reliability problems at scale. You have no authority over their team. How do you handle this?',
+  coreTension: 'The honesty that surfaces a real reliability risk is the same force that can harden positions and damage the relationship the resolution depends on — influence works by lowering defensiveness faster than it raises the stakes, and that is a skill of sequence, not sincerity alone.',
+  levelExpectations: {
+    mid: 'Argues from engineering intuition to win the point, or defers to seniority and stays silent. Gives evaluative feedback that triggers defensiveness and lets circular debate run because no one names the decision owner.',
+    senior: 'Steelmans the opposing view before raising concerns, leads with load tests and incident history instead of preference, offers options with consequences, and closes with recorded dissent, disagree-and-commit, and SBI feedback that names observable behavior.',
+    staff: 'Treats the structural moves — naming decision owners, protecting dissent in the ADR, repairing relationships deliberately after conflict — as the primary leverage, and models constructive disagreement publicly so the organization learns that how engineers lose an argument is as visible as how they win.',
+  },
   coreConcepts: [
     'Influence without authority',
     'Stakeholder mapping — interests, concerns, and constraints',
