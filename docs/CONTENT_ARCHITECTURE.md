@@ -156,19 +156,21 @@ Every complete chapter contains:
 
 1. Problem statement
 2. Interview question
-3. Core concepts
-4. Architecture diagram
-5. Worked solution
-6. Design patterns
-7. Trade-offs
-8. Failure scenarios
-9. Production considerations
-10. Staff Engineer discussion
-11. Related topics
-12. Real-world systems
-13. Follow-up interview questions
-14. Cheat sheet
-15. Flashcards
-16. One-minute interview answer
+3. Core tension — the irreducible trade-off the chapter turns on
+4. Level expectations — what mid, senior, and staff answers do differently
+5. Core concepts
+6. Architecture diagram
+7. Worked solution
+8. Design patterns
+9. Trade-offs
+10. Failure scenarios
+11. Production considerations
+12. Staff Engineer discussion
+13. Related topics
+14. Real-world systems
+15. Follow-up interview questions
+16. Cheat sheet
+17. Flashcards
+18. One-minute interview answer
 
 Every claim derived from an external post is rewritten, checked against authoritative material where possible, and linked to its source. Unverified company internals must not be presented as fact.

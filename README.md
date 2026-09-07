@@ -1,6 +1,6 @@
 # StaffPath
 
-StaffPath is a local-first Staff Software Engineer preparation system — 22 encyclopedia chapters, 55 practice scenarios, 6 company packs, a 90-day roadmap, mock interview scorecards, and a live readiness tracker. No account or backend required. All preparation data stays in your browser.
+StaffPath is a local-first Staff Software Engineer preparation system — 65 encyclopedia chapters, 116 practice scenarios, 6 company packs, a 90-day roadmap, mock interview scorecards, and a live readiness tracker. No account or backend required. All preparation data stays in your browser.
 
 The application is a production React + TypeScript implementation. The original dependency-free prototype is archived under `/legacy/index.html` for reference and backward-data compatibility.
 
@@ -17,7 +17,7 @@ Open the URL printed by Vite.
 
 ```sh
 npm run check      # TypeScript
-npm test           # 65+ Vitest tests
+npm test           # 77 Vitest tests
 npm run build      # Production bundle
 npm audit          # Dependency security
 ```
@@ -25,19 +25,19 @@ npm audit          # Dependency security
 ## Feature overview
 
 ### Content
-- **22 encyclopedia chapters** — full Staff-level depth across Systems, Data, Reliability, AI, Architecture, and Leadership; every chapter has a problem statement, solution approach, failure scenarios, Staff discussion, flashcards, one-minute answer, and cheat sheet
-- **55 practice scenarios** across four tracks: system design, problem solving, people leadership, and SDLC — including distributed messaging, social feed, video streaming, booking systems, AI coding assistants, and natural-language analytics
-- **29 curated resources** — books (Designing Data-Intensive Applications, Staff Engineer, Accelerate, An Elegant Puzzle), engineering blogs (Netflix, Stripe, Uber, High Scalability), and operational references (Google SRE launch checklist)
-- **14 Communication Gym lessons** with responsible practice guidance
+- **65 encyclopedia chapters** — full Staff-level depth across Systems, Data, Reliability, AI, Architecture, and Leadership; every chapter has a problem statement, solution approach, failure scenarios, Staff discussion, core tension, mid/senior/staff level expectations, flashcards, one-minute answer, and cheat sheet
+- **116 practice scenarios** across four tracks: system design (54), problem solving (22), people leadership (20), and SDLC (20) — including distributed messaging, social feed, video streaming, booking systems, AI coding assistants, and natural-language analytics
+- **52 curated resources** — books (Designing Data-Intensive Applications, Staff Engineer, Accelerate, An Elegant Puzzle), engineering blogs (Netflix, Stripe, Uber, High Scalability), and operational references (Google SRE launch checklist)
+- **19 Communication Gym lessons** with responsible practice guidance
 
 ### Company packs (6)
 Google, Meta, Netflix, Startup, Amazon, and Atlassian — each with:
-- 59 chapter-level interview angles across all 22 chapters
+- 12–19 chapter-level interview angles drawn from the 65-chapter catalog (Amazon covers the most)
 - 8 behavioral questions with LP framing where applicable
 - Interview format and process overview
-- 4–5 key signals interviewers look for
-- 3–4 common mistakes that trip candidates up
-- 3–4 company-specific practice scenarios
+- 5 key signals interviewers look for
+- 4 common mistakes that trip candidates up
+- 4 company-specific practice scenarios
 
 ### Preparation system
 - **90-day roadmap** — one-hour daily executor with timer, reflection, artifact evidence, and 13 weeks of themed mastery questions (3 per week)
@@ -51,7 +51,7 @@ Google, Meta, Netflix, Startup, Amazon, and Atlassian — each with:
 - **Interview Studio** — 45-minute timed mocks across system design, AI design, behavioral, and coding; 8-dimension scorecard; spaced mistake review; last-3-mock average
 - **Company pack behavioral mode** — when a pack is active, Interview Studio surfaces that company's 8 behavioral questions with key signals panel
 - **Quick Actions FAB** — context-aware top-5 actions from anywhere in the app
-- **Keyboard shortcuts** — ⌘1–8 for main nav; ⌘I/M/H/, for Interviews/Communication/Handbook/Settings; ⌘K search; ⌘N journal; ⌘R roadmap; ⌘? help
+- **Keyboard shortcuts** — ⌘1–8 for main nav; ⌘I/M/H/F/, for Interviews/Communication/Handbook/Flashcards/Settings; ⌘K search; ⌘N journal; ⌘R roadmap; ⌘? help
 
 ### Evidence and export
 - **Handbook** — STAR story bank, architecture diagram studio, evidence aggregation, templates (ADR, RFC, system design, incident update, STAR, weekly reflection), and Markdown export
@@ -60,11 +60,11 @@ Google, Meta, Netflix, Startup, Amazon, and Atlassian — each with:
 - **Versioned JSON backup/restore**
 
 ### Technical
-- React 19, strict TypeScript, Vite 7, Vitest 3
+- React 19, strict TypeScript, Vite 8, Vitest 4
 - Local-first: all data in `localStorage`; no account or backend
 - Legacy `staffpath-state` data auto-migrates on first load
-- Offline write queue for journal, practice, and roadmap writes
-- Installable PWA with service worker and connection status banner
+- Connection banner with an offline action queue for journal, practice, and roadmap activity
+- Installable PWA with service worker and connection status banner; paths derived from the Vite base so it works at root or under a sub-path
 - Lazy-loaded Mermaid diagrams with SVG download
 - Route-level code splitting and lazy loading
 - GitHub Actions CI (typecheck → test → build → audit) and GitHub Pages deploy workflow
