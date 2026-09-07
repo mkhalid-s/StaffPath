@@ -3,6 +3,7 @@ import type { PreparationMode } from '../../domain/preparationModes';
 import { PREPARATION_MODES, resolveModeConfig } from '../../domain/preparationModes';
 import { buildPersonalizedRecommendations, suggestedStartingWeek } from '../../lib/recommendations';
 import { appStore, useStaffPathState } from '../../lib/appStore';
+import { localDayKey } from '../../lib/dates';
 import { SkillAssessment } from './SkillAssessment';
 
 type OnboardingStep = 'welcome' | 'mode' | 'assessment' | 'recommendations';
@@ -40,7 +41,7 @@ export function OnboardingGuide() {
       profile: {
         ...current.profile,
         name: name.trim() || 'Staff engineer',
-        startDate: new Date().toISOString().slice(0, 10),
+        startDate: localDayKey(),
         onboardingComplete: true,
       },
     }));

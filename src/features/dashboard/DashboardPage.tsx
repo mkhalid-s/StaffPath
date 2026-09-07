@@ -4,6 +4,7 @@ import { resolveModeConfig } from '../../domain/preparationModes';
 import { buildWhatsNextActions } from '../../lib/intelligence';
 import { FEATURES, getNextUnlock, getUnlockProgress, isFeatureUnlocked } from '../../lib/featureUnlocks';
 import { useStaffPathState } from '../../lib/appStore';
+import { localDayKey } from '../../lib/dates';
 import { IntelligentRecommendations } from './IntelligentRecommendations';
 
 const lifecycle = [
@@ -21,7 +22,7 @@ export function DashboardPage() {
   const communication = Object.values(state.roadmap).filter((record) => record.communicationComplete).length + Object.values(state.communicationLessons).filter((record) => record.completedAt).length;
   const progress = Math.round((sessions / ROADMAP_SESSION_COUNT) * 100);
   const next = roadmapSessions.find((session) => !state.roadmap[String(session.id)]?.completedAt) || roadmapSessions[ROADMAP_SESSION_COUNT - 1];
-  const dueMistakes = state.mistakes.filter((item) => !item.resolved && item.nextReview <= new Date().toISOString().slice(0, 10)).length;
+  const dueMistakes = state.mistakes.filter((item) => !item.resolved && item.nextReview <= localDayKey()).length;
   const greeting = state.profile.name ? `Welcome back, ${state.profile.name}.` : 'Build judgment. Create leverage.';
   const nextUnlock = getNextUnlock(state);
   const lockedFeatures = FEATURES.filter((feature) => !isFeatureUnlocked(state, feature.id) && feature.id !== 'settings');

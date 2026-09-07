@@ -2,6 +2,7 @@ import { practiceCatalog, type PracticeTrack } from '../data/practiceCatalog';
 import { roadmapSessions } from '../data/roadmap';
 import type { StaffPathState } from '../domain/appState';
 import { isPathUnlocked } from './featureUnlocks';
+import { localDayKey } from './dates';
 import { buildWhatsNextActions } from './intelligence';
 
 export interface QuickAction {
@@ -28,7 +29,7 @@ export function pickRandomPractice(state: StaffPathState): StaffPathState['pract
 }
 
 export function buildQuickActions(state: StaffPathState, today = new Date()): QuickAction[] {
-  const day = today.toISOString().slice(0, 10);
+  const day = localDayKey(today);
   const dueMistakes = state.mistakes.filter((m) => !m.resolved && m.nextReview <= day).length;
   const next = roadmapSessions.find((session) => !state.roadmap[String(session.id)]?.completedAt);
   const actions: QuickAction[] = [];
@@ -109,6 +110,6 @@ export function buildQuickActions(state: StaffPathState, today = new Date()): Qu
 }
 
 export function getQuickActionBadgeCount(state: StaffPathState, today = new Date()): number {
-  const day = today.toISOString().slice(0, 10);
+  const day = localDayKey(today);
   return state.mistakes.filter((m) => !m.resolved && m.nextReview <= day).length;
 }

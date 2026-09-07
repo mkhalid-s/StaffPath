@@ -3,9 +3,10 @@ import { appStore, useStaffPathState } from '../../lib/appStore';
 import type { MockInterviewRecord } from '../../domain/appState';
 import { interviewPrompts } from '../../data/interviewPrompts';
 import { getActivePack } from '../../data/companyPacks';
+import { localDayKey } from '../../lib/dates';
 
 const criteria = ['Requirements', 'Estimation', 'Architecture', 'Technical depth', 'Trade-offs', 'Failure handling', 'Staff-level judgment', 'Communication'];
-const isoAfter = (days: number) => { const date = new Date(); date.setDate(date.getDate() + days); return date.toISOString().slice(0, 10); };
+const isoAfter = (days: number) => { const date = new Date(); date.setDate(date.getDate() + days); return localDayKey(date); };
 
 type InterviewType = MockInterviewRecord['type'] | 'pack-behavioral';
 
@@ -90,7 +91,7 @@ export function InterviewPage() {
       ...current,
       mockInterviews: [...current.mockInterviews, {
         id: crypto.randomUUID(), type: savedType, score: average,
-        date: new Date().toISOString().slice(0, 10), feedback, prompt,
+        date: localDayKey(), feedback, prompt,
         durationMinutes, criteria: { ...scores }
       }]
     }));

@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import type { StaffPathState, UserProfile } from '../domain/appState';
 import { FEATURES } from './featureUnlocks';
+import { localDayKey } from './dates';
 
 const KEY = 'staffpath-v2';
 const listeners = new Set<() => void>();
@@ -14,7 +15,7 @@ function legacyName(): string {
 
 const defaultProfile = (): UserProfile => ({
   name: legacyName(),
-  startDate: new Date().toISOString().slice(0, 10),
+  startDate: localDayKey(),
   onboardingComplete: Boolean(legacyName()),
   preparationMode: 'moderate',
   skillAssessmentComplete: false,

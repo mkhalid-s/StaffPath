@@ -3,6 +3,7 @@ import type { PreparationMode } from '../../domain/preparationModes';
 import { PREPARATION_MODES, resolveModeConfig } from '../../domain/preparationModes';
 import type { StaffPathState } from '../../domain/appState';
 import { appStore, useStaffPathState } from '../../lib/appStore';
+import { localDayKey } from '../../lib/dates';
 import { loadDemoState } from '../../lib/demoSeed';
 import { CompanyPackSelection } from './CompanyPackSelection';
 
@@ -28,7 +29,7 @@ export function SettingsPage() {
 
   const modeConfig = resolveModeConfig(selectedMode, selectedMode === 'custom' ? { totalDays: customDays, dailyMinutes: customMinutes } : undefined);
 
-  function exportBackup() { const url = URL.createObjectURL(new Blob([JSON.stringify({ ...state, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' })); const anchor = document.createElement('a'); anchor.href = url; anchor.download = `staffpath-backup-${new Date().toISOString().slice(0, 10)}.json`; anchor.click(); URL.revokeObjectURL(url); setMessage('Backup downloaded.'); }
+  function exportBackup() { const url = URL.createObjectURL(new Blob([JSON.stringify({ ...state, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' })); const anchor = document.createElement('a'); anchor.href = url; anchor.download = `staffpath-backup-${localDayKey()}.json`; anchor.click(); URL.revokeObjectURL(url); setMessage('Backup downloaded.'); }
   async function importBackup(file?: File) { if (!file) return; if (file.size > 5_000_000) { setMessage('Backup is larger than 5 MB and was not opened.'); return; } try { const parsed = JSON.parse(await file.text()); delete parsed.exportedAt; if (!isStaffPathBackup(parsed)) throw new Error('invalid'); appStore.replace(parsed); setMessage('Backup restored successfully.'); } catch { setMessage('This is not a valid StaffPath v2 backup. No data was changed.'); } }
   function reset() { if (!window.confirm('Reset all StaffPath v2 progress? Export a backup first if you may need it.')) return; appStore.reset(); setMessage('Local progress was reset.'); }
   function loadDemo() { if (!window.confirm('Replace your current data with a sample week-6 journey? Your real progress will be lost unless you export a backup first.')) return; loadDemoState(); setMessage('Demo data loaded — explore the app as a user at week 6.'); }

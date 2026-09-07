@@ -3,11 +3,12 @@ import { roadmapSessions } from '../../data/roadmap';
 import { encyclopediaChapters } from '../../data/encyclopediaChapters';
 import type { StaffPathState } from '../../domain/appState';
 import { searchChapters } from '../encyclopedia/search';
+import { localDayKey } from '../../lib/dates';
 
 export interface CoachAction { title: string; reason: string; to: string; priority: number }
 
 export function buildCoachActions(state: StaffPathState, today = new Date()): CoachAction[] {
-  const day = today.toISOString().slice(0, 10);
+  const day = localDayKey(today);
   const due = state.mistakes.filter((item) => !item.resolved && item.nextReview <= day).length;
   const next = roadmapSessions.find((session) => !state.roadmap[String(session.id)]?.completedAt);
   const tracks: PracticeTrack[] = ['design', 'problem', 'people', 'sdlc'];
