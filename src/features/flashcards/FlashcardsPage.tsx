@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ChapterCategory } from '../../domain/encyclopedia';
 import { encyclopediaChapters } from '../../data/encyclopediaChapters';
+import { localDayKey } from '../../lib/dates';
 
 interface ReviewCard {
   id: string;
@@ -33,13 +34,13 @@ function loadKnownLegacy(): Set<string> {
 }
 
 function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDayKey();
 }
 
 function addDays(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  return localDayKey(d);
 }
 
 function loadSchedule(): Record<string, ScheduleEntry> {

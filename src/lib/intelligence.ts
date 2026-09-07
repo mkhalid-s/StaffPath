@@ -2,6 +2,7 @@ import { roadmapSessions } from '../data/roadmap';
 import { practiceCatalog, type PracticeTrack } from '../data/practiceCatalog';
 import { encyclopediaChapters } from '../data/encyclopediaChapters';
 import type { StaffPathState } from '../domain/appState';
+import { dayKeyOf, localDayKey } from './dates';
 import { COMPETENCIES, findWeakestCompetencies } from './recommendations';
 
 const COMPETENCY_CHAPTERS: Record<string, string[]> = {
@@ -67,22 +68,24 @@ function completedSessions(state: StaffPathState) {
 }
 
 function daysAgo(iso: string, today: Date): number {
-  const then = new Date(iso.slice(0, 10));
-  return Math.floor((today.getTime() - then.getTime()) / 86_400_000);
+  const [year, month, day] = dayKeyOf(iso).split('-').map(Number);
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const then = new Date(year, month - 1, day);
+  return Math.round((todayStart.getTime() - then.getTime()) / 86_400_000);
 }
 
 export function computeStreak(state: StaffPathState, today = new Date()): number {
   const dates = new Set<string>();
   for (const record of completedSessions(state)) {
-    if (record.completedAt) dates.add(record.completedAt.slice(0, 10));
+    if (record.completedAt) dates.add(dayKeyOf(record.completedAt));
   }
-  for (const entry of state.journal) dates.add(entry.date.slice(0, 10));
+  for (const entry of state.journal) dates.add(dayKeyOf(entry.date));
   if (!dates.size) return 0;
 
   let streak = 0;
   const cursor = new Date(today);
   for (let i = 0; i < 365; i++) {
-    const key = cursor.toISOString().slice(0, 10);
+    const key = localDayKey(cursor);
     if (dates.has(key)) {
       streak++;
       cursor.setDate(cursor.getDate() - 1);
@@ -163,7 +166,7 @@ export function identifyFocusAreas(state: StaffPathState, limit = 3): FocusArea[
 }
 
 export function buildWhatsNextActions(state: StaffPathState, today = new Date()): IntelligentAction[] {
-  const day = today.toISOString().slice(0, 10);
+  const day = localDayKey(today);
   const actions: IntelligentAction[] = [];
   const patterns = analyzeLearningPatterns(state, today);
   const focusAreas = identifyFocusAreas(state, 2);
@@ -390,23 +393,23 @@ export function getActivityHeatmap(state: StaffPathState, days = 84, today = new
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
+    const key = localDayKey(d);
     map.set(key, { date: key, sessions: 0, practice: 0, journal: 0, total: 0 });
   }
 
   for (const record of completedSessions(state)) {
     if (!record.completedAt) continue;
-    const key = record.completedAt.slice(0, 10);
+    const key = dayKeyOf(record.completedAt);
     const entry = map.get(key);
     if (entry) { entry.sessions++; entry.total++; }
   }
   for (const attempt of state.practiceAttempts) {
-    const key = attempt.date.slice(0, 10);
+    const key = dayKeyOf(attempt.date);
     const entry = map.get(key);
     if (entry) { entry.practice++; entry.total++; }
   }
   for (const entry of state.journal) {
-    const key = entry.date.slice(0, 10);
+    const key = dayKeyOf(entry.date);
     const day = map.get(key);
     if (day) { day.journal++; day.total++; }
   }
