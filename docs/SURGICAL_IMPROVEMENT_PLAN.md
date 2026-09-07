@@ -5,7 +5,8 @@ Complete reference for the phased enhancement of StaffPath — a local-first Sta
 **Status:** Phases 1–7 complete  
 **Merged:** [#2](https://github.com/mkhalid-s/StaffPath/pull/2) (implementation)  
 **Documentation PR:** [#3](https://github.com/mkhalid-s/StaffPath/pull/3) (this document)  
-**Last updated:** August 27, 2026
+**Last updated:** August 27, 2026  
+**Snapshot note:** counts in this document (21 chapters / 56 tests) reflect the repo as of August 27, 2026; the catalog has since grown to 65 chapters / 77 tests (September 2026).
 
 ---
 
@@ -680,7 +681,7 @@ src/
 ```sh
 npm ci
 npm run check      # TypeScript
-npm test           # 56 tests
+npm test           # test suite
 npm run build      # Production bundle
 npm audit          # Dependency security
 ```
