@@ -1,15 +1,20 @@
-const CACHE_VERSION = 'staffpath-v2';
+const CACHE_VERSION = 'staffpath-v3';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const CONTENT_CACHE = `${CACHE_VERSION}-content`;
 
+// The app deploys under vite.config.ts's base path (GitHub Pages serves it at
+// /StaffPath/). The registration scope is that base, so derive every URL from
+// it and the worker works at root or under a sub-path.
+const BASE = new URL(self.registration.scope).pathname;
+
 const PRECACHE = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/staffpath-icon.svg',
+  BASE,
+  `${BASE}index.html`,
+  `${BASE}manifest.webmanifest`,
+  `${BASE}staffpath-icon.svg`,
 ];
 
-const CONTENT_ROUTES = [
+const APP_ROUTES = [
   '/',
   '/roadmap',
   '/practice',
@@ -24,7 +29,10 @@ const CONTENT_ROUTES = [
   '/resources',
   '/lifecycle',
   '/settings',
+  '/flashcards',
 ];
+
+const CONTENT_ROUTES = APP_ROUTES.map((route) => (route === '/' ? BASE : `${BASE}${route.slice(1)}`));
 
 async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
@@ -45,7 +53,7 @@ async function networkFirst(request, cacheName) {
     const cached = await cache.match(request);
     if (cached) return cached;
     if (request.mode === 'navigate') {
-      const shell = await cache.match('/') || await cache.match('/index.html');
+      const shell = await cache.match(BASE) || await cache.match(`${BASE}index.html`);
       if (shell) return shell;
     }
     throw new Error('Offline');
