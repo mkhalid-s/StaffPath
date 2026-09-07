@@ -7,6 +7,12 @@ export const requirementsQualityAttributesChapter: EncyclopediaChapter = {
   summary: 'Turn an ambiguous product prompt into measurable behavior, scale, reliability, security, and cost constraints that drive architecture.',
   problemStatement: 'Teams choose components before agreeing on users, outcomes, and measurable quality targets, producing designs that are either over-engineered or fail under real load.',
   interviewQuestion: 'How do you begin a Staff-level system design interview?',
+  coreTension: 'Discovery consumes the very time the design needs, yet designing before the drivers are explicit produces confident guesses — the discipline is deciding how much remaining ambiguity could actually change the architecture.',
+  levelExpectations: {
+    mid: 'Restates the problem, asks for scale numbers, and jumps to components. Treats quality attributes as a checklist to recite rather than constraints that eliminate design options.',
+    senior: 'Quantifies scale, latency, availability, consistency, and cost, isolates the two or three architecture drivers, and states explicit non-goals and assumptions. Ties each driver to a validation plan before drawing the design.',
+    staff: 'Treats requirement discovery as risk negotiation with product and business stakeholders — deciding which uncertainties matter enough to resolve, publishing assumptions with revisit triggers, and using drivers to kill options early so the organization stops re-litigating settled scope.',
+  },
   coreConcepts: [
     'Functional requirements',
     'Quality attributes',
@@ -93,6 +99,12 @@ export const capPacelcConsistencyChapter: EncyclopediaChapter = {
   problemStatement:
     'Teams treat CAP as a one-time pick between consistency and availability, but real systems need different guarantees per dataset, and PACELC reminds us latency matters even when the network is healthy.',
   interviewQuestion: 'Explain the consistency model for a multi-region shopping cart and payment ledger.',
+  coreTension: 'Users experience consistency as product behavior, but every strengthening of it buys latency or availability somewhere in the world — the real decision is which invariants each journey can feel, not which slogan the database advertises.',
+  levelExpectations: {
+    mid: 'Recites CAP and picks "eventual consistency" globally. Can configure quorum reads and writes but cannot say what staleness a user actually experiences or what happens to checkout during a partition.',
+    senior: 'Chooses consistency per dataset, uses PACELC to separate partition behavior from normal-path latency, adds session guarantees where journeys need read-your-writes, and documents staleness bounds and conflict behavior at the API level.',
+    staff: 'Translates consistency choices into user-visible semantics and business risk — negotiating them with product and compliance as SLA decisions, designing the observability that proves declared guarantees hold, and owning the repair tooling for when conflicts surface anyway.',
+  },
   coreConcepts: [
     'CAP theorem',
     'PACELC extension',
@@ -183,6 +195,12 @@ export const consensusCoordinationChapter: EncyclopediaChapter = {
   problemStatement:
     'Multiple nodes must agree on a single ordering of configuration or leadership changes; ad-hoc locking and home-grown election fail under crashes, clock skew, and network delays.',
   interviewQuestion: 'Design leader election and safe task execution for a distributed scheduler.',
+  coreTension: 'Consensus is the only proven way to agree under failure, yet it is expensive, operationally fragile, and contagious — the craft lies in shrinking where it must run while refusing to improvise in the places it must.',
+  levelExpectations: {
+    mid: 'Knows Raft elects leaders and can describe quorum voting. Reaches for a lock service but treats a granted lock as safety, missing fencing tokens and the stale-leader window after a partition heals.',
+    senior: 'Uses proven consensus (etcd, ZooKeeper) for control-plane state only, issues monotonic fencing tokens with every leadership grant, requires the data plane to reject stale leaders, and exercises membership changes and quorum loss before production.',
+    staff: 'Minimizes the coordination surface itself — sharding ownership, designing idempotent leaderless data planes, and separating control from data plane — while treating the consensus layer as a critical dependency with backup, disaster recovery, and change-management rigor.',
+  },
   coreConcepts: [
     'Raft',
     'Paxos',
@@ -272,6 +290,12 @@ export const distributedTransactionsChapter: EncyclopediaChapter = {
   problemStatement:
     'A single user action must update inventory, payment, and fulfillment, but no single database transaction can span independent services; naive dual writes create duplicate charges, lost orders, or inconsistent state.',
   interviewQuestion: 'Design checkout so inventory, payment, and order state stay consistent across microservices.',
+  coreTension: 'Business invariants span services that share no transaction, so atomicity must be reconstructed from local commits, retries, and compensations — the design question is which intermediate states users and auditors can tolerate, not how to fake global atomicity.',
+  levelExpectations: {
+    mid: 'Chains synchronous service calls and applies 2PC because it looks like ACID. Dual-writes to a database and a broker and loses events on crash. Cannot articulate what happens when a compensation itself fails.',
+    senior: 'Designs sagas with explicit state machines, persists intent through a transactional outbox, makes every step idempotent with business keys, and reconciles against external systems of record with operator tooling for stuck transitions.',
+    staff: 'Treats consistency boundaries as organizational decisions — collapsing services where invariants genuinely demand it, negotiating which compensations the business legally allows, and owning the evidence trail that makes eventual consistency accountable to auditors and support.',
+  },
   coreConcepts: [
     'ACID versus BASE',
     'Two-phase commit',
@@ -362,6 +386,12 @@ export const messagingDeliverySemanticsChapter: EncyclopediaChapter = {
   summary: 'Design reliable message pipelines by choosing the right delivery guarantee, making consumers idempotent, and handling duplicate, reordered, and poison messages without data loss.',
   problemStatement: 'Distributed systems fail mid-send. Retrying produces duplicates; not retrying causes loss. Without a deliberate delivery contract and idempotent consumers, any transient failure corrupts state.',
   interviewQuestion: 'How would you design a payment event pipeline that guarantees exactly-once processing despite broker and consumer failures?',
+  coreTension: 'Failure between producer, broker, and consumer makes duplication and loss the default, and eliminating either costs throughput or complexity — the deliverable is not a guarantee but a published contract for how much of each the business absorbs, plus the operational proof it holds.',
+  levelExpectations: {
+    mid: 'Picks a delivery mode from broker documentation and adds retries blindly. Cannot trace what happens to a message when the consumer dies after processing but before committing its offset.',
+    senior: 'Publishes an explicit delivery contract per topic, deduplicates with idempotency keys and bounded windows, partitions for per-entity ordering, and runs the dead-letter queue with a drain SLA and lag-based alerting.',
+    staff: 'Derives the guarantee from the business cost of a duplicate versus a loss, rejects broker-only exactly-once claims as architectural theater, and owns end-to-end proof — rebalance chaos tests, dedup-window sizing against real traffic, and named ownership for the moment the contract breaks.',
+  },
   coreConcepts: [
     'At-most-once delivery',
     'At-least-once delivery',
