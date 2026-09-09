@@ -37,7 +37,7 @@ export function applyTheme(theme: ColorTheme) {
   root.setAttribute('data-theme-preference', theme);
   root.style.colorScheme = resolved;
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', resolved === 'dark' ? '#0c0f0d' : '#f4f3ee');
+  if (meta) meta.setAttribute('content', resolved === 'dark' ? '#121614' : '#f4f3ee');
   window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, { detail: { theme, resolved } }));
 }
 

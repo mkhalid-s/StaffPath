@@ -211,7 +211,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .velocity-accelerating { color: #2d5a3d; background: #e8f5e9; }
 .velocity-steady { color: #5a4d2d; background: #f5f0e8; }
 .velocity-plateau { color: #5a3d2d; background: #f5e8e8; }
-.velocity-inactive { color: var(--muted); }
+.velocity-inactive { color: var(--muted); background: var(--cream); }
 
 .intelligence-grid { display: grid; grid-template-columns: 1fr 300px; gap: 18px; margin-top: 16px; }
 .intelligence-actions { display: grid; gap: 8px; }
@@ -416,7 +416,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .flashcard-state-chip[data-state="known"] { color: var(--green); border-color: currentColor; }
 .flashcard-rated { display: flex; align-items: center; gap: 14px; padding: 10px 18px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); font-size: 12px; color: var(--muted); }
 
-/* Dark palette is defined once at the end of this file. */
+.chapter-card li { color: var(--ink); }
 
 /* ── Related practice scenarios in chapter detail ── */
 .related-scenarios { display: grid; gap: 7px; }
@@ -622,39 +622,39 @@ input, textarea, select { color: var(--ink); }
 
 /* ── Dark theme ── */
 html[data-theme="dark"] {
-  --ink: #eef1ec;
-  --muted: #a7b0a9;
-  --nav: #9aa49c;
-  --nav-label: #8d978f;
-  --line: #2c3530;
-  --line-strong: #3d4841;
-  --paper: #0c0f0d;
-  --card: #151a17;
-  --sidebar: #101412;
-  --cream: #1b221e;
-  --input: #101513;
-  --hover: #1e2622;
-  --hover-strong: #24352c;
-  --chip: #1e3328;
-  --callout: #1a2c24;
-  --success-bg: #1a2c24;
+  --ink: #f2f4f1;
+  --muted: #b7c0b9;
+  --nav: #c0c8c1;
+  --nav-label: #b3bbb4;
+  --line: #343e39;
+  --line-strong: #4a564f;
+  --paper: #121614;
+  --card: #1b221e;
+  --sidebar: #161b18;
+  --cream: #252e29;
+  --input: #141a17;
+  --hover: #232c27;
+  --hover-strong: #2a3b32;
+  --chip: #24382e;
+  --callout: #1e3329;
+  --success-bg: #1e3329;
   --green: #8fd4a6;
   --on-green: #0c0f0d;
-  --green-dark: #1c3a2c;
+  --green-dark: #1e3f30;
   --lime: #d4e68c;
   --lime-ink: #14190f;
-  --panel-muted: #b6c6bc;
-  --on-panel: #eef4ef;
-  --warn-bg: #2a2318;
-  --warn-fg: #e0cba8;
-  --warn-line: #5a4a32;
-  --danger-line: #6a4540;
-  --code-bg: #0a100c;
-  --code-fg: #cde0d4;
+  --panel-muted: #c3d1c8;
+  --on-panel: #f3f7f4;
+  --warn-bg: #32291c;
+  --warn-fg: #e6d2ae;
+  --warn-line: #6a5738;
+  --danger-line: #7a524c;
+  --code-bg: #0e1411;
+  --code-fg: #d3e4d9;
   --focus: #c5d87a;
-  --overlay: rgba(4, 6, 5, .72);
-  --paper-translucent: rgba(12, 15, 13, .88);
-  --shadow: 0 18px 50px rgba(0, 0, 0, .45);
+  --overlay: rgba(6, 8, 7, .72);
+  --paper-translucent: rgba(18, 22, 20, .9);
+  --shadow: 0 18px 50px rgba(0, 0, 0, .4);
   color: var(--ink);
   background: var(--paper);
 }
@@ -707,6 +707,6 @@ html[data-theme="dark"] .roadmap-week>div>button:hover,
 html[data-theme="dark"] .roadmap-week>div>button.current { background: var(--hover-strong); }
 html[data-theme="dark"] .settings-message { background: var(--success-bg); color: var(--green); }
 html[data-theme="dark"] .solution-guide ul li { color: var(--muted); }
-html[data-theme="dark"] .button.primary:hover { filter: brightness(1.05); }
+html[data-theme="dark"] .chapter-card li { background: #2a3530; color: #d5ddd7; }
 html[data-theme="dark"] .quick-actions-menu { background: var(--card); box-shadow: var(--shadow); }
 
