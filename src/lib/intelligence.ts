@@ -4,6 +4,7 @@ import { encyclopediaChapters } from '../data/encyclopediaChapters';
 import type { StaffPathState } from '../domain/appState';
 import { dayKeyOf, localDayKey } from './dates';
 import { COMPETENCIES, findWeakestCompetencies } from './recommendations';
+import { buildStudyWeekPlan } from './studyWeek';
 
 const COMPETENCY_CHAPTERS: Record<string, string[]> = {
   'technical-foundations': ['cap-pacelc-consistency', 'consensus-coordination', 'distributed-transactions', 'messaging-delivery-semantics', 'replication-protocols'],
@@ -170,6 +171,20 @@ export function buildWhatsNextActions(state: StaffPathState, today = new Date())
   const actions: IntelligentAction[] = [];
   const patterns = analyzeLearningPatterns(state, today);
   const focusAreas = identifyFocusAreas(state, 2);
+
+  const studyWeek = buildStudyWeekPlan(state);
+  if (studyWeek) {
+    actions.push({
+      title: `Week ${studyWeek.week}: ${studyWeek.module.title}`,
+      reason: `${studyWeek.chapterProgress.completed}/${studyWeek.chapterProgress.total} chapters read · roadmap week ${studyWeek.roadmapWeek} at ${studyWeek.roadmapProgress.completed}/${studyWeek.roadmapProgress.total} sessions.`,
+      insight: studyWeek.module.intent,
+      to: studyWeek.nextChapterId
+        ? `/encyclopedia?chapter=${studyWeek.nextChapterId}`
+        : studyWeek.roadmapLink,
+      priority: 92,
+      category: 'chapter',
+    });
+  }
 
   const dueMistakes = state.mistakes.filter((m) => !m.resolved && m.nextReview <= day);
   if (dueMistakes.length) {

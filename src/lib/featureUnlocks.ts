@@ -64,9 +64,9 @@ export const FEATURES: FeatureDefinition[] = [
     path: '/curriculum',
     label: 'Curriculum',
     icon: '📚',
-    requirement: 'Complete 1 roadmap session',
-    isUnlocked: (state) => sessions(state) >= 1,
-    progress: (state) => ({ current: Math.min(sessions(state), 1), target: 1 }),
+    requirement: 'Complete onboarding',
+    isUnlocked: (state) => state.profile.onboardingComplete,
+    progress: (state) => ({ current: state.profile.onboardingComplete ? 1 : 0, target: 1 }),
   },
   {
     id: 'pack',

@@ -153,9 +153,44 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .assessment-summary { display: inline-flex; align-items: baseline; gap: 10px; margin-bottom: 16px; padding: 10px 16px; border-radius: 8px; background: var(--cream); }
 .assessment-summary strong { font-size: 24px; color: var(--green); }
 .recommendation-list { display: grid; gap: 10px; margin: 20px 0; }
-.recommendation-list article { padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
-.recommendation-list strong { display: block; font-size: 12px; margin-bottom: 4px; }
-.recommendation-list p { margin: 0; color: var(--muted); font-size: 10px; }
+.recommendation-list article, .recommendation-card { padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); text-decoration: none; color: inherit; display: block; transition: border-color .15s; }
+.recommendation-card:hover { border-color: var(--green); }
+.recommendation-list strong, .recommendation-card strong { display: block; font-size: 12px; margin-bottom: 4px; }
+.recommendation-list p, .recommendation-card p { margin: 0; color: var(--muted); font-size: 12px; }
+.recommendation-card em { display: block; margin-top: 8px; font-style: normal; font-size: 11px; color: var(--green); font-weight: 650; }
+.onboarding-pack-note { margin: 0 0 12px; padding: 12px 14px; border-radius: 8px; background: var(--cream); font-size: 12px; color: var(--muted); }
+.pack-pick-cards { max-height: 42vh; overflow: auto; }
+
+.guided-help { margin-bottom: 24px; padding: 22px 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+.guided-help-header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin-bottom: 18px; }
+.guided-help-header h2 { margin: 6px 0 8px; font-size: 22px; letter-spacing: -.03em; }
+.guided-help-header p { margin: 0; max-width: 620px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.guided-help-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.guided-help-steps article { padding: 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+.guided-help-steps span { color: var(--green); font-size: 11px; font-weight: 750; }
+.guided-help-steps h3 { margin: 8px 0 6px; font-size: 14px; }
+.guided-help-steps p { margin: 0 0 10px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.guided-help-footnote { margin: 14px 0 0; font-size: 12px; color: var(--muted); }
+
+.study-week-card { margin-bottom: 24px; padding: 22px 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+.study-week-card.compact { margin-bottom: 0; padding: 16px 18px; }
+.study-week-header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 16px; }
+.study-week-header h2 { margin: 6px 0 8px; font-size: 20px; letter-spacing: -.03em; }
+.study-week-header p { margin: 0; max-width: 640px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.study-week-progress { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.study-week-progress span { display: block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
+.study-week-progress em { display: block; margin-top: 6px; font-style: normal; font-size: 12px; color: var(--muted); }
+.study-week-bar { height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.study-week-fill { height: 100%; border-radius: 999px; background: var(--green); }
+.study-week-steps { margin: 0 0 14px; padding-left: 0; list-style: none; display: grid; gap: 8px; }
+.study-week-steps li { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; font-size: 13px; }
+.study-week-steps strong { font-size: 12px; min-width: 88px; }
+.study-week-pack-note { margin: 0 0 12px; font-size: 12px; color: var(--muted); }
+.coach-this-week { margin-bottom: 28px; }
+.coach-this-week > div:first-child { margin-bottom: 12px; }
+.coach-this-week h2 { margin: 6px 0 8px; font-size: 22px; }
+.coach-this-week p { margin: 0; max-width: 720px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.curriculum-module.highlighted { border-color: var(--green); box-shadow: 0 0 0 1px var(--green); }
 
 @media (max-width: 680px) {
   .onboarding-panel { padding: 24px 20px; max-height: calc(100vh - 16px); }

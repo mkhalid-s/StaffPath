@@ -1,6 +1,6 @@
 # Remaining work — plan for review
 
-**Status:** proposed, not started  
+**Status:** P0 implemented (2026-09-09)  
 **Date:** 2026-09-09  
 **Audience:** review this before any more implementation.
 
@@ -46,7 +46,7 @@ StaffPath already has a strong encyclopedia, a 90-session roadmap, practice labs
 
 ---
 
-## P0 — Close the guided loop
+## P0 — Close the guided loop ✅ (shipped)
 
 Highest leverage. New users still do not land on a path after onboarding.
 

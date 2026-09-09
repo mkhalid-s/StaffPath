@@ -82,6 +82,8 @@ export function buildDemoState(): StaffPathState {
       unlockAll: false,
       celebratedUnlocks: ['coach', 'curriculum', 'practice', 'resources', 'communication'],
       selectedCompanyPack: 'amazon',
+      studyWeek: 4,
+      guidedHelpDismissed: true,
     },
     assessments: {
       'technical-foundations': { score: 4, evidence: 'Comfortable with core distributed systems concepts.', updatedAt: daysAgo(58) },

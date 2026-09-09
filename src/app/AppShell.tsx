@@ -29,7 +29,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
 const NAV_GROUPS = [
   { label: 'PREPARE', paths: ['/', '/roadmap', '/curriculum', '/pack', '/coach'] },
   { label: 'PRACTICE', paths: ['/practice', '/interviews', '/communication', '/flashcards'] },
-  { label: 'KNOWLEDGE', paths: ['/encyclopedia', '/resources', '/lifecycle'] },
+  { label: 'KNOWLEDGE', paths: ['/encyclopedia', '/resources'] },
+  { label: 'REFERENCE', paths: ['/lifecycle'] },
   { label: 'EVIDENCE', paths: ['/skills', '/handbook', '/journal', '/settings'] },
 ];
 import { ConnectionStatus } from '../components/ConnectionStatus';

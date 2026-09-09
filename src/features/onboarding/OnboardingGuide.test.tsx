@@ -24,12 +24,15 @@ describe('OnboardingGuide', () => {
     fireEvent.click(screen.getByRole('button', { name: /Moderate/ }));
     fireEvent.click(screen.getByRole('button', { name: /Continue to assessment/ }));
     fireEvent.click(screen.getByRole('button', { name: /Save baseline and continue/ }));
-    fireEvent.click(screen.getByRole('button', { name: /Start preparing/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Continue to your plan/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Start week/ }));
     const state = appStore.get();
     expect(state.profile.onboardingComplete).toBe(true);
     expect(state.profile.name).toBe('Alex');
     expect(state.profile.preparationMode).toBe('moderate');
     expect(state.profile.skillAssessmentComplete).toBe(true);
+    expect(state.profile.studyWeek).toBeGreaterThanOrEqual(1);
+    expect(state.profile.guidedHelpDismissed).toBe(false);
   });
 
   it('hides when onboarding is complete', () => {

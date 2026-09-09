@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { readQueryParam } from '../../lib/router';
 import { curriculumModules, type CurriculumLevel } from '../../data/curriculum';
 import { encyclopediaChapters } from '../../data/encyclopediaChapters';
 import { roadmapSessions, roadmapWeeks } from '../../data/roadmap';
@@ -21,6 +22,13 @@ export function CurriculumPage() {
   const [level, setLevel] = useState<'All' | CurriculumLevel>('All');
   const pack = getActivePack(state.profile.selectedCompanyPack);
   const completedIds = new Set(state.completedChapters);
+  const highlightWeek = Number(readQueryParam('week') || state.profile.studyWeek || 0);
+  const weekRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!highlightWeek || !weekRef.current?.scrollIntoView) return;
+    weekRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [highlightWeek]);
 
   const visible = useMemo(
     () => curriculumModules.filter((module) => level === 'All' || module.level === level),
@@ -84,7 +92,13 @@ export function CurriculumPage() {
           const roadmapTitle = roadmapWeeks[module.roadmapWeek - 1]?.title ?? `Week ${module.roadmapWeek}`;
           const done = readCount === module.chapterIds.length && roadmap.total > 0 && roadmap.completed === roadmap.total;
           return (
-            <article key={module.week} className="curriculum-module" data-done={done || undefined}>
+            <article
+              key={module.week}
+              ref={module.week === highlightWeek ? weekRef : undefined}
+              className={`curriculum-module ${module.week === highlightWeek ? 'highlighted' : ''}`}
+              data-week={module.week}
+              data-done={done || undefined}
+            >
               <header>
                 <div>
                   <p className="eyebrow">WEEK {module.week} · {module.level.toUpperCase()}</p>

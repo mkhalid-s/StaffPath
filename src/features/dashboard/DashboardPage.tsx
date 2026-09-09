@@ -7,6 +7,8 @@ import { FEATURES, getNextUnlock, getUnlockProgress, isFeatureUnlocked } from '.
 import { useStaffPathState } from '../../lib/appStore';
 import { localDayKey } from '../../lib/dates';
 import { IntelligentRecommendations } from './IntelligentRecommendations';
+import { GuidedHelp } from '../../components/GuidedHelp';
+import { StudyWeekCard } from '../../components/StudyWeekCard';
 
 const lifecycle = [
   ['Learn', 'Build accurate mental models', '/encyclopedia', 'encyclopedia'],
@@ -51,6 +53,10 @@ export function DashboardPage() {
           )}
         </div>
       </div>
+
+      <GuidedHelp />
+
+      <StudyWeekCard />
 
       <section className="hero-panel">
         <div>

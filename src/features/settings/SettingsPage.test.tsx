@@ -9,7 +9,7 @@ describe('backup validation', () => {
   it('accepts the required v2 collections', () => {
     expect(isStaffPathBackup({
       version: 2,
-      profile: { name: 'Test', startDate: '2026-01-01', onboardingComplete: true, preparationMode: 'moderate', skillAssessmentComplete: true, unlockAll: false, celebratedUnlocks: [], selectedCompanyPack: 'none' },
+      profile: { name: 'Test', startDate: '2026-01-01', onboardingComplete: true, preparationMode: 'moderate', skillAssessmentComplete: true, unlockAll: false, celebratedUnlocks: [], selectedCompanyPack: 'none', studyWeek: 1, guidedHelpDismissed: true },
       roadmap: {},
       mistakes: [],
       mockInterviews: [],

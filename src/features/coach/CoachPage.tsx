@@ -3,6 +3,8 @@ import { Link } from '../../lib/router';
 import { useStaffPathState } from '../../lib/appStore';
 import { buildWhatsNextActions, buildStudyPlan, identifyFocusAreas } from '../../lib/intelligence';
 import { buildCoachActions, retrieveCoachMatches } from './recommendations';
+import { StudyWeekCard } from '../../components/StudyWeekCard';
+import { buildStudyWeekPlan } from '../../lib/studyWeek';
 
 const categoryIcon: Record<string, string> = {
   roadmap: '□', practice: '△', mistake: '◉', assessment: '◇', communication: '◌', chapter: '⌕', journal: '≡',
@@ -19,6 +21,7 @@ export function CoachPage() {
   const usingIntelligence = intelligentActions.length > 0;
   const [showPlan, setShowPlan] = useState(false);
   const studyPlan = showPlan ? buildStudyPlan(state) : null;
+  const weekPlan = buildStudyWeekPlan(state);
 
   return (
     <div className="page coach-page">
@@ -29,6 +32,17 @@ export function CoachPage() {
           <p>StaffPath recommends the next useful action from your real progress and retrieves material already in your source of truth.</p>
         </div>
       </div>
+
+      {weekPlan && (
+        <section className="coach-this-week">
+          <div>
+            <p className="eyebrow">YOUR STUDY WEEK</p>
+            <h2>Week {weekPlan.week}: {weekPlan.module.title}</h2>
+            <p>Coach actions below still apply, but this week&apos;s map is the spine — read the chapters, run one {weekPlan.practiceTrack} practice, then finish roadmap week {weekPlan.roadmapWeek}.</p>
+          </div>
+          <StudyWeekCard compact />
+        </section>
+      )}
 
       <section className="coach-priorities">
         <div>
