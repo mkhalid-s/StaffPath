@@ -17,4 +17,17 @@ describe('complete preparation content contract', () => {
     expect(learningResources).toHaveLength(52);
     for (const prompts of Object.values(interviewPrompts)) expect(prompts.length).toBeGreaterThanOrEqual(6);
   });
+
+  it('wires every curriculum module to real encyclopedia chapters and a roadmap week', () => {
+    const ids = new Set(encyclopediaChapters.map((chapter) => chapter.id));
+    for (const module of curriculumModules) {
+      expect(module.chapterIds.length).toBeGreaterThan(0);
+      expect(module.roadmapWeek).toBeGreaterThanOrEqual(1);
+      expect(module.roadmapWeek).toBeLessThanOrEqual(12);
+      expect(module.intent.length).toBeGreaterThan(40);
+      for (const chapterId of module.chapterIds) {
+        expect(ids.has(chapterId), `${module.title} → missing chapter ${chapterId}`).toBe(true);
+      }
+    }
+  });
 });

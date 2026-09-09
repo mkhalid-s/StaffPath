@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Map, Target, BookOpen, Zap,
   Search, CreditCard, Link2, TrendingUp, Mic,
   Brain, MessageSquare, Notebook, PenLine, Settings,
-  Lock, Menu, Keyboard, Monitor, Moon, Sun,
+  Lock, Menu, Keyboard, Monitor, Moon, Sun, Building2,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -12,6 +12,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   roadmap:       Map,
   coach:         Target,
   curriculum:    BookOpen,
+  pack:          Building2,
   practice:      Zap,
   encyclopedia:  Search,
   flashcards:    CreditCard,
@@ -26,7 +27,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
 };
 
 const NAV_GROUPS = [
-  { label: 'PREPARE', paths: ['/', '/roadmap', '/coach', '/curriculum'] },
+  { label: 'PREPARE', paths: ['/', '/roadmap', '/curriculum', '/pack', '/coach'] },
   { label: 'PRACTICE', paths: ['/practice', '/interviews', '/communication', '/flashcards'] },
   { label: 'KNOWLEDGE', paths: ['/encyclopedia', '/resources', '/lifecycle'] },
   { label: 'EVIDENCE', paths: ['/skills', '/handbook', '/journal', '/settings'] },

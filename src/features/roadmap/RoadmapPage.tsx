@@ -4,7 +4,7 @@ import { encyclopediaChapters } from '../../data/encyclopediaChapters';
 import type { RoadmapSessionRecord } from '../../domain/appState';
 import { resolveModeConfig } from '../../domain/preparationModes';
 import { appStore, useStaffPathState } from '../../lib/appStore';
-import { Link } from '../../lib/router';
+import { Link, useLocationSearch } from '../../lib/router';
 import { enqueueAction, isOnline } from '../../lib/offlineQueue';
 import { buildSessionPlan } from './sessionPlan';
 
@@ -20,6 +20,7 @@ export function RoadmapPage() {
   const [selectedId, setSelectedId] = useState(firstOpen.id);
   const [filter, setFilter] = useState<'all' | SessionCategory>('all');
   const [running, setRunning] = useState(false);
+  const search = useLocationSearch();
   const selected = roadmapSessions[selectedId - 1];
   const record = state.roadmap[String(selectedId)] || emptyRecord();
   const plan = useMemo(() => buildSessionPlan(selected, modeConfig.dailyMinutes), [selected, modeConfig.dailyMinutes]);
@@ -27,6 +28,13 @@ export function RoadmapPage() {
   const weeklyPace = sessionsPerWeek(modeConfig.totalDays);
   const currentWeek = roadmapWeeks[selected.week - 1];
   const masteryQuestions = currentWeek?.masteryQuestions ?? [];
+
+  useEffect(() => {
+    const week = Number(new URLSearchParams(search).get('week'));
+    if (!Number.isInteger(week) || week < 1) return;
+    const session = roadmapSessions.find((item) => item.week === week);
+    if (session) setSelectedId(session.id);
+  }, [search]);
 
   useEffect(() => {
     if (!running || remaining === 0) return;

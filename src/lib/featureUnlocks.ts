@@ -5,6 +5,7 @@ export type FeatureId =
   | 'roadmap'
   | 'coach'
   | 'curriculum'
+  | 'pack'
   | 'practice'
   | 'encyclopedia'
   | 'flashcards'
@@ -66,6 +67,15 @@ export const FEATURES: FeatureDefinition[] = [
     requirement: 'Complete 1 roadmap session',
     isUnlocked: (state) => sessions(state) >= 1,
     progress: (state) => ({ current: Math.min(sessions(state), 1), target: 1 }),
+  },
+  {
+    id: 'pack',
+    path: '/pack',
+    label: 'Company path',
+    icon: '🏢',
+    requirement: 'Complete onboarding',
+    isUnlocked: (state) => state.profile.onboardingComplete,
+    progress: (state) => ({ current: state.profile.onboardingComplete ? 1 : 0, target: 1 }),
   },
   {
     id: 'practice',

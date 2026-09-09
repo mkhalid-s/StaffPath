@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { practiceCatalog, practiceRubrics, practiceTracks, type PracticeTrack } from '../../data/practiceCatalog';
 import { getActivePack } from '../../data/companyPacks';
 import { appStore, useStaffPathState } from '../../lib/appStore';
 import { enqueueAction, isOnline } from '../../lib/offlineQueue';
+import { useLocationSearch } from '../../lib/router';
 
 const labels: Record<PracticeTrack, [string, string]> = {
   design: ['System design', 'Architecture, scale, and trade-offs'],
@@ -17,11 +18,6 @@ interface PackScenario {
   prompt: string;
   variations: string[];
   coachingPrompts: string[];
-}
-
-interface PackWithScenarios {
-  practiceScenarios?: PackScenario[];
-  behavioralQuestions?: string[];
 }
 
 const universalDesignProbes = [
@@ -52,6 +48,8 @@ export function PracticePage() {
   const pack = getActivePack(state.profile.selectedCompanyPack);
   const [packQOpen, setPackQOpen] = useState(false);
   const [browseQuery, setBrowseQuery] = useState('');
+  const [packOverride, setPackOverride] = useState<PackScenario | null>(null);
+  const search = useLocationSearch();
 
   const allScenarios = useMemo(() => practiceTracks.flatMap((t) =>
     practiceCatalog[t].map((s, i) => ({ ...s, trackIndex: i }))
@@ -64,10 +62,50 @@ export function PracticePage() {
       s.title.toLowerCase().includes(q) || s.prompt.toLowerCase().includes(q)
     ).slice(0, 12);
   }, [browseQuery, allScenarios]);
-  const packScenarios = (pack as (typeof pack & PackWithScenarios) | null)?.practiceScenarios ?? [];
-  const packQuestions = (pack as (typeof pack & PackWithScenarios) | null)?.behavioralQuestions ?? [];
+  const packScenarios = pack?.practiceScenarios ?? [];
+  const packQuestions = pack?.behavioralQuestions ?? [];
+  const active = packOverride
+    ? {
+      id: `pack-${pack?.id ?? 'none'}-${packOverride.title}`,
+      title: packOverride.title,
+      prompt: packOverride.prompt,
+      variations: packOverride.variations,
+      coachingPrompts: packOverride.coachingPrompts,
+      solutionGuide: undefined as string[] | undefined,
+    }
+    : challenge;
+  const activeVariation = packOverride
+    ? packOverride.variations[0]
+    : variation;
 
-  function switchTrack(next: PracticeTrack) { setTrack(next); setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false); setProbesOpen(false); setGuideOpen(false); }
+  useEffect(() => {
+    const params = new URLSearchParams(search);
+    const nextTrack = params.get('track');
+    if (nextTrack === 'design' || nextTrack === 'problem' || nextTrack === 'people' || nextTrack === 'sdlc') {
+      setTrack(nextTrack);
+    }
+    const packTitle = params.get('packScenario');
+    if (!packTitle || !pack) {
+      if (!packTitle) setPackOverride(null);
+      return;
+    }
+    const match = pack.practiceScenarios.find((scenario) => scenario.title === packTitle);
+    if (match) {
+      setTrack(match.track);
+      setPackOverride(match);
+    }
+  }, [search, pack]);
+
+  function switchTrack(next: PracticeTrack) {
+    setPackOverride(null);
+    setTrack(next);
+    setResponse('');
+    setReflection('');
+    setChecked([]);
+    setCoachOpen(false);
+    setProbesOpen(false);
+    setGuideOpen(false);
+  }
   function move(delta: number) {
     appStore.update((current) => ({ ...current, practiceCursor: { ...current.practiceCursor, [track]: Math.max(0, current.practiceCursor[track] + delta) } }));
     setResponse(''); setReflection(''); setChecked([]); setCoachOpen(false); setProbesOpen(false);
@@ -77,7 +115,7 @@ export function PracticePage() {
     if (!response.trim()) return;
     appStore.update((current) => ({
       ...current,
-      practiceAttempts: [...current.practiceAttempts, { id: crypto.randomUUID(), challengeId: challenge.id, track, title: challenge.title, variation, response: response.trim(), reflection: reflection.trim(), score: checked.length, maxScore: rubric.length, date: new Date().toISOString() }],
+      practiceAttempts: [...current.practiceAttempts, { id: crypto.randomUUID(), challengeId: active.id, track, title: active.title, variation: activeVariation, response: response.trim(), reflection: reflection.trim(), score: checked.length, maxScore: rubric.length, date: new Date().toISOString() }],
       practiceCursor: { ...current.practiceCursor, [track]: current.practiceCursor[track] + 1 },
     }));
     if (!isOnline()) enqueueAction('practice', `Practice: ${challenge.title}`);
@@ -129,8 +167,8 @@ export function PracticePage() {
     <div className="interview-tabs" role="tablist">{practiceTracks.map((item) => <button role="tab" aria-selected={track === item} className={track === item ? 'active' : ''} key={item} onClick={() => switchTrack(item)}>{labels[item][0]} <span>{practiceCatalog[item].length}</span></button>)}</div>
     <form className="practice-layout" onSubmit={saveAttempt}>
       <section className="challenge-panel">
-        <div className="session-meta"><span>{labels[track][0].toUpperCase()}</span><span>CHALLENGE {cursor % challenges.length + 1} / {challenges.length}</span></div>
-        <h2>{challenge.title}</h2><p>{challenge.prompt}</p>
+        <div className="session-meta"><span>{labels[track][0].toUpperCase()}</span><span>{packOverride ? `${pack?.label ?? 'PACK'} SCENARIO` : `CHALLENGE ${cursor % challenges.length + 1} / ${challenges.length}`}</span></div>
+        <h2>{active.title}</h2><p>{active.prompt}</p>
         {track === 'design' && (
           <div className="design-probes-card">
             <button className="coach-toggle" type="button" onClick={() => setProbesOpen((value) => !value)}>
@@ -161,7 +199,7 @@ export function PracticePage() {
             )}
           </div>
         )}
-        <div className="variation-card"><span>CONSTRAINT VARIATION</span><strong>{variation}</strong></div>
+        <div className="variation-card"><span>CONSTRAINT VARIATION</span><strong>{activeVariation}</strong></div>
         <label>{labels[track][1]}<textarea aria-label="Practice response" required value={response} onChange={(event) => setResponse(event.target.value)} placeholder="Clarify the problem, state assumptions, reason through options, make a recommendation…" /></label>
         <label>Post-attempt reflection<textarea aria-label="Practice reflection" value={reflection} onChange={(event) => setReflection(event.target.value)} placeholder="What was weak? What will you do differently next time?" /></label>
         <div className="button-row"><button className="button" type="button" onClick={() => move(-1)} disabled={cursor === 0}>← Previous</button><button className="button" type="button" onClick={() => move(1)}>Skip / next →</button></div>
@@ -170,16 +208,16 @@ export function PracticePage() {
         <p className="eyebrow">DELIBERATE REVIEW</p><h2>Score observable behaviors</h2><p>Check only what your written or spoken answer actually demonstrated.</p>
         <div className="rubric-list">{rubric.map((item, index) => <label key={item}><input type="checkbox" checked={checked.includes(index)} onChange={(event) => setChecked((values) => event.target.checked ? [...values, index] : values.filter((value) => value !== index))} />{item}</label>)}</div>
         <button className="coach-toggle" type="button" onClick={() => setCoachOpen((value) => !value)}>{coachOpen ? 'Hide coaching prompts' : 'Reveal coaching prompts'}</button>
-        {coachOpen && <ul className="coach-prompts">{challenge.coachingPrompts.map((prompt) => <li key={prompt}>{prompt}</li>)}</ul>}
+        {coachOpen && <ul className="coach-prompts">{active.coachingPrompts.map((prompt) => <li key={prompt}>{prompt}</li>)}</ul>}
         <div className="score-preview"><strong>{checked.length}/{rubric.length}</strong><span>self-review evidence</span></div>
         <button className="button primary complete-button" type="submit" disabled={!response.trim()}>Save attempt to handbook</button>
-        {challenge.solutionGuide && challenge.solutionGuide.length > 0 && (
+        {active.solutionGuide && active.solutionGuide.length > 0 && (
           <>
             <button className="coach-toggle" type="button" onClick={() => setGuideOpen((v) => !v)}>{guideOpen ? 'Hide solution guide ↑' : 'Reveal solution guide ↓'}</button>
             {guideOpen && (
               <div className="solution-guide">
                 <p className="eyebrow">STAFF-LEVEL SOLUTION GUIDE</p>
-                <ul>{challenge.solutionGuide.map((point) => <li key={point}>{point}</li>)}</ul>
+                <ul>{active.solutionGuide.map((point) => <li key={point}>{point}</li>)}</ul>
               </div>
             )}
           </>
@@ -192,11 +230,23 @@ export function PracticePage() {
         <div className="section-heading"><p className="eyebrow">{pack.label.toUpperCase()} SCENARIOS</p><h2>Company-specific practice</h2></div>
         <div className="attempt-grid">
           {packScenarios.map((scenario) => (
-            <article key={scenario.title}>
+            <button
+              key={scenario.title}
+              type="button"
+              className="pack-scenario-card"
+              onClick={() => {
+                setTrack(scenario.track);
+                setPackOverride(scenario);
+                setResponse('');
+                setReflection('');
+                window.scrollTo({ top: 0 });
+              }}
+            >
               <span>[{pack.label}] · {labels[scenario.track][0]}</span>
               <h3>{scenario.title}</h3>
               <p>{scenario.prompt}</p>
-            </article>
+              <strong>Run this prompt →</strong>
+            </button>
           ))}
         </div>
       </section>
