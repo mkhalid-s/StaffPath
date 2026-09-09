@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { appStore } from './appStore';
-import { buildStudyWeekPlan, isCurriculumWeekComplete, resolveStudyWeek } from './studyWeek';
+import { buildStudyWeekPlan, getRoadmapFocusSessionId, getRoadmapFocusWeek, isCurriculumWeekComplete, resolveStudyWeek } from './studyWeek';
+import { roadmapSessions } from '../data/roadmap';
 
 describe('studyWeek', () => {
   beforeEach(() => appStore.reset());
@@ -40,6 +41,17 @@ describe('studyWeek', () => {
     }));
     expect(isCurriculumWeekComplete(appStore.get(), 1)).toBe(true);
     expect(resolveStudyWeek(appStore.get())).toBe(2);
+  });
+
+  it('focuses roadmap on the study week linked roadmap week', () => {
+    appStore.update((current) => ({
+      ...current,
+      profile: { ...current.profile, studyWeek: 7, onboardingComplete: true },
+    }));
+    expect(getRoadmapFocusWeek(appStore.get())).toBe(8);
+    const sessionId = getRoadmapFocusSessionId(appStore.get());
+    const session = roadmapSessions.find((item) => item.id === sessionId);
+    expect(session?.week).toBe(8);
   });
 
   it('builds deep links for read, practice, and apply', () => {

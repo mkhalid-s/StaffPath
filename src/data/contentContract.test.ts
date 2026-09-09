@@ -28,6 +28,12 @@ describe('complete preparation content contract', () => {
       for (const chapterId of module.chapterIds) {
         expect(ids.has(chapterId), `${module.title} → missing chapter ${chapterId}`).toBe(true);
       }
+      if (module.resourceTitles?.length) {
+        const titles = new Set(learningResources.map((resource) => resource.title));
+        for (const title of module.resourceTitles) {
+          expect(titles.has(title), `${module.title} → missing resource ${title}`).toBe(true);
+        }
+      }
     }
   });
 });

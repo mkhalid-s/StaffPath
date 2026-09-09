@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { appStore } from '../../lib/appStore';
+import { getRoadmapFocusSessionId } from '../../lib/studyWeek';
 import { RoadmapPage } from './RoadmapPage';
 
 describe('RoadmapPage', () => {
@@ -15,11 +16,12 @@ describe('RoadmapPage', () => {
 
   it('persists reflection, artifact, communication and completion evidence', () => {
     render(<RoadmapPage />);
+    const sessionId = String(getRoadmapFocusSessionId(appStore.get()));
     fireEvent.change(screen.getByLabelText('Session reflection'), { target: { value: 'Scope is broader than code.' } });
     fireEvent.change(screen.getByLabelText('Session artifact'), { target: { value: 'staff-motivation.md' } });
     fireEvent.click(screen.getByRole('checkbox'));
     fireEvent.click(screen.getByRole('button', { name: 'Complete session' }));
-    expect(appStore.get().roadmap['1']).toMatchObject({ reflection: 'Scope is broader than code.', artifact: 'staff-motivation.md', communicationComplete: true });
-    expect(appStore.get().roadmap['1'].completedAt).toBeTruthy();
+    expect(appStore.get().roadmap[sessionId]).toMatchObject({ reflection: 'Scope is broader than code.', artifact: 'staff-motivation.md', communicationComplete: true });
+    expect(appStore.get().roadmap[sessionId].completedAt).toBeTruthy();
   });
 });

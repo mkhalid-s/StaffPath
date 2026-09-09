@@ -191,6 +191,16 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .coach-this-week h2 { margin: 6px 0 8px; font-size: 22px; }
 .coach-this-week p { margin: 0; max-width: 720px; color: var(--muted); font-size: 13px; line-height: 1.55; }
 .curriculum-module.highlighted { border-color: var(--green); box-shadow: 0 0 0 1px var(--green); }
+.curriculum-resources { margin: 14px 0 4px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+.curriculum-resources ul { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.curriculum-resources li { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.curriculum-resources a { color: var(--green); font-weight: 650; text-decoration: none; }
+.curriculum-resources a:hover { text-decoration: underline; }
+.curriculum-resources span { color: var(--muted); font-size: 12px; }
+.pack-questions a { color: inherit; text-decoration: none; }
+.pack-questions a:hover { color: var(--green); text-decoration: underline; }
+.related-topic-links a { color: var(--green); font-weight: 600; text-decoration: none; }
+.related-topic-links a:hover { text-decoration: underline; }
 
 @media (max-width: 680px) {
   .onboarding-panel { padding: 24px 20px; max-height: calc(100vh - 16px); }

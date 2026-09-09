@@ -5,6 +5,7 @@ import type { RoadmapSessionRecord } from '../../domain/appState';
 import { resolveModeConfig } from '../../domain/preparationModes';
 import { appStore, useStaffPathState } from '../../lib/appStore';
 import { Link, useLocationSearch } from '../../lib/router';
+import { getRoadmapFocusSessionId } from '../../lib/studyWeek';
 import { enqueueAction, isOnline } from '../../lib/offlineQueue';
 import { buildSessionPlan } from './sessionPlan';
 
@@ -17,7 +18,7 @@ export function RoadmapPage() {
   const focusTarget = modeConfig.focusSeconds;
   const completed = roadmapSessions.filter((session) => state.roadmap[String(session.id)]?.completedAt).length;
   const firstOpen = roadmapSessions.find((session) => !state.roadmap[String(session.id)]?.completedAt) || roadmapSessions[ROADMAP_SESSION_COUNT - 1];
-  const [selectedId, setSelectedId] = useState(firstOpen.id);
+  const [selectedId, setSelectedId] = useState(() => getRoadmapFocusSessionId(state));
   const [filter, setFilter] = useState<'all' | SessionCategory>('all');
   const [running, setRunning] = useState(false);
   const search = useLocationSearch();
@@ -32,9 +33,8 @@ export function RoadmapPage() {
   useEffect(() => {
     const week = Number(new URLSearchParams(search).get('week'));
     if (!Number.isInteger(week) || week < 1) return;
-    const session = roadmapSessions.find((item) => item.week === week);
-    if (session) setSelectedId(session.id);
-  }, [search]);
+    setSelectedId(getRoadmapFocusSessionId(state, week));
+  }, [search, state.roadmap, state.profile.studyWeek]);
 
   useEffect(() => {
     if (!running || remaining === 0) return;

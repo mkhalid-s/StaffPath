@@ -14,5 +14,6 @@ describe('PackPage', () => {
     expect(screen.getByText('Chapters this pack rewrites')).toBeInTheDocument();
     expect(screen.getByText('Pack scenarios')).toBeInTheDocument();
     expect(screen.getByText(/Design a distributed cron service/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Score a mock in Interview Studio/ })).toHaveAttribute('href', expect.stringContaining('packBehavioral=0'));
   });
 });

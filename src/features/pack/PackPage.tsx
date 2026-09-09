@@ -125,9 +125,13 @@ export function PackPage() {
               </div>
             </div>
             <ul className="pack-questions">
-              {pack.behavioralQuestions.map((question) => <li key={question}>{question}</li>)}
+              {pack.behavioralQuestions.map((question, index) => (
+                <li key={question}>
+                  <Link to={`/interviews?packBehavioral=${index}`}>{question}</Link>
+                </li>
+              ))}
             </ul>
-            <Link className="button primary" to="/interviews">Score a mock in Interview Studio</Link>
+            <Link className="button primary" to="/interviews?packBehavioral=0">Score a mock in Interview Studio</Link>
           </section>
         </>
       )}

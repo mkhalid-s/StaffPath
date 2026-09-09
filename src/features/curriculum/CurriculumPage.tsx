@@ -6,6 +6,7 @@ import { roadmapSessions, roadmapWeeks } from '../../data/roadmap';
 import { getActivePack } from '../../data/companyPacks';
 import { useStaffPathState } from '../../lib/appStore';
 import { Link } from '../../lib/router';
+import { getResourcesByTitles } from '../../lib/resources';
 
 function chapterById(id: string) {
   return encyclopediaChapters.find((chapter) => chapter.id === id);
@@ -140,6 +141,19 @@ export function CurriculumPage() {
                 ))}
               </div>
               <p className="curriculum-output"><strong>Evidence to produce:</strong> {module.output}</p>
+              {module.resourceTitles && module.resourceTitles.length > 0 && (
+                <div className="curriculum-resources">
+                  <p className="eyebrow">SUPPLEMENTARY READING</p>
+                  <ul>
+                    {getResourcesByTitles(module.resourceTitles).map((resource) => (
+                      <li key={resource.title}>
+                        <a href={resource.url} target="_blank" rel="noreferrer">{resource.title}</a>
+                        <span>{resource.type} · {resource.domain}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <div className="button-row">
                 <Link className="button primary" to={`/encyclopedia?chapter=${encodeURIComponent(module.chapterIds[0])}`}>Start with {chapters[0]?.title ?? 'first chapter'}</Link>
                 <Link className="button" to={`/practice?track=${module.practiceTrack}`}>Practice {module.practiceTrack}</Link>

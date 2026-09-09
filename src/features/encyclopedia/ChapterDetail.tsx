@@ -3,6 +3,8 @@ import { Server, Database, Shield, Cpu, Layout, Users, type LucideIcon } from 'l
 import type { EncyclopediaChapter } from '../../domain/encyclopedia';
 import { practiceCatalog } from '../../data/practiceCatalog';
 import { ArchitectureDiagram } from './ArchitectureDiagram';
+import { Link } from '../../lib/router';
+import { resolveRelatedTopics } from '../../lib/relatedTopics';
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
   Systems: Server,
@@ -25,6 +27,25 @@ function findRelatedScenarios(chapter: EncyclopediaChapter) {
 
 function ListSection({ title, items }: { title: string; items: string[] }) {
   return <section className="chapter-section"><h3>{title}</h3><ul>{items.map((item) => <li key={item}>{item}</li>)}</ul></section>;
+}
+
+function RelatedTopicsSection({ refs }: { refs: string[] }) {
+  if (!refs.length) return null;
+  return (
+    <section className="chapter-section">
+      <h3>Related topics</h3>
+      <ul className="related-topic-links">
+        {refs.map((ref) => {
+          const link = resolveRelatedTopics([ref])[0];
+          return (
+            <li key={ref}>
+              {link ? <Link to={link.href}>{link.title}</Link> : ref}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
 }
 
 export function ChapterDetail({ chapter, onClose, completed, onToggleComplete, packAngle }: { chapter: EncyclopediaChapter; onClose: () => void; completed: boolean; onToggleComplete: () => void; packAngle?: string | null }) {
@@ -66,7 +87,7 @@ export function ChapterDetail({ chapter, onClose, completed, onToggleComplete, p
         <ListSection title="Failure scenarios" items={chapter.failureScenarios} />
         <ListSection title="Production considerations" items={chapter.productionConsiderations} />
         <ListSection title="Staff Engineer discussion" items={chapter.staffDiscussion} />
-        <ListSection title="Related topics" items={chapter.relatedTopics} />
+        <RelatedTopicsSection refs={chapter.relatedTopics} />
         <ListSection title="Real-world systems" items={chapter.realWorldSystems} />
         <ListSection title="Follow-up interview questions" items={chapter.followUpQuestions} />
         <ListSection title="Cheat sheet" items={chapter.cheatSheet} />

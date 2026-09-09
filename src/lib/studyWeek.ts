@@ -50,6 +50,25 @@ export interface StudyWeekPlan {
   nextRoadmapSession: { id: number; title: string } | null;
 }
 
+/** Roadmap week tied to the learner's current curriculum week (study path). */
+export function getRoadmapFocusWeek(state: StaffPathState): number {
+  const plan = buildStudyWeekPlan(state);
+  if (plan) return plan.roadmapWeek;
+  const firstOpen = roadmapSessions.find((session) => !state.roadmap[String(session.id)]?.completedAt);
+  return firstOpen?.week ?? 1;
+}
+
+/** First incomplete session in the focus week, else first session of that week. */
+export function getRoadmapFocusSessionId(state: StaffPathState, week?: number): number {
+  const focusWeek = week ?? getRoadmapFocusWeek(state);
+  const inWeek = roadmapSessions.filter((session) => session.week === focusWeek);
+  const open = inWeek.find((session) => !state.roadmap[String(session.id)]?.completedAt);
+  if (open) return open.id;
+  if (inWeek[0]) return inWeek[0].id;
+  const firstOpen = roadmapSessions.find((session) => !state.roadmap[String(session.id)]?.completedAt);
+  return firstOpen?.id ?? roadmapSessions[0]?.id ?? 1;
+}
+
 export function buildStudyWeekPlan(state: StaffPathState): StudyWeekPlan | null {
   const week = resolveStudyWeek(state);
   const module = getCurriculumModule(week);

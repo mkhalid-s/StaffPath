@@ -14,6 +14,8 @@ export interface CurriculumModule {
   /** Matching 90-day roadmap week (1–12). */
   roadmapWeek: number;
   practiceTrack: PracticeTrackHint;
+  /** Optional external references from the resources library (by title). */
+  resourceTitles?: string[];
 }
 
 export const curriculumModules: CurriculumModule[] = [
@@ -27,6 +29,7 @@ export const curriculumModules: CurriculumModule[] = [
     chapterIds: ['requirements-quality-attributes', 'capacity-estimation', 'virtual-waiting-room'],
     roadmapWeek: 3,
     practiceTrack: 'design',
+    resourceTitles: ['ByteByteGo System Design', 'The System Design Primer', 'System Design School'],
   },
   {
     week: 2,
@@ -38,6 +41,7 @@ export const curriculumModules: CurriculumModule[] = [
     chapterIds: ['dns-cdn-networking', 'api-protocol-selection', 'load-balancing-rate-limits', 'api-gateway-patterns'],
     roadmapWeek: 3,
     practiceTrack: 'design',
+    resourceTitles: ['HTTP reference', 'Architecture Center', 'Well-Architected Framework'],
   },
   {
     week: 3,
@@ -49,6 +53,7 @@ export const curriculumModules: CurriculumModule[] = [
     chapterIds: ['database-selection-sharding', 'idempotent-webhooks', 'replication-protocols', 'consistent-hashing', 'key-value-store-internals'],
     roadmapWeek: 5,
     practiceTrack: 'design',
+    resourceTitles: ['Designing Data-Intensive Applications', 'Transaction isolation', 'CMU 15-445: Database Internals'],
   },
   {
     week: 4,
@@ -60,6 +65,7 @@ export const curriculumModules: CurriculumModule[] = [
     chapterIds: ['cache-stampede', 'messaging-delivery-semantics', 'event-driven-architecture', 'cqrs-event-sourcing', 'change-data-capture'],
     roadmapWeek: 5,
     practiceTrack: 'design',
+    resourceTitles: ['Kafka design documentation', 'The Log: What Every Software Engineer Should Know', 'Martin Fowler\'s Blog'],
   },
   {
     week: 5,
@@ -71,6 +77,7 @@ export const curriculumModules: CurriculumModule[] = [
     chapterIds: ['cap-pacelc-consistency', 'consensus-coordination', 'time-and-clocks', 'distributed-transactions', 'distributed-locks-leader-election', 'multi-region-active-active'],
     roadmapWeek: 4,
     practiceTrack: 'design',
+    resourceTitles: ['In Search of an Understandable Consensus Algorithm', 'MIT 6.824: Distributed Systems', 'Jepsen Analyses'],
   },
   {
     week: 6,
@@ -82,6 +89,7 @@ export const curriculumModules: CurriculumModule[] = [
     chapterIds: ['resilience-patterns', 'slo-observability-incidents', 'metrics-monitoring-alerting', 'chaos-engineering', 'autoscaling-capacity'],
     roadmapWeek: 7,
     practiceTrack: 'problem',
+    resourceTitles: ['Site Reliability Engineering books', 'SRE Workbook', 'Honeycomb Engineering Blog'],
   },
   {
     week: 7,
@@ -93,6 +101,7 @@ export const curriculumModules: CurriculumModule[] = [
     chapterIds: ['kubernetes-for-engineers', 'security-multitenancy', 'zero-trust-networking', 'cryptography-primitives', 'infrastructure-as-code'],
     roadmapWeek: 8,
     practiceTrack: 'sdlc',
+    resourceTitles: ['Kubernetes concepts', 'Threat Modeling', 'Developer Guide'],
   },
   {
     week: 8,
@@ -104,6 +113,7 @@ export const curriculumModules: CurriculumModule[] = [
     chapterIds: ['staff-archetypes', 'technical-strategy-decisions', 'platform-engineering', 'safe-delivery-migrations', 'technical-debt-management', 'domain-driven-design'],
     roadmapWeek: 9,
     practiceTrack: 'sdlc',
+    resourceTitles: ['Staff engineering guides', 'The Architect Elevator', 'Accelerate'],
   },
   {
     week: 9,
@@ -115,6 +125,7 @@ export const curriculumModules: CurriculumModule[] = [
     chapterIds: ['prompt-engineering', 'vector-databases-embeddings', 'ml-serving-infrastructure', 'llm-router', 'semantic-cache', 'ai-evaluation-testing'],
     roadmapWeek: 6,
     practiceTrack: 'design',
+    resourceTitles: ['AI Risk Management Framework', 'OpenTelemetry documentation', 'Honeycomb Engineering Blog'],
   },
   {
     week: 10,
@@ -126,6 +137,7 @@ export const curriculumModules: CurriculumModule[] = [
     chapterIds: ['production-rag', 'agents-tool-calling'],
     roadmapWeek: 9,
     practiceTrack: 'design',
+    resourceTitles: ['Production Postmortems', 'Uber Engineering Blog', 'Stripe Engineering Blog'],
   },
   {
     week: 11,
@@ -137,6 +149,7 @@ export const curriculumModules: CurriculumModule[] = [
     chapterIds: ['influence-conflict-feedback', 'mentoring-leverage', 'staff-archetypes'],
     roadmapWeek: 10,
     practiceTrack: 'people',
+    resourceTitles: ['Being Glue', 'Staff Engineer', 'The Guerrilla Guide to Interviewing'],
   },
   {
     week: 12,
@@ -148,5 +161,6 @@ export const curriculumModules: CurriculumModule[] = [
     chapterIds: ['requirements-quality-attributes', 'capacity-estimation', 'staff-archetypes'],
     roadmapWeek: 12,
     practiceTrack: 'design',
+    resourceTitles: ['NeetCode System Design', 'High Scalability blog', 'DORA State of DevOps Report'],
   },
 ];

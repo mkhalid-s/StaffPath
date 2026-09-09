@@ -1,6 +1,6 @@
 # Remaining work — plan for review
 
-**Status:** P0 implemented (2026-09-09)  
+**Status:** P0 + P1 implemented (2026-09-09)  
 **Date:** 2026-09-09  
 **Audience:** review this before any more implementation.
 
@@ -103,7 +103,7 @@ Highest leverage. New users still do not land on a path after onboarding.
 
 ---
 
-## P1 — Make overlays and recommendations actually fire
+## P1 — Make overlays and recommendations actually fire ✅ (shipped)
 
 ### P1.1 Interview Studio from Company path
 
