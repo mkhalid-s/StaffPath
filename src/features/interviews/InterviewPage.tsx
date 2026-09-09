@@ -4,6 +4,7 @@ import type { MockInterviewRecord } from '../../domain/appState';
 import { interviewPrompts } from '../../data/interviewPrompts';
 import { getActivePack } from '../../data/companyPacks';
 import { localDayKey } from '../../lib/dates';
+import { readQueryParam, useLocationSearch } from '../../lib/router';
 
 const criteria = ['Requirements', 'Estimation', 'Architecture', 'Technical depth', 'Trade-offs', 'Failure handling', 'Staff-level judgment', 'Communication'];
 const isoAfter = (days: number) => { const date = new Date(); date.setDate(date.getDate() + days); return localDayKey(date); };
@@ -24,6 +25,7 @@ const formatClock = (totalSeconds: number) => `${String(Math.floor(Math.max(0, t
 
 export function InterviewPage() {
   const state = useStaffPathState();
+  const search = useLocationSearch();
   const pack = getActivePack(state.profile.selectedCompanyPack);
   const [tab, setTab] = useState<'mock' | 'mistakes'>('mock');
   const [type, setType] = useState<InterviewType>('system-design');
@@ -58,6 +60,17 @@ export function InterviewPage() {
       return next;
     });
   };
+
+  useEffect(() => {
+    const raw = readQueryParam('packBehavioral');
+    if (raw === null || !pack?.behavioralQuestions.length) return;
+    const index = Number(raw);
+    if (!Number.isInteger(index) || index < 0) return;
+    setTab('mock');
+    setType('pack-behavioral');
+    setPromptIndex(index % pack.behavioralQuestions.length);
+    resetTimer();
+  }, [search, pack]);
 
   useEffect(() => {
     if (!running) return;

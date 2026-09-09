@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { PreparationMode } from '../../domain/preparationModes';
 import { PREPARATION_MODES, resolveModeConfig } from '../../domain/preparationModes';
 import type { StaffPathState } from '../../domain/appState';
 import { appStore, useStaffPathState } from '../../lib/appStore';
 import { localDayKey } from '../../lib/dates';
 import { loadDemoState } from '../../lib/demoSeed';
+import { getStoredTheme, persistTheme, THEME_CHANGE_EVENT, type ColorTheme } from '../../lib/theme';
 import { CompanyPackSelection } from './CompanyPackSelection';
 
 export function isStaffPathBackup(value: unknown): value is StaffPathState {
@@ -23,9 +24,16 @@ export function isStaffPathBackup(value: unknown): value is StaffPathState {
 export function SettingsPage() {
   const state = useStaffPathState();
   const [message, setMessage] = useState('');
+  const [theme, setTheme] = useState<ColorTheme>(() => getStoredTheme());
   const [selectedMode, setSelectedMode] = useState<PreparationMode>(state.profile.preparationMode);
   const [customDays, setCustomDays] = useState(state.profile.customMode?.totalDays ?? 120);
   const [customMinutes, setCustomMinutes] = useState(state.profile.customMode?.dailyMinutes ?? 45);
+
+  useEffect(() => {
+    const sync = () => setTheme(getStoredTheme());
+    window.addEventListener(THEME_CHANGE_EVENT, sync);
+    return () => window.removeEventListener(THEME_CHANGE_EVENT, sync);
+  }, []);
 
   const modeConfig = resolveModeConfig(selectedMode, selectedMode === 'custom' ? { totalDays: customDays, dailyMinutes: customMinutes } : undefined);
 
@@ -49,8 +57,36 @@ export function SettingsPage() {
   return (
     <div className="page settings-page">
       <div className="page-heading">
-        <div><p className="eyebrow">LOCAL-FIRST DATA</p><h1>Settings</h1><p>Manage your preparation pace, profile, and data backup.</p></div>
+        <div><p className="eyebrow">LOCAL-FIRST DATA</p><h1>Settings</h1><p>Manage appearance, preparation pace, profile, and data backup.</p></div>
       </div>
+
+      <section className="settings-section">
+        <div className="section-heading"><div><p className="eyebrow">APPEARANCE</p><h2>Color theme</h2></div></div>
+        <p>A quieter forest palette for long study sessions. System follows your operating system.</p>
+        <div className="theme-picker" role="radiogroup" aria-label="Color theme">
+          {([
+            ['system', 'System', 'Match the OS light or dark setting'],
+            ['light', 'Light', 'Warm paper, ink, and forest green'],
+            ['dark', 'Dark', 'Charcoal canvas with readable sage accents'],
+          ] as const).map(([id, label, hint]) => (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              aria-checked={theme === id}
+              className={`theme-option ${theme === id ? 'selected' : ''}`}
+              onClick={() => {
+                setTheme(id);
+                persistTheme(id);
+                setMessage(`Theme set to ${label.toLowerCase()}.`);
+              }}
+            >
+              <strong>{label}</strong>
+              <span>{hint}</span>
+            </button>
+          ))}
+        </div>
+      </section>
 
       <CompanyPackSelection />
 

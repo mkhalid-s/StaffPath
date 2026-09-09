@@ -11,6 +11,10 @@ export interface UserProfile {
   unlockAll: boolean;
   celebratedUnlocks: string[];
   selectedCompanyPack: CompanyPackId;
+  /** Active curriculum week (1–12). Set at onboarding from skill assessment. */
+  studyWeek: number;
+  /** Post-onboarding guided help on Today. */
+  guidedHelpDismissed: boolean;
 }
 
 export interface CompetencyAssessment { score: number; evidence: string; updatedAt: string }

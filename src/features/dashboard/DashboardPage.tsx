@@ -2,10 +2,13 @@ import { Link } from '../../lib/router';
 import { roadmapSessions, ROADMAP_SESSION_COUNT } from '../../data/roadmap';
 import { resolveModeConfig } from '../../domain/preparationModes';
 import { buildWhatsNextActions } from '../../lib/intelligence';
+import { getActivePack } from '../../data/companyPacks';
 import { FEATURES, getNextUnlock, getUnlockProgress, isFeatureUnlocked } from '../../lib/featureUnlocks';
 import { useStaffPathState } from '../../lib/appStore';
 import { localDayKey } from '../../lib/dates';
 import { IntelligentRecommendations } from './IntelligentRecommendations';
+import { GuidedHelp } from '../../components/GuidedHelp';
+import { StudyWeekCard } from '../../components/StudyWeekCard';
 
 const lifecycle = [
   ['Learn', 'Build accurate mental models', '/encyclopedia', 'encyclopedia'],
@@ -24,6 +27,7 @@ export function DashboardPage() {
   const next = roadmapSessions.find((session) => !state.roadmap[String(session.id)]?.completedAt) || roadmapSessions[ROADMAP_SESSION_COUNT - 1];
   const dueMistakes = state.mistakes.filter((item) => !item.resolved && item.nextReview <= localDayKey()).length;
   const greeting = state.profile.name ? `Welcome back, ${state.profile.name}.` : 'Build judgment. Create leverage.';
+  const pack = getActivePack(state.profile.selectedCompanyPack);
   const nextUnlock = getNextUnlock(state);
   const lockedFeatures = FEATURES.filter((feature) => !isFeatureUnlocked(state, feature.id) && feature.id !== 'settings');
   const unlockedCount = FEATURES.filter((feature) => isFeatureUnlocked(state, feature.id)).length;
@@ -50,6 +54,10 @@ export function DashboardPage() {
         </div>
       </div>
 
+      <GuidedHelp />
+
+      <StudyWeekCard />
+
       <section className="hero-panel">
         <div>
           <span className="status-chip">DAY {next.id} · WEEK {next.week}</span>
@@ -67,6 +75,18 @@ export function DashboardPage() {
           <div><strong>{state.practiceAttempts.length}</strong><span>practice attempts</span></div>
           <div><strong>{state.completedChapters.length}/65</strong><span>chapters evidenced</span></div>
           <div><strong>{focusHours}h</strong><span>focus time</span></div>
+        </div>
+      </section>
+
+      <section className="pack-banner">
+        <div>
+          <p className="eyebrow">{pack ? `${pack.company.toUpperCase()} PATH` : 'COMPANY PATH'}</p>
+          <h2>{pack ? `${pack.label} is overlaying chapters and practice` : 'Study the Staff core, then overlay a company'}</h2>
+          <p>{pack ? pack.practiceContext : 'Curriculum is the map. Roadmap is the daily loop. A company pack only rewrites the lens — it is not a second product.'}</p>
+        </div>
+        <div className="button-row">
+          <Link className="button primary" to="/pack">{pack ? 'Open today’s pack path' : 'Choose a company path'}</Link>
+          <Link className="button" to="/curriculum">Open the 12-week map</Link>
         </div>
       </section>
 

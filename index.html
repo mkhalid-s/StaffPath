@@ -3,14 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#153b2b" />
+    <meta name="theme-color" content="#f4f3ee" />
     <meta name="description" content="A complete Staff Software Engineer preparation workspace." />
     <meta name="color-scheme" content="light dark" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('staffpath-theme') || 'system';
+          var dark = stored === 'dark' || (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+          document.documentElement.dataset.themePreference = stored === 'light' || stored === 'dark' ? stored : 'system';
+          document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', dark ? '#121614' : '#f4f3ee');
+        } catch (e) {}
+      })();
+    </script>
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/staffpath-icon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
     <title>StaffPath</title>
   </head>
   <body>

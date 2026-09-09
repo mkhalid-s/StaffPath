@@ -12,6 +12,7 @@ import { useStaffPathState } from '../lib/appStore';
 import { FEATURE_BY_PATH, isPathUnlocked } from '../lib/featureUnlocks';
 import { initKeyboardShortcuts, SHOW_SHORTCUTS_EVENT } from '../lib/keyboardShortcuts';
 import { initOfflineSync } from '../lib/offlineQueue';
+import { applyTheme, getStoredTheme } from '../lib/theme';
 
 const EncyclopediaPage = lazy(() => import('../features/encyclopedia/EncyclopediaPage').then((module) => ({ default: module.EncyclopediaPage })));
 const LifecyclePage = lazy(() => import('../features/lifecycle/LifecyclePage').then((module) => ({ default: module.LifecyclePage })));
@@ -24,6 +25,7 @@ const HandbookPage = lazy(() => import('../features/handbook/HandbookPage').then
 const JournalPage = lazy(() => import('../features/journal/JournalPage').then((module) => ({ default: module.JournalPage })));
 const SettingsPage = lazy(() => import('../features/settings/SettingsPage').then((module) => ({ default: module.SettingsPage })));
 const CurriculumPage = lazy(() => import('../features/curriculum/CurriculumPage').then((module) => ({ default: module.CurriculumPage })));
+const PackPage = lazy(() => import('../features/pack/PackPage').then((module) => ({ default: module.PackPage })));
 const CoachPage = lazy(() => import('../features/coach/CoachPage').then((module) => ({ default: module.CoachPage })));
 const ResourcesPage = lazy(() => import('../features/resources/ResourcesPage').then((module) => ({ default: module.ResourcesPage })));
 const FlashcardsPage = lazy(() => import('../features/flashcards/FlashcardsPage').then((module) => ({ default: module.FlashcardsPage })));
@@ -41,6 +43,7 @@ const pages: Record<string, React.ReactNode> = {
   '/journal': <JournalPage />,
   '/settings': <SettingsPage />,
   '/curriculum': <CurriculumPage />,
+  '/pack': <PackPage />,
   '/coach': <CoachPage />,
   '/resources': <ResourcesPage />,
   '/flashcards': <FlashcardsPage />,
@@ -74,10 +77,16 @@ export function App() {
     const showHelp = () => setHelpOpen(true);
     window.addEventListener(SHOW_SHORTCUTS_EVENT, showHelp);
     const cleanupSync = initOfflineSync();
+    const media = typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+    const syncSystemTheme = () => {
+      if (getStoredTheme() === 'system') applyTheme('system');
+    };
+    media?.addEventListener('change', syncSystemTheme);
     return () => {
       cleanupShortcuts();
       cleanupSync();
       window.removeEventListener(SHOW_SHORTCUTS_EVENT, showHelp);
+      media?.removeEventListener('change', syncSystemTheme);
     };
   }, []);
 

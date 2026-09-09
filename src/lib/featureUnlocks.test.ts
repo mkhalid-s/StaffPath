@@ -16,6 +16,16 @@ describe('featureUnlocks', () => {
     expect(isFeatureUnlocked(state, 'dashboard')).toBe(true);
     expect(isFeatureUnlocked(state, 'roadmap')).toBe(true);
     expect(isFeatureUnlocked(state, 'practice')).toBe(false);
+    expect(isFeatureUnlocked(state, 'curriculum')).toBe(false);
+  });
+
+  it('unlocks curriculum after onboarding', () => {
+    appStore.update((current) => ({
+      ...current,
+      profile: { ...current.profile, onboardingComplete: true },
+    }));
+    expect(isFeatureUnlocked(appStore.get(), 'curriculum')).toBe(true);
+    expect(isPathUnlocked(appStore.get(), '/curriculum')).toBe(true);
   });
 
   it('unlocks practice after 2 sessions', () => {

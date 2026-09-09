@@ -22,6 +22,8 @@ const defaultProfile = (): UserProfile => ({
   unlockAll: false,
   celebratedUnlocks: [],
   selectedCompanyPack: 'none',
+  studyWeek: 1,
+  guidedHelpDismissed: false,
 });
 
 const blankState = (): StaffPathState => ({

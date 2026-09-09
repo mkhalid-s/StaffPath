@@ -1,6 +1,7 @@
 import type { CompanyPackId } from '../../data/companyPacks';
 import { COMPANY_PACKS } from '../../data/companyPacks';
 import { appStore, useStaffPathState } from '../../lib/appStore';
+import { Link } from '../../lib/router';
 
 interface PackWithDetails {
   interviewFormat?: string;
@@ -17,7 +18,8 @@ export function CompanyPackSelection() {
       <div className="section-heading">
         <div><p className="eyebrow">COMPANY PACK</p><h2>Interview context overlay</h2></div>
       </div>
-      <p>Add company-specific angles to encyclopedia chapters and practice scenarios. Core content stays the same — packs layer on context.</p>
+      <p>Add company-specific angles to encyclopedia chapters and practice scenarios. Core content stays the same — packs layer on context. The workspace for actually using a pack is Company path.</p>
+      <p><Link className="text-link" to="/pack">Open the company path workspace →</Link></p>
       <div className="mode-cards settings-mode-cards">
         <button
           type="button"

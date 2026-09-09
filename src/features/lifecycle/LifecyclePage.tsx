@@ -112,9 +112,9 @@ export function LifecyclePage() {
     <div className="page lifecycle-page">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">YOUR PREPARATION SYSTEM</p>
+          <p className="eyebrow">REFERENCE · NOT YOUR DAILY CALENDAR</p>
           <h1>Preparation is a feedback system.</h1>
-          <p>Every activity should improve judgment, produce evidence, or reveal the next gap.</p>
+          <p>Every activity should improve judgment, produce evidence, or reveal the next gap. For day-to-day prep, follow <Link to="/curriculum">Curriculum week-by-week</Link> and the <Link to="/roadmap">90-day roadmap</Link>. Use this page for the full delivery lifecycle picture.</p>
         </div>
         <div className="chapter-count">
           <strong>{evidence.gatesPassed}/{evidence.gates.length}</strong>

@@ -6,6 +6,7 @@ import { searchChapters } from './search';
 import { getActivePack, getChapterPackAngle } from '../../data/companyPacks';
 import { FOCUS_SEARCH_EVENT } from '../../lib/keyboardShortcuts';
 import { appStore, useStaffPathState } from '../../lib/appStore';
+import { useLocationSearch } from '../../lib/router';
 
 const categories: Array<'All' | ChapterCategory> = ['All', 'Systems', 'Data', 'Reliability', 'AI', 'Architecture', 'Leadership'];
 
@@ -17,15 +18,22 @@ export function EncyclopediaPage() {
   const deferredQuery = useDeferredValue(query);
   const searchInput = useRef<HTMLInputElement>(null);
   const pack = getActivePack(state.profile.selectedCompanyPack);
+  const search = useLocationSearch();
   const results = useMemo(() => searchChapters(encyclopediaChapters, deferredQuery, category, pack), [deferredQuery, category, pack]);
   useEffect(() => {
     const focusSearch = () => searchInput.current?.focus();
     window.addEventListener(FOCUS_SEARCH_EVENT, focusSearch);
     return () => window.removeEventListener(FOCUS_SEARCH_EVENT, focusSearch);
   }, []);
+  useEffect(() => {
+    const chapterId = new URLSearchParams(search).get('chapter');
+    if (!chapterId) return;
+    const match = encyclopediaChapters.find((chapter) => chapter.id === chapterId);
+    if (match) setSelected(match);
+  }, [search]);
 
   return <div className="page encyclopedia-page">
-    <div className="page-heading"><div><p className="eyebrow">ENGINEERING ENCYCLOPEDIA</p><h1>Search concepts. Connect judgment.</h1><p>Every chapter follows one interview-to-production structure.{pack && ` ${pack.label} overlay active.`}</p></div><div className="chapter-count"><strong>{state.completedChapters.length}/{encyclopediaChapters.length}</strong><span>chapters complete</span></div></div>
+    <div className="page-heading"><div><p className="eyebrow">ENGINEERING ENCYCLOPEDIA</p><h1>Search concepts. Connect judgment.</h1><p>Every chapter follows one interview-to-production structure.{pack && ` ${pack.label} overlay active — pack-angled chapters sort first.`}</p></div><div className="chapter-count"><strong>{state.completedChapters.length}/{encyclopediaChapters.length}</strong><span>chapters complete</span></div></div>
     <div className="search-panel">
       <label><span>⌕</span><input ref={searchInput} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search idempotency, hot keys, routing, failure scenarios…" aria-label="Search encyclopedia" /><kbd>⌘ K</kbd></label>
       <div className="category-filters">{categories.map((item) => <button key={item} className={category === item ? 'active' : ''} onClick={() => setCategory(item)}>{item}</button>)}</div>

@@ -30,14 +30,24 @@ export function usePathname() {
   return useSyncExternalStore(subscribe, () => stripBase(window.location.pathname), () => '/');
 }
 
+export function useLocationSearch() {
+  return useSyncExternalStore(subscribe, () => window.location.search, () => '');
+}
+
+export function readQueryParam(name: string): string | null {
+  if (typeof window === 'undefined') return null;
+  return new URLSearchParams(window.location.search).get(name);
+}
+
 export function navigate(to: string) {
   if (typeof window === 'undefined') return;
   const target = withBase(to);
-  if (window.location.pathname !== target) {
+  const current = `${window.location.pathname}${window.location.search}`;
+  if (current !== target) {
     window.history.pushState({}, '', target);
-    window.dispatchEvent(new Event(routeEvent));
-    window.scrollTo({ top: 0 });
   }
+  window.dispatchEvent(new Event(routeEvent));
+  window.scrollTo({ top: 0 });
 }
 
 interface LinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> { to: string }
