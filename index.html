@@ -3,9 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#153b2b" />
+    <meta name="theme-color" content="#f4f3ee" />
     <meta name="description" content="A complete Staff Software Engineer preparation workspace." />
     <meta name="color-scheme" content="light dark" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('staffpath-theme') || 'system';
+          var dark = stored === 'dark' || (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+          document.documentElement.dataset.themePreference = stored === 'light' || stored === 'dark' ? stored : 'system';
+          document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', dark ? '#0c0f0d' : '#f4f3ee');
+        } catch (e) {}
+      })();
+    </script>
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/staffpath-icon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -12,6 +12,7 @@ import { useStaffPathState } from '../lib/appStore';
 import { FEATURE_BY_PATH, isPathUnlocked } from '../lib/featureUnlocks';
 import { initKeyboardShortcuts, SHOW_SHORTCUTS_EVENT } from '../lib/keyboardShortcuts';
 import { initOfflineSync } from '../lib/offlineQueue';
+import { applyTheme, getStoredTheme } from '../lib/theme';
 
 const EncyclopediaPage = lazy(() => import('../features/encyclopedia/EncyclopediaPage').then((module) => ({ default: module.EncyclopediaPage })));
 const LifecyclePage = lazy(() => import('../features/lifecycle/LifecyclePage').then((module) => ({ default: module.LifecyclePage })));
@@ -74,10 +75,16 @@ export function App() {
     const showHelp = () => setHelpOpen(true);
     window.addEventListener(SHOW_SHORTCUTS_EVENT, showHelp);
     const cleanupSync = initOfflineSync();
+    const media = typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+    const syncSystemTheme = () => {
+      if (getStoredTheme() === 'system') applyTheme('system');
+    };
+    media?.addEventListener('change', syncSystemTheme);
     return () => {
       cleanupShortcuts();
       cleanupSync();
       window.removeEventListener(SHOW_SHORTCUTS_EVENT, showHelp);
+      media?.removeEventListener('change', syncSystemTheme);
     };
   }, []);
 

@@ -37,7 +37,7 @@ export function CompetencyRadar({ state, size = 280 }: CompetencyRadarProps) {
         const outer = point(i, 5);
         return <line key={i} x1={center} y1={center} x2={outer.x} y2={outer.y} stroke="var(--line)" strokeWidth="1" />;
       })}
-      <polygon points={polygon} fill="rgba(45,90,61,0.15)" stroke="var(--green)" strokeWidth="2" />
+      <polygon points={polygon} fill="color-mix(in srgb, var(--green) 18%, transparent)" stroke="var(--green)" strokeWidth="2" />
       {dataPoints.map((p, i) => (
         <circle key={scores[i].id} cx={p.x} cy={p.y} r="4" fill="var(--green)" />
       ))}
